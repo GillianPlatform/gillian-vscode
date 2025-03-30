@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import "@gillianplatform/sedap-react/dist/sedap-react.css";
+import "@gillianplatform/sedap-react/dist/style.css";
 import "./index.css";
 import App from "./App.tsx";
 
