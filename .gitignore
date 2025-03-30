@@ -1,4 +1,6 @@
 node_modules
+debug-ui-out
 dist
 out
 *.vsix
+*.tsbuildinfo

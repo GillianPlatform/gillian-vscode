@@ -1,20 +1,18 @@
 {
   "name": "gillian-debugger-ui",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --build && vite build",
-    "watch:tsc": "tsc --build --watch --preserveWatchOutput",
-    "watch:vite": "vite build --watch",
-    "watch": "concurrently -n tsc,vite -c cyan,green \"npm run watch:tsc\" \"npm run watch:vite\"",
-    "lint": "eslint .",
+    "build": "vite build",
+    "watch": "vite build --watch",
+    "lint": "eslint --fix",
+    "lint-check": "eslint",
     "preview": "vite preview"
   },
   "dependencies": {
     "@gillianplatform/sedap-react": "0.0.1",
-    "@gillianplatform/sedap-vscode-ui": "0.0.2",
+    "@gillianplatform/sedap-vscode-ui": "0.0.1",
     "@vscode/webview-ui-toolkit": "^1.4.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -38,6 +36,8 @@
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
     "prettier": "^3.4.2",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-delete": "^3.0.1",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.18.2",
     "vite": "^6.0.5"

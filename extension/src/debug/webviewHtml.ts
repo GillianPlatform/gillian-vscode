@@ -2,7 +2,7 @@ import { ExtensionContext, Uri, WebviewPanel } from "vscode";
 import { randomUUID } from "crypto";
 
 export const getWebviewResourceRoot = (context: ExtensionContext) => {
-  return Uri.joinPath(context.extensionUri, "debug-ui/dist");
+  return Uri.joinPath(context.extensionUri, "debug-ui-out");
 };
 
 export const getWebviewHtml =

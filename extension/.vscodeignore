@@ -1,0 +1,5 @@
+../**/*
+tsconfig.json
+esbuild.js
+eslint.config.mjs
+src/**/*

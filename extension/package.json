@@ -1,0 +1,434 @@
+{
+  "name": "gillian",
+  "publisher": "gillianplatform",
+  "displayName": "The Gillian Platform",
+  "icon": "gillian.png",
+  "version": "0.0.1",
+  "description": "Gillian integration for VSCode",
+  "author": {
+    "name": "The Gillian Team",
+    "url": "https://github.com/GillianPlatform"
+  },
+  "homepage": "gillianplatform.github.io",
+  "license": "BSD-3-Clause",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Debuggers",
+    "Visualization"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GillianPlatform/Gillian.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GillianPlatform/Gillian/issues"
+  },
+  "main": "./dist/extension.js",
+  "scripts": {
+    "build-dev": "node esbuild.js",
+    "build": "node esbuild.js --production",
+    "watch": "node esbuild.js --watch",
+    "vscode:prepublish": "npm run build --workspace ../debug-ui && npm run build",
+    "package": "vsce package",
+    "lint": "eslint --fix",
+    "lint-check": "eslint"
+  },
+  "dependencies": {
+    "@gillianplatform/sedap-vscode-ext": "0.0.1",
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^1.2.4",
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.17.0",
+    "@gillianplatform/sedap-types": "0.0.1",
+    "@types/glob": "^7.2.0",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.96.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.2",
+    "@typescript-eslint/parser": "^8.18.2",
+    "@vscode/test-electron": "^2.1.3",
+    "@vscode/vsce": "^3.2.2",
+    "concurrently": "^9.1.2",
+    "esbuild": "^0.25.1",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "glob": "^8.0.1",
+    "prettier": "^3.4.2",
+    "typescript": "^4.6.4"
+  },
+  "activationEvents": [
+    "onDebugDynamicConfigurations:gillian",
+    "onCommand:extension.gillian.getProgramName",
+    "onLanguage:javascript",
+    "onLanguage:c"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "jsil",
+        "aliases": [
+          "jsil"
+        ],
+        "extensions": [
+          ".jsil"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "wisl",
+        "aliases": [
+          "wisl"
+        ],
+        "extensions": [
+          ".wisl"
+        ],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "gil",
+        "aliases": [
+          "gil"
+        ],
+        "extensions": [
+          ".gil"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "jsil",
+        "scopeName": "source.jsil",
+        "path": "./syntaxes/jsil.tmLanguage.json"
+      },
+      {
+        "language": "wisl",
+        "scopeName": "source.wisl",
+        "path": "./syntaxes/wisl.tmLanguage.json"
+      },
+      {
+        "language": "gil",
+        "scopeName": "source.gil",
+        "path": "./syntaxes/gil.tmLanguage.json"
+      },
+      {
+        "injectTo": [
+          "source.c"
+        ],
+        "scopeName": "clogic.injection",
+        "path": "./syntaxes/clogic.tmLanguage.json"
+      }
+    ],
+    "configuration": [
+      {
+        "title": "Gillian",
+        "properties": {
+          "gillian.outputDirectory": {
+            "type": "string",
+            "default": "~/.gillian",
+            "description": "Gillian's output directory, i.e. where logs will be stored."
+          },
+          "gillian.runMode": {
+            "type": "string",
+            "enum": [
+              "installed",
+              "source"
+            ],
+            "default": "source",
+            "enumDescriptions": [
+              "Run installed Gillian binaries",
+              "Run Gillian from source, using the current opam switch."
+            ],
+            "description": "Specifies how to run Gillian."
+          },
+          "gillian.binDirectory": {
+            "type": "string",
+            "default": "",
+            "markdownDescription": "The location of the Gillian binaries; only relevant if `#gillian.runMode#` is `installed`."
+          },
+          "gillian.sourceDirectory": {
+            "type": "string",
+            "default": "",
+            "markdownDescription": "The location of the Gillian source code, only relevant if `#gillian.runMode#` is `source`."
+          },
+          "gillian.useManualProof": {
+            "type": "boolean",
+            "default": false,
+            "description": "Enables manual proof mode, i.e. disables automatical folding/unfolding."
+          }
+        }
+      },
+      {
+        "id": "gillian.wisl",
+        "title": "WISL",
+        "properties": {
+          "gillian.wisl.showVerifyButton": {
+            "type": "boolean",
+            "default": true
+          },
+          "gillian.wisl.showSymbolicDebugButton": {
+            "type": "boolean",
+            "default": true
+          },
+          "gillian.wisl.commandLineArguments": {
+            "type": "array",
+            "default": [],
+            "items": {
+              "type": "string"
+            }
+          },
+          "gillian.wisl.environmentVariables": {
+            "type": "object",
+            "default": {},
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      {
+        "id": "gillian.gillian-c",
+        "title": "Gillian-C",
+        "properties": {
+          "gillian.gillian-c.showVerifyButton": {
+            "type": "boolean",
+            "default": true
+          },
+          "gillian.gillian-c.showSymbolicDebugButton": {
+            "type": "boolean",
+            "default": true
+          },
+          "gillian.gillian-c.commandLineArguments": {
+            "type": "array",
+            "default": [],
+            "items": {
+              "type": "string"
+            }
+          },
+          "gillian.gillian-c.environmentVariables": {
+            "type": "object",
+            "default": {},
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      {
+        "id": "gillian.gillian-js",
+        "title": "Gillian-JS",
+        "properties": {
+          "gillian.gillian-js.showVerifyButton": {
+            "type": "boolean",
+            "default": true
+          },
+          "gillian.gillian-js.showSymbolicDebugButton": {
+            "type": "boolean",
+            "default": true
+          },
+          "gillian.gillian-js.commandLineArguments": {
+            "type": "array",
+            "default": [],
+            "items": {
+              "type": "string"
+            }
+          },
+          "gillian.gillian-js.environmentVariables": {
+            "type": "object",
+            "default": {},
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      {
+        "id": "gillian.gillian-c2",
+        "title": "Gillian-C2",
+        "properties": {
+          "gillian.gillian-c2.showVerifyButton": {
+            "type": "boolean",
+            "default": false
+          },
+          "gillian.gillian-c2.showSymbolicDebugButton": {
+            "type": "boolean",
+            "default": true
+          },
+          "gillian.gillian-c2.commandLineArguments": {
+            "type": "array",
+            "default": [],
+            "items": {
+              "type": "string"
+            }
+          },
+          "gillian.gillian-c2.environmentVariables": {
+            "type": "object",
+            "default": {},
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    ],
+    "menus": {
+      "debug/toolBar": [
+        {
+          "command": "extension.gillian.showDebuggerWebview",
+          "when": "debugType == gillian"
+        }
+      ],
+      "editor/title/run": [
+        {
+          "command": "extension.gillian.runEditorContents",
+          "when": "resourceLangId == gil"
+        },
+        {
+          "command": "extension.gillian.debugEditorContents",
+          "when": "resourceLangId == gil"
+        },
+        {
+          "command": "extension.gillian.runEditorContents",
+          "when": "resourceLangId == wisl"
+        },
+        {
+          "command": "extension.gillian.debugEditorContents",
+          "when": "resourceLangId == wisl"
+        },
+        {
+          "command": "extension.gillian.runEditorContents",
+          "when": "resourceLangId == javascript"
+        },
+        {
+          "command": "extension.gillian.debugEditorContents",
+          "when": "resourceLangId == javascript"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "extension.gillian.debugEditorContents",
+          "when": "resourceLangId == gil"
+        },
+        {
+          "command": "extension.gillian.runEditorContents",
+          "when": "resourceLangId == gil"
+        },
+        {
+          "command": "extension.gillian.debugEditorContents",
+          "when": "resourceLangId == wisl"
+        },
+        {
+          "command": "extension.gillian.runEditorContents",
+          "when": "resourceLangId == wisl"
+        },
+        {
+          "command": "extension.gillian.debugEditorContents",
+          "when": "resourceLangId == javascript"
+        },
+        {
+          "command": "extension.gillian.runEditorContents",
+          "when": "resourceLangId == javascript"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "extension.gillian.debugEditorContents",
+        "title": "Debug File",
+        "category": "Gillian",
+        "enablement": "!inDebugMode",
+        "icon": "$(debug-alt)"
+      },
+      {
+        "command": "extension.gillian.runEditorContents",
+        "title": "Run File",
+        "category": "Gillian",
+        "enablement": "!inDebugMode",
+        "icon": "$(play)"
+      },
+      {
+        "command": "extension.gillian.debugProcedure",
+        "title": "Debug Procedure"
+      },
+      {
+        "command": "extension.gillian.showDebuggerWebview",
+        "title": "Show Gillian debugger panel",
+        "icon": "$(window)"
+      },
+      {
+        "command": "extension.gillian.restartWislLSP",
+        "title": "Restart WISL language server"
+      }
+    ],
+    "breakpoints": [
+      {
+        "language": "gil"
+      },
+      {
+        "language": "wisl"
+      },
+      {
+        "language": "javascript"
+      },
+      {
+        "language": "c"
+      }
+    ],
+    "debuggers": [
+      {
+        "type": "gillian",
+        "label": "Gillian Debugger",
+        "program": "TODO: Compile Gillian as executable",
+        "configurationAttributes": {
+          "launch": {
+            "required": [
+              "program"
+            ],
+            "properties": {
+              "program": {
+                "type": "string",
+                "description": "Absolute path to a text file.",
+                "default": "${workspaceFolder}/${command:AskForProgramName}"
+              },
+              "stopOnEntry": {
+                "type": "boolean",
+                "description": "Automatically stop after launch.",
+                "default": true
+              },
+              "targetLanguage": {
+                "type": "string",
+                "description": "Target language of the program to debug (wisl, js, etc.).",
+                "default": "wisl"
+              },
+              "procedureName": {
+                "type": "string",
+                "description": "Name of procedure to debug"
+              },
+              "trace": {
+                "type": "boolean",
+                "description": "Enable logging of the Debug Adapter Protocol.",
+                "default": true
+              }
+            }
+          }
+        },
+        "initialConfigurations": [
+          {
+            "type": "gillian",
+            "request": "launch",
+            "name": "Ask for file name",
+            "program": "${workspaceFolder}/${command:AskForProgramName}",
+            "stopOnEntry": true
+          }
+        ],
+        "variables": {
+          "AskForProgramName": "extension.gillian.getProgramName"
+        }
+      }
+    ]
+  }
+}
