@@ -1,0 +1,36 @@
+// TODO: manual mode
+
+// === EXERCISE 3 ===
+// Gillian's predicates are *iso-recursive*, meaning that a predicate is not
+// considered equivalent to its definition, but can be freely *folded*
+// (converted from definition to predicate) and *unfolded* (converted from
+// predicate to definition) in one step.
+// Normally, in most cases, Gillian can automatically fold and unfold as needed.
+// For clarity, however, this automatic fold/unfold has been disabled for some
+// exercises (including this one). You'll have to add these tactics yourself!
+// The syntax for folding and unfolding respectively is as follows:
+//   [[ fold P(x, y) ]];
+//   [[ unfold P(x, y) ]];
+//
+// Try adding folds and unfolds to make this function verify!
+
+predicate list(+x, alpha) {
+    (x == null) * (alpha == nil);
+    (x -> #v, #z) * list(#z, #beta) * (alpha == #v::#beta)
+}
+
+{ (x == #x) * list(#x, #alpha) }
+function llen(x) {
+    // [[ unfold list(#x, #alpha) ]];
+    if (x = null) {
+        n := 0
+    } else {
+        t := [x+1];
+        n := llen(t);
+        n := n + 1
+    };
+    [[ fold list(#x, #alpha) ]];
+    // [[ fold list(#x, #alpha) ]];
+    return n
+}
+{ list(#x, #alpha) * (ret == len(#alpha)) }
