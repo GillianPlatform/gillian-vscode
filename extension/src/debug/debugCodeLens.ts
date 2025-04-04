@@ -131,7 +131,7 @@ class DebugCodeLensProvider implements CodeLensProvider {
       case "javascript":
       case "wisl":
       default:
-        pattern = /function /g;
+        pattern = /^(?:(?!\s*\/\/.+))function /gm;
         break;
     }
 
