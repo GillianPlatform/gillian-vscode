@@ -1,0 +1,34 @@
+
+predicate list_member(+vs, +v, r : Bool){
+  (vs == []) * (r == false);
+  (vs == v :: #rest) * (r == true) * list_member(#rest, v, #mem);
+  (vs == #v :: #rest) * (#v != v) * list_member(#rest, v, r)
+}
+
+predicate KVL(+x, vs : List) {
+  (x == null) * (vs == -{}-);
+  (x -b> #k, #v, #next) * KVL(#next, #vs) *
+  (vs == [#k, #v] :: #vs) *
+  list_member(#vs, [#k, #v], false)
+}
+
+{(x == #x) * (k == #k) * (v == #v) * KVL(x, #vs)}
+function insertKVL(x, k, v) {
+  if (x == null) {
+  	r := new(3);
+		[r] := k;
+		[r + 1] := v
+	} else {
+		r := x;
+		c := [x];
+		if (c == k) {
+			[x + 1] := v
+		} else {
+			n := [x + 2];
+			n := insertKVL(n, k, v);
+			[x + 2] := n
+		}
+	};
+	return r
+}
+{ KVL(ret, #vs) * list_member(#vs, [#k, #v], true)}

@@ -1,0 +1,95 @@
+//
+// Standard over-approximating SLL predicate with contents
+//
+predicate SLLSet(+x, vs) {
+  // Empty SLL
+  (x == null) * (vs == -{}-);
+  // One SLL node and the rest
+  (x -b> #v, #next) * SLLSet(#next, #vs) *
+  (vs == -{#v}- -u- #vs)
+}
+
+predicate list_member(+vs, +v, r : Bool){
+  (vs == []) * (r == false);
+  (vs == v :: #rest) * (r == true) * list_member(#rest, v, #mem);
+  (vs == #v :: #rest) * (#v != v) * list_member(#rest, v, r)
+}
+
+lemma list_member_append {
+  statement:
+    forall vs, v, r, w.
+      list_member(vs, v, r) |- list_member(vs @ [ w ], v, (r || (w == v)))
+
+  proof:
+    if (w == v) {} else {}; // FIXME: THIS IS HORRIFIC
+    unfold list_member(vs, v, r);
+    if (!(vs == [])) {
+      assert {bind: #nv, #nvs, #nr} (vs == #nv :: #nvs) * list_member(#nvs, #v, #nr);
+      apply list_member_append(#nvs, v, #nr, w)
+    }
+}
+
+predicate tree(+x, vs : Set) {
+  // Empty Node
+  (x == null) * (vs == -{}-);
+  (x -> #v, #l, #r) * tree(#l, #vl) * tree(#r, #vr) *
+  (vs == (#vl -u- -{#v}-) -u- #vr) *
+  (!(#v -e- #vl)) *
+  (!(#v -e- #vr))
+}
+
+predicate bst(+x, v : Int, vs : Set) {
+  // Empty Node
+  (x == null) * (v == 0) * (vs == -{}-);
+  (x -b> v, #l, #r) * bst(#l, #v, #vl) * bst(#r, #v2, #vr) *
+  (vs == (#vl -u- -{v}-) -u- #vr) *
+  (!(v -e- #vl)) *
+  (!(v -e- #vr)) *
+  (#v < v) *
+  (v < #v2)
+}
+
+{(x == #x) * (y == #y) * SLLSet(#x, #vx) * SLLSet(#y, #vy) }
+function SLL_concat(x, y) {
+  [[ unfold SLLSet(x, #vx) ]];
+  if (x == null){
+    x := y
+  } else {
+    t := [x + 1];
+    z := SLL_concat(t, y);
+    [x + 1] := z;
+    [[ fold SLLSet(x, #vx -u- #vy) ]]
+  };
+  return x
+}
+{ SLLSet(ret,  #vx -u- #vy) }
+
+{ (x == #x) * tree(x, #vs) }
+function listify(x) {
+  [[ unfold tree(x, #vs) ]];
+  if (x == null) {
+    r := null
+  } else {
+    a := [x]; l := [x + 1]; r := [x + 2];
+    y := listify(l);
+    z := listify(r);
+    y := SLL_concat(y, z);
+    r := new(2); [r] := a; [r + 1] := y
+  };
+  [[ fold tree(x, #vs) ]];
+  [[ fold SLLSet(r, #vs) ]];
+  return r
+}
+{ tree(#x, #vs) * SLLSet(ret, #vs) }
+
+{ (x == #x) * (x != null) * bst(#x, #v, #vs)}
+function BSTFindMin(x) {
+  l := [x + 1];
+  if (l == null) {
+    min := [x]
+  } else {
+    min := BSTFindMin(l)
+  };
+  return min
+}
+{ (#x != null) * bst(#x, #v, #vs) * (ret -e- #vs) * (ret <= #v)}
