@@ -12,7 +12,8 @@
 //       function is declared.
 //       You can step through the code using normal debugging controls, as well
 //       as Gillian's bespoke debugging interface.
-//       Make sure you keep an eye on the current state in the "Run" tab!
+//       Make sure you keep an eye on the current state in the "Run" tab, over
+//       on the left!
 
 { isInt(x) }
 function signum(x) {
