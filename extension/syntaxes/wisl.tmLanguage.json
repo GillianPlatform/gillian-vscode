@@ -20,14 +20,28 @@
   ],
   "repository": {
     "comments": {
-      "begin": "//",
-      "beginCaptures": {
-        "0": {
-          "name": "punctuation.definition.comment.wisl"
+      "patterns": [
+        {
+          "begin": "//",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.wisl"
+            }
+          },
+          "end": "$",
+          "name": "comment.line.double-slash.wisl"
+        },
+        {
+          "begin": "@config",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.wisl"
+            }
+          },
+          "end": "$",
+          "name": "comment.line.config-stmt.wisl"
         }
-      },
-      "end": "$",
-      "name": "comment.line.double-slash.wisl"
+      ]
     },
     "function_innards": {
       "patterns": [
@@ -473,7 +487,7 @@
           "name": "keyword.operator.arithmetic.wisl"
         },
         {
-          "match": "not|&&|\\|\\|!|/\\\\|\\\\/|\\|\\-",
+          "match": "not|&&|\\|\\||!|/\\\\|\\\\/|\\|\\-",
           "name": "keyword.operator.logical.wisl"
         },
         {
@@ -481,7 +495,7 @@
           "name": "keyword.operator.other.list.wisl"
         },
         {
-          "match": "<|>|<=|>=|=|!=|>=#|>#|<=#|<#|==",
+          "match": "<|>|<=|>=|!=|==",
           "name": "keyword.operator.comparison.wisl"
         }
       ]
@@ -489,7 +503,7 @@
     "values": {
       "patterns": [
         {
-          "match": "true|True|false|False|nil|null|emp",
+          "match": "true|false|nil|null|emp",
           "name": "constant.language.wisl"
         },
         {
