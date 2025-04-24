@@ -1,4 +1,4 @@
-// TODO: manual mode
+@config manual_fold : true
 
 // === EXERCISE 3 ===
 // Gillian's predicates are *iso-recursive*, meaning that a predicate is not
