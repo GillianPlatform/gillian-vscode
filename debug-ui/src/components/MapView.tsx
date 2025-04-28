@@ -1,4 +1,9 @@
-import { NodePrev, TraceView, TraceViewProps } from "@gillianplatform/sedap-react";
+import {
+  DEFAULT_REACT_FLOW_PROPS,
+  NodePrev,
+  TraceView,
+  TraceViewProps,
+} from "@gillianplatform/sedap-react";
 import IconButton from "./IconButton";
 import Badge from "./Badge";
 import styled from "styled-components";
@@ -47,6 +52,10 @@ function MapView({
     componentOverrides: {
       button: IconButton,
       badge: Badge,
+    },
+    reactFlowProps: {
+      id: root,
+      ...DEFAULT_REACT_FLOW_PROPS,
     },
   };
 
