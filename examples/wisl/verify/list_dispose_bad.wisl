@@ -5,7 +5,7 @@ predicate list(+x) {
 
 { (x == #x) * list(#x) }
 function list_dispose(x) {
-    if (not (x = null)) {  
+    if (x != null) {  
         t := [x+1];
         u := list_dispose(t);
         free(x)

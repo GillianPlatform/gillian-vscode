@@ -22,14 +22,13 @@ predicate list(+x, alpha) {
 { (x == #x) * list(#x, #alpha) }
 function llen(x) {
     // [[ unfold list(#x, #alpha) ]];
-    if (x = null) {
+    if (x == null) {
         n := 0
     } else {
         t := [x+1];
         n := llen(t);
         n := n + 1
     };
-    [[ fold list(#x, #alpha) ]];
     // [[ fold list(#x, #alpha) ]];
     return n
 }

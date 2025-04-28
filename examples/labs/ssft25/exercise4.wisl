@@ -1,4 +1,4 @@
-// TODO: manual mode
+@config manual_fold : true
 
 // === EXERCISE 4 ===
 // Once again, add fold and/or unfold tactics to make this function verify.
