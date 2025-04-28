@@ -99,7 +99,7 @@ function App() {
     let tabExists = false;
     if (activeTab !== undefined) {
       for (const { id } of roots) {
-        if (id === activeTab || derivedRoots[id][activeTab]) {
+        if (id === activeTab || derivedRoots?.[id]?.[activeTab]) {
           tabExists = true;
           break;
         }
