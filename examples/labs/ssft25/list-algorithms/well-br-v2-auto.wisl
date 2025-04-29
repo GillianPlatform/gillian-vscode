@@ -41,12 +41,30 @@ lemma SLLseg_to_SLL {
     }
 }
 
+lemma SLLseg_append {
+  statement:
+    forall x, vs, v, z.
+      SLLseg(x, #y, vs) * (#y -b> v, z) |- SLLseg(x, z, vs @ [ v ])
+
+  proof:
+    unfold SLLseg(x, #y, vs);
+    if (x != #y) {
+      assert {bind: #nv, #nnext, #nvs}
+        (x -b> #nv, #nnext) * SLLseg(#nnext, #y, #nvs) *
+        (vs == #nv :: #nvs);
+      apply SLLseg_append(#nnext, #nvs, v, z);
+      fold SLLseg(x, z, vs @ [ v ])
+    } else {
+      fold SLLseg(#y, z, [ v ])
+    }
+}
+
 { (v == #v) }
 function SLL_allocate_node(v) {
   t := new(2);
   [t] := v;
   [[ fold SLL(null, []) ]];
-  [[ fold SLL(t, [ #v ])]];
+  [[ fold SLL(t, [ #v ]) ]];
   return t
 }
 { SLL(ret, [ #v ]) }
@@ -54,16 +72,16 @@ function SLL_allocate_node(v) {
 { (x == #x) * (k == #k) * SLL(#x, #vs) }
 function SLL_push(x, k) {
   z := SLL_allocate_node(k);
-  [[ unfold SLL(z, [ #k ])]];
+  [[ unfold SLL(z, [ #k ]) ]];
   [z + 1] := x;
-  [[ fold SLL(z, #k :: #vs)]];
+  [[ fold SLL(z, #k :: #vs) ]];
   return z
 }
 { SLL(ret, #k :: #vs) }
 
 { (x == #x) * (x != null) * SLL(#x, #k :: #vs) }
 function SLL_pop(x) {
-  [[ unfold SLL(#x, #k :: #vs)]];
+  [[ unfold SLL(#x, #k :: #vs) ]];
   r := new(2);
   k := [x];
   z := [x + 1];
@@ -71,7 +89,7 @@ function SLL_pop(x) {
   [r + 1] := z;
   return r
 }
-{ SLL(#z, #vs) * (ret == #r) * #r -b> #k, #z}
+{ SLL(#z, #vs) * (ret == #r) * #r -b> #k, #z }
 
 // Well bracked predicates
 
@@ -87,10 +105,6 @@ predicate nb(+c : String) {
   ((c != "<") /\ (c != ">") /\ (c != "[") /\ (c != "]"))
 }
 
-predicate bpair(+c1 : String, +c2 : String) {
-  ((c1 == "<") /\ (c2 == ">") \/ ((c1 == "[") /\ (c2 == "]")))
-}
-
 predicate wbs(+a, +b, r : Bool) {
   // base case
   (a == []) * (b == []) * (r == true);
@@ -100,28 +114,31 @@ predicate wbs(+a, +b, r : Bool) {
 
   // open brackets case
   (a == #c :: #a) * 
-  ((#c == "<") || (#c == "[")) * 
+  ob(#c) * 
   wbs(#a, #c :: b, r);
 
   // close brackets true case
   (a == #c :: #a) * 
-  ((#c == ">") || (#c == "]")) * 
+  cb(#c) * 
   (b == #d :: #b) * 
   ((#d == "<") /\ (#c == ">") \/ ((#d == "[") /\ (#c == "]"))) * 
   wbs(#a, #b, r);
 
+  // close brackets empty case
+  (a == #c :: #a) * cb(#c) *  (b == []) * (r == false) * wbs(#a, [], #r);
+
   // close brackets false case
   (a == #c :: #a) * 
-  ((#c == ">") || (#c == "]")) * 
+  cb(#c) * 
   (b == #d :: #b) * 
-  ((#d != "<") \/ (#c != ">") /\ ((#d != "[") \/ (#c != "]"))) * 
+  (((#d != "<") \/ (#c != ">")) /\ ((#d != "[") \/ (#c != "]"))) * 
   (r == false) * 
   wbs(#a, #b, #r);
 
   // no brackets case
   (a == #c :: #a) * 
-  ((#c != "<") /\ (#c != ">") /\ (#c != "[") /\ (#c != "]")) 
-  * wbs(#a, b, r)
+  nb(#c) * 
+  wbs(#a, b, r)
 }
 
 predicate wb(+a, r : Bool) {
@@ -131,7 +148,7 @@ predicate wb(+a, r : Bool) {
 { (x == #x) * (s == #s) * SLL(#x, #a) * SLL(#s, #b) * wbs(#a, #b, #r) }
 function wellBr_helper(x, s) {
   ok := true;
-  [[ unfold wbs(#a, #b, #r)]];
+  [[ unfold wbs(#a, #b, #r) ]];
   if (x == null) {
     if (s != null) {
       ok := false
@@ -152,11 +169,9 @@ function wellBr_helper(x, s) {
           r := SLL_pop(s);
           d := [r];
           s := [r + 1];
-          if (((d == "<") && (c == ">")) || ((d == "[") && (c == "]"))) {
-            ok := wellBr_helper(n, s)
-          } else {
-            ok := false
-          }
+          bpair := ((d == "<") && (c == ">")) || ((d == "[") && (c == "]"));
+          ok := wellBr_helper(n, s);
+          ok := ok && bpair
         }
       } else {
         ok := wellBr_helper(n, s)
@@ -170,28 +185,29 @@ function wellBr_helper(x, s) {
 { SLL(x, #a) * wb(#a, #r) }
 function wellBr(x) {
   s := null;
-  [[ fold SLL(s, [])]];
+  [[ fold SLL(s, []) ]];
   r := wellBr_helper(x, s);
-  [[ fold wb(#a, #r)]];
+  [[ fold wb(#a, #r) ]];
   return r
 }
-{ SLL(#x, #a) * wb(#a, #r) * (ret == #r)}
+{ SLL(#x, #a) * wb(#a, #r) * (ret == #r) }
 
 
-{ (x == #x) * SLL(#x, #a) * wb(#a, #r) }
+{ (x == #x) * SLL(x, #a) * wb(#a, #r) }
 function wellBr_iter(x) {	
   y := x; 
   s := null; 
   ok := true;
-  [[ fold SLLseg(x, y, [])]];
-  [[ fold SLL(s, [])]];
+  [[ fold SLLseg(x, y, []) ]];
+  [[ fold SLL(s, []) ]];
   [[ invariant {bind: ok, s, y, #a1, #a2, #b, #wr}
           SLLseg(x, y, #a1) * SLL(y, #a2) * SLL(s, #b) * (#a == #a1 @ #a2) *
-          wbs(#a2, #b, #wr) * (#r == ok || #wr)]];
+          wbs(#a2, #b, #wr) * (#r == ok && #wr) ]];
   while (y != null && ok == true) {
     [[ unfold SLL(y, #a2)]];
     c := [y];
-    [[ unfold wbs(#a2, #b, #r)]];
+    [[ assert {bind: #v, #z} y -b> #v, #z ]];
+    [[ unfold wbs(#a2, #b, #wr)]];
     if ((c == "<") || (c == "[")) {
       s := SLL_push(s, c)
     } else {
@@ -203,14 +219,22 @@ function wellBr_iter(x) {
           d := [r];
           s := [r + 1];
           bpair := ((d == "<") && (c == ">")) || ((d == "[") && (c == "]"));
-          ok := (ok && bpair)
+          ok := ok && bpair
         }
       } else { 
         skip 
       }
     };
-    y := [y + 1]
+    y := [y + 1];
+    [[ apply SLLseg_append(x, #a1, #v, y) ]]
   };
-  return (ok && (s == null))
+  [[
+    if (ok == true) {
+      apply SLLseg_to_SLL(#x)
+    } else {
+
+    }
+  ]];
+  return ok && (s == null)
 }
 { SLL(#x, #a) * wb(#a, #r) * (ret == #r) }
