@@ -15,7 +15,7 @@
 //       Make sure you keep an eye on the current state in the "Run" tab, over
 //       on the left!
 
-{ isInt(x) }
+{ x : Int }
 function signum(x) {
   if (x > 0) {
     s := 1
@@ -29,8 +29,3 @@ function signum(x) {
   return s
 }
 { emp }
-
-// TODO: is there a nicer way of writing this?
-predicate isInt(x : Int) {
-  emp
-}
