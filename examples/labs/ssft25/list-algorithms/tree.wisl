@@ -112,11 +112,6 @@ predicate list_min(+vs, +v : Int){
   (vs == #v :: #rest) * (v <= #v) * list_min(#rest, v)
 }
 
-predicate list_to_set(+l : List, s : Set) {
-  (l == []) * (s == -{}-);
-  (l == #v :: #vs) * (s == -{#v}- -u- #es) * list_to_set(#vs, #es)
-}
-
 lemma min_merge {
   statement:
     forall min, vsl, vsr.
@@ -242,15 +237,6 @@ lemma list_member_lt {
     }
 }
 
-predicate tree(+x, vs : Set) {
-  // Empty Node
-  (x == null) * (vs == -{}-);
-  (x -b> #v, #l, #r) * tree(#l, #vl) * tree(#r, #vr) *
-  (vs == (#vl -u- -{#v}-) -u- #vr) *
-  (!(#v -e- #vl)) *
-  (!(#v -e- #vr))
-}
-
 predicate bst(+x, vs : List) {
   // Empty Node
   (x == null) * (vs == []);
@@ -261,39 +247,6 @@ predicate bst(+x, vs : List) {
   list_gt(#vsl, #v) *
   list_lt(#vsr, #v)
 }
-
-{(x == #x) * (y == #y) * SLLSet(#x, #vx) * SLLSet(#y, #vy) }
-function SLL_concat(x, y) {
-  [[ unfold SLLSet(x, #vx) ]];
-  if (x == null){
-    x := y
-  } else {
-    t := [x + 1];
-    z := SLL_concat(t, y);
-    [x + 1] := z;
-    [[ fold SLLSet(x, #vx -u- #vy) ]]
-  };
-  return x
-}
-{ SLLSet(ret,  #vx -u- #vy) }
-
-{ (x == #x) * tree(x, #vs) }
-function listify(x) {
-  [[ unfold tree(x, #vs) ]];
-  if (x == null) {
-    r := null
-  } else {
-    a := [x]; l := [x + 1]; r := [x + 2];
-    y := listify(l);
-    z := listify(r);
-    y := SLL_concat(y, z);
-    r := new(2); [r] := a; [r + 1] := y
-  };
-  [[ fold tree(x, #vs) ]];
-  [[ fold SLLSet(r, #vs) ]];
-  return r
-}
-{ tree(#x, #vs) * SLLSet(ret, #vs) }
 
 { (v == #v) }
 function BSTAllocateLeaf(v) {
