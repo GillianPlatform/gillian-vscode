@@ -1,3 +1,7 @@
+predicate isInt(v : Int) {
+  emp
+}
+
 //
 // Standard over-approximating SLL predicate with contents
 //
@@ -248,9 +252,8 @@ predicate bst(+x, vs : List) {
   list_lt(#vsr, #v)
 }
 
-{ (v == #v) }
+{ (v == #v) * isInt(v) }
 function BSTAllocateLeaf(v) {
-  assume_type(v, Int);
   t := new(3);
   [t] := v;
   [[ fold bst(null, []) ]];
@@ -295,9 +298,8 @@ function BSTCopy(x) {
 }
 { bst(#x, #vs) * bst(ret, #vs) }
 
-{ (x == #x) * (a == #a) * bst(#x, #vs) }
+{ (x == #x) * (a == #a) * bst(#x, #vs) * isInt(a) }
 function BSTSearch(x, a) {
-  assume_type(a, Int);
   r := false;
   [[ unfold bst(#x, #vs) ]];
   if(x != null) {
