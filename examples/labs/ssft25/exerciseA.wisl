@@ -1,0 +1,175 @@
+// === EXERCISE ?? : Removing Duplicates ===
+// Having learned everything so far, it is now time to tackle harder problems. One key problem is 
+// transforming a list to a set. In order to do this, one could just make a set list predicate that utilizes
+// the l_member predicate and checks that the tail of the list does not contain the head. This works just fine,
+// but how do we connect the new list to the old list? The sob_list predicate comes in, which takes in two lists and 
+// is denoted as true if and only if the first list is a sub list of the other.
+
+// With these two predicates, and a handful of lemmas, try to make the remove_predicates function verify.
+
+// Bonus challenge: Could you verify this problem without having to create a different list predicate?
+
+predicate list(+x, vs) {
+  (vs == []) * (x == null);
+  (x -> #v, #z) * list(#z, #vs) * (vs == #v :: #vs)
+}
+
+predicate l_member(+vs, +v, r : Bool){
+  (vs == []) * (r == false);
+  (vs == v :: #rest) * (r == true) * l_member(#rest, v, #mem);
+  (vs == #v :: #rest) * (! (#v == v)) * l_member(#rest, v, r)
+}
+
+predicate set_list(+x, vs) {
+  (vs == []) * (x == null);
+  (x -> #v, #z) * set_list(#z, #vs) * (vs == #v :: #vs) * l_member(#vs, #v, false)
+}
+
+predicate sub_list(+xs, +vs) {
+  (xs == []);
+  (xs == #x :: #xs) * l_member(vs, #x, true) * sub_list(#xs, vs)
+}
+
+lemma list_member_create {
+  statement:
+    forall x, k, vs.
+      list(x, vs) |- list(x, vs) * l_member(vs, k, #r)
+  proof:
+    unfold list(x, vs);
+    if (x == null) {
+      fold list(x, vs);
+      fold l_member(vs, k, false)
+    } else {
+      assert {bind: #v, #beta} (#vs == #v :: #beta) * (x -> #v, #z);
+      apply list_member_create(#z, k, #beta);
+      if (#v == k) {
+        fold l_member(vs, k, true)
+      } else {
+        fold l_member(vs, k, #r)
+      }
+    }
+}
+
+lemma set_list_member_create {
+  statement:
+    forall x, k, vs.
+      set_list(x, vs) |- set_list(x, vs) * l_member(vs, k, #r)
+  proof:
+    unfold set_list(x, vs);
+    if (x == null) {
+      fold set_list(x, vs);
+      fold l_member(vs, k, false)
+    } else {
+      assert {bind: #v, #beta} (#vs == #v :: #beta) * (x -> #v, #z);
+      apply set_list_member_create(#z, k, #beta);
+      if (#v == k) {
+        fold l_member(vs, k, true)
+      } else {
+        fold l_member(vs, k, #r)
+      }
+    }
+}
+
+lemma list_member_duplicate {
+  statement:
+    forall vs, k, r.
+      l_member(vs, k, r) |- l_member(vs, k, r) * l_member(vs, k, r)
+}
+
+lemma list_member_true {
+  statement:
+    forall vs, k, v.
+      l_member(vs, k, true) |- l_member(v :: vs, k, true)
+  proof:
+    if (v == k) {} else {};
+    fold l_member(v :: vs, k, true)
+}
+
+lemma sub_list_prepend {
+  statement:
+    forall xs, vs, v.
+      sub_list(xs, vs) |- sub_list(xs, v :: vs) 
+  proof:
+    if (xs != []) {
+      unfold sub_list(xs, vs);
+      assert {bind: #xss, #x} (xs == #x :: #xss);
+      apply sub_list_prepend(#xss, vs, v);
+      apply list_member_true(vs, #x, v);
+      fold sub_list(xs, v :: vs)
+    }
+}
+
+{ (v == #v) }
+function set_list_allocate_node(v) {
+  t := new(2);
+  [t] := v;
+  [[ fold set_list(null, []) ]];
+  [[ fold l_member([], #v, false)]];
+  [[ fold set_list(t, [ #v ]) ]];
+  return t
+}
+{ set_list(ret, [ #v ]) }
+
+{ (x == #x) * (k == #k) *  set_list(#x, #vs) * l_member(#vs, #k, false) }
+function set_list_prepend(x, k){
+    z := set_list_allocate_node(k);
+    [[ unfold set_list(z, [k]) ]];
+    [z + 1] := x;
+    [[ apply list_member_duplicate(#vs, #k, false)]];
+    [[ fold set_list(z, (k :: #vs)) ]];
+    [[ fold l_member(#k :: #vs, #k, true)]];
+    return z
+}
+{ set_list(ret, #k :: #vs) * l_member(#k :: #vs, #k, true) }
+
+{ (x == #x) * (k == #k) * set_list(#x, #vs) * l_member(#vs, #k, #r) }
+function set_list_member(x, k){
+  found := false;
+  [[ unfold set_list(x, #vs) ]];
+  [[ unfold l_member(#vs, k, #r) ]];
+  if (x == null){
+    skip
+  } else {
+    v := [x];
+    if (v == k){
+      found := true
+    } else {
+      t := [x + 1];
+      found := set_list_member(t, k)
+    }
+  };
+  [[ fold l_member(#vs, k, #r) ]];
+  [[ fold set_list(x, #vs) ]];
+  return found
+}
+{ set_list(#x, #vs) * l_member(#vs, #k, #r) * (ret == #r) }
+
+{ (x == #x) * list(x, #vs) }
+function remove_duplicates(x) {
+ //  [[ unfold list(x, #vs)]];
+  if (x == null) {
+    r := null;
+    // [[ fold set_list(x, [])]];
+    // [[ fold sub_list([], #vs)]]
+  } else {
+    v := [x];
+    next := [x + 1];
+    r := remove_duplicates(next);
+    // [[ assert {bind: #s} set_list(r, #s)]];
+    // [[ assert {bind: #v, #beta} (#vs == #v :: #beta) ]];
+    // [[ apply set_list_member_create(r, v, #s) ]];
+    mem := set_list_member(r, v);
+    // [[ apply sub_list_prepend(#s, #beta, #v)]];
+    if (mem) {
+      skip
+    } else {
+      r := set_list_prepend(r, v);
+      // [[ apply list_member_create(next, #v, #beta) ]];
+      // [[ fold l_member(#v :: #beta, #v, true) ]];
+      // [[ fold sub_list(#v :: #s, #vs)]]
+    }
+  };
+  // [[ fold list(x, #vs) ]];
+  return r
+}
+{ list(#x, #vs) * set_list(ret, #xs) * sub_list(#xs, #vs) }

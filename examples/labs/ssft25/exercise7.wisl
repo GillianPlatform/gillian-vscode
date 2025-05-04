@@ -1,0 +1,44 @@
+// @config manual_fold : true
+
+// === EXERCISE 7: Introducing other predicates ===
+// Along with the list predicate, one could specify predicates that relate to properties of the list.
+// the predicate, l_member, takes in a mathematical list and a value, and derives whether the value
+// is in the the list or not.
+
+// With this new predicate, we can use it to verify the function list_member.
+
+// TODO: Improve the explanation of what l_member. Also think of a better name that doesn't clash with function name.
+
+
+predicate list(+x, alpha) {
+    (x == null) * (alpha == nil);
+    (x -> #v, #z) * list(#z, #beta) * (alpha == #v::#beta)
+}
+
+predicate l_member(+vs, +v, r : Bool){
+  (vs == []) * (r == false);
+  (vs == v :: #rest) * (r == true) * l_member(#rest, v, #mem);
+  (vs == #v :: #rest) * (!(#v == v)) * l_member(#rest, v, r)
+}
+
+{ (x == #x) * (k == #k) * list(#x, #vs) * l_member(#vs, #k, #r) }
+function list_member(x, k){
+  found := false;
+  // [[ unfold list(x, #vs) ]];
+  // [[ unfold l_member(#vs, k, #r) ]];
+  if (x == null){
+    skip
+  } else {
+    v := [x];
+    if (v == k){
+      found := true
+    } else {
+      t := [x + 1];
+      found := list_member(t, k)
+    }
+  };
+  // [[ fold l_member(#vs, k, #r) ]];
+  // [[ fold list(x, #vs) ]];
+  return found
+}
+{ list(#x, #vs) * l_member(#vs, #k, #r) * (ret == #r) }

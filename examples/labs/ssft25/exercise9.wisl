@@ -1,0 +1,46 @@
+// @config manual_fold : true
+
+// === EXERCISE 9: Apply tactic ===
+// TODO: Give a tutorial using list_get as an example of how to use a lemma. This lemma is actually not required
+// but makes the verification simpler. Helps to understand how apply works.
+
+predicate list(+x, alpha) {
+    (x == null) * (alpha == nil);
+    (x -> #v, #z) * list(#z, #beta) * (alpha == #v::#beta)
+}
+
+predicate list_search(+vs, +i, v) {
+  (vs == #v :: #vs) * (i == 1) * (v == #v);
+  (vs == #v :: #vs) * (i != 1) * (i < len(vs)) * list_search(#vs, i - 1, v)
+}
+
+lemma search_not_null {
+  statement:
+    forall x, vs, i, r.
+      list(x, vs) * list_search(vs, i, r) * (i != 0) |- list(x, vs) * list_search(vs, i, r) * (x != null)
+  proof:
+    unfold list_search(vs, i, r);
+    unfold list(x, #vs);
+    fold list(x, #vs);
+    fold list_search(#vs, #i, #r)
+}
+
+{ (x == #x) * (i == #i) * (x != null) * list(x, #vs) * list_search(#vs, #i, #r) }
+function list_get(x, i) {
+  [[ unfold list(x, #vs)]];
+  [[ unfold list_search(#vs, #i, #r)]];
+  v := [x];
+  next := [x + 1];
+  if (i == 1) {
+    r := v
+  } else {
+    i := i - 1;
+    [[ assert {bind: #beta} list(next, #beta)]];
+    [[ apply search_not_null(next, #beta, i, #r) ]];
+    r := list_get(next, i)
+  };
+  [[ fold list(x, #vs)]];
+  [[ fold list_search(#vs, #i, #r)]];
+  return r
+}
+{ list(#x, #vs) * list_search(#vs, #i, #r) * (ret == #r) }
