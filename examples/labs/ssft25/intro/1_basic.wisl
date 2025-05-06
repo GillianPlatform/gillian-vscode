@@ -1,0 +1,58 @@
+// =============================================================================
+//
+// Welcome to the Gillian lab! These exercises aim to introduce you to Gillian
+// and its underlying Compositional Symbolic Execution principles.
+//
+// This program already verifies just fine; take it as an opportunity to get
+// familiar with the tool (and make sure everything is installed correctly!)
+// 
+// First off, try changing the code below. The language server should quickly
+// highlight any mistakes, including syntax errors and verification failures.
+//
+// Next, try starting the debugger by clicking "Debug llen" just above where
+// llen is declared. We suggest following the steps below to get familiar with
+// the interface:
+//   1. You might find a lot in common with "normal" debuggers you've used
+//      before. Notice how the current symbolic state is displayed in the left
+//      sidebar, and a small panel with controls for stepping backwards and
+//      forwards, continuing execution, etc. appears at the top.
+//      Alongside the code, a Gillian Debugging panel should have also appeared,
+//      albeit not with much information at the moment.
+//   2. Try stepping through the program; you can do this with the step in or
+//      step over buttons in the aforementioned panel, but you can also step by
+//      clicking on the "play" buttons in the Gillian Debugging panel.
+//      Using the Gillian Debugging panel allows you to jump to any previously
+//      executed command, and select which branch to step to if multiple are
+//      present.
+//   3. Pay attention to how the symbolic state in the left sidebar changes as
+//      you step through. Make sure that you expand each category so you can see
+//      the whole state.
+//   4. When you reach the end of a branch of execution, notice how, in the
+//      Gillian Debugging panel, the last command has a "Match" badge on it,
+//      where Gillian has stepped through a matching plan to check that the
+//      final symbolic state satisfies llen's postcondition.
+//      Click on the arrow on that command's node to expand it and see these
+//      steps. Matches can contain other matches; notice that the step for
+//      matching the list predicate performs a sub-match.
+//   5. If you want to view a nested section of the execution map on its own,
+//      click the magnifying glass button on it to open it in its own tab.
+//
+// =============================================================================
+
+{ (x == #x) * list(#x, #alpha) }
+function llen(x) {
+    if (x == null) {
+        n := 0
+    } else {
+        t := [x+1];
+        n := llen(t);
+        n := n + 1
+    };
+    return n
+}
+{ list(#x, #alpha) * (ret == len(#alpha)) }
+
+predicate list(+x, alpha) {
+    (x == null) * (alpha == nil);
+    (x -> #v, #z) * list(#z, #beta) * (alpha == #v::#beta)
+}
