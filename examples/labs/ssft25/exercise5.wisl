@@ -1,0 +1,31 @@
+// @config manual_fold : true
+
+// === EXERCISE 5: Function calls ===
+// As a follow-up from the last exercise, use fold/unfold to make list_prepend verify.
+
+// TODO: maybe write about the fact that this introduces function calls and what this mean in the context
+// of Gillian 
+
+predicate list(+x, alpha) {
+    (x == null) * (alpha == nil);
+    (x -> #v, #z) * list(#z, #beta) * (alpha == #v::#beta)
+}
+
+// TODO maybe make this function be "admitted"? Can't show the solution.
+{ (v == #v) }
+function list_allocate_node(v){
+  t := new(2);
+  [t] := v;
+  return t
+}
+{ list(ret, [ #v ]) }
+
+{ (x == #x) * (k == #k) * list(#x, #vs) }
+function list_prepend(x, k){
+    z := list_allocate_node(k);
+    // [[ unfold list(z, [ k ]) ]];
+    [z + 1] := x;
+    // [[ fold list(z, (k :: #vs)) ]];
+    return z
+}
+{ list(ret, #k :: #vs) }
