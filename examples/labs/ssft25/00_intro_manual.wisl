@@ -14,8 +14,8 @@
 //
 // Try adding folds and unfolds to make this function verify!
 
-// If you get stuck with verifing a function, sometimes hints are provided below
-// the function specification.
+// If you get stuck with verifing a function, sometimes hints are in the 
+// 'hints' folder
 
 predicate list(+x, alpha) {
     (x == null) * (alpha == nil);
