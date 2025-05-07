@@ -1,6 +1,6 @@
-// @config manual_fold : true
+@config manual_fold : true
 
-// === EXERCISE 5: Function calls ===
+// === Function calls ===
 // As a follow-up from the last exercise, use fold/unfold to make list_prepend verify.
 
 // TODO: maybe write about the fact that this introduces function calls and what this mean in the context

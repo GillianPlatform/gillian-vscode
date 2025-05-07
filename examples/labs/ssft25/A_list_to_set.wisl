@@ -144,33 +144,6 @@ function set_list_member(x, k){
 }
 { set_list(#x, #vs) * l_member(#vs, #k, #r) * (ret == #r) }
 
-{ (x == #x) * (k == #k) * list(#x, #vs) }
-function list_member(x, k){
-  found := false;
-  [[ unfold list(x, #vs) ]];
-  if (x == null){
-    skip;
-     [[ fold l_member(#vs, k, false) ]];
-     [[ fold list(x, #vs) ]]
-  } else {
-    v := [x];
-    t := [x + 1];
-    if (v == k){
-      found := true;
-      [[ assert {bind: #beta} (#vs == v :: #beta) ]];
-      [[ apply list_member_create(t, #k, #beta) ]];
-      [[ fold l_member(#vs, #k, found)]];
-      [[ fold list(#x, #vs)]]
-    } else {
-      found := list_member(t, k);
-      [[ fold l_member(#vs, k, found) ]];
-      [[ fold list(x, #vs) ]]
-    }
-  };
-  
-  return found
-}
-{ list(#x, #vs) * l_member(#vs, #k, #r) * (ret == #r) }
 
 { (x == #x) * list(x, #vs) }
 function remove_duplicates(x) {

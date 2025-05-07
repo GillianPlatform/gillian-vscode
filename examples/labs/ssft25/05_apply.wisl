@@ -1,6 +1,6 @@
-// @config manual_fold : true
+@config manual_fold : true
 
-// === EXERCISE 9: Apply tactic ===
+// === Apply tactic ===
 // TODO: Give a tutorial using list_get as an example of how to use a lemma. This lemma is actually not required
 // but makes the verification simpler. Helps to understand how apply works.
 
@@ -44,3 +44,52 @@ function list_get(x, i) {
   return r
 }
 { list(#x, #vs) * list_search(#vs, #i, #r) * (ret == #r) }
+
+predicate l_member(+vs, +v, r : Bool){
+  (vs == []) * (r == false);
+  (vs == v :: #rest) * (r == true) * l_member(#rest, v, #mem);
+  (vs == #v :: #rest) * (! (#v == v)) * l_member(#rest, v, r)
+}
+
+lemma list_member_create {
+  statement:
+    forall x, k, vs.
+      list(x, vs) |- list(x, vs) * l_member(vs, k, #r)
+  proof:
+    unfold list(x, vs);
+    if (x == null) {
+      fold list(x, vs);
+      fold l_member(vs, k, false)
+    } else {
+      assert {bind: #v, #beta} (#vs == #v :: #beta) * (x -> #v, #z);
+      apply list_member_create(#z, k, #beta);
+      if (#v == k) {
+        fold l_member(vs, k, true)
+      } else {
+        fold l_member(vs, k, #r)
+      }
+    }
+}
+
+{ (x == #x) * (k == #k) * list(#x, #vs) }
+function list_member(x, k){
+  found := false;
+  [[ unfold list(x, #vs) ]];
+  if (x == null){
+    skip
+  } else {
+    v := [x];
+    t := [x + 1];
+    if (v == k){
+      found := true;
+      [[ assert {bind: #beta} (#vs == v :: #beta) ]];
+      [[ apply list_member_create(t, #k, #beta) ]]
+    } else {
+      found := list_member(t, k)
+    }
+  };
+  [[ fold l_member(#vs, k, found) ]];
+  [[ fold list(x, #vs) ]];
+  return found
+}
+{ list(#x, #vs) * l_member(#vs, #k, #r) * (ret == #r) }

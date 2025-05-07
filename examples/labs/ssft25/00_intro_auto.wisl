@@ -1,5 +1,5 @@
 
-// === EXERCISE 2 ===
+// === INTRO ===
 // In this exercise, let's take a look at Gillian's 'matching' process.
 // Whenever Gillian needs to check that the current state satisfies some
 // condition (e.g. a compositional function call, checking the postcondition),

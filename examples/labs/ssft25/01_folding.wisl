@@ -1,6 +1,6 @@
 @config manual_fold : true
 
-// === EXERCISE 4 ===
+// === Folding and Unfolding ===
 // Once again, add fold and/or unfold tactics to make this function verify.
 
 // TODO: more comments? this one has the twist of folding the empty list
@@ -10,12 +10,12 @@ predicate list(+x, alpha) {
     (x -> #v, #z) * list(#z, #beta) * (alpha == #v::#beta)
 }
 
-{ v == #v }
+{ (v == #v) }
 function list_allocate_node(v){
   t := new(2);
   [t] := v;
   // [[ fold list(null, []) ]];
-  // [[ fold list(t, [ #v ]) ]];
+  //[[ fold list(t, [ #v ]) ]];
   return t
 }
 { list(ret, [ #v ]) }

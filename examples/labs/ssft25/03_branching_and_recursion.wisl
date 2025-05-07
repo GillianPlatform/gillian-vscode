@@ -1,6 +1,6 @@
-// @config manual_fold : true
+@config manual_fold : true
 
-// === EXERCISE 6: Dealing with Ifs and Recursion ===
+// === Dealing with Ifs and Recursion ===
 // Using the same predicate, solve the following functions that deal with recursively going into the list.
 
 // TODO: write more about how gillian works in this case? Or maybe this is already covered.
@@ -19,22 +19,6 @@ function list_allocate_node(v){
 }
 { list(ret, [ #v ]) }
 
-{ (x == #x) * (y == #y) * list(#x, #vs) * list(#y, [#vy]) }
-function list_append_node(x, y) {
-  // [[ unfold list(x, #vs) ]];
-  if (x == null) {
-    x := y
-  } else {
-    t := [x + 1];
-    z := list_append_node(t, y);
-    [x + 1] := z;
-    // [[ fold list(x, #vs @ [#vy])]]
-  };
-  return x
-}
-{ list(ret, #vs @ [#vy]) }
-
-// 04. Concatenating two lists
 {(x == #x) * (y == #y) * list(#x, #vx) * list(#y, #vy) }
 function list_concat(x, y) {
   // [[ unfold list(x, #vx) ]];
@@ -43,14 +27,13 @@ function list_concat(x, y) {
   } else {
     t := [x + 1];
     z := list_concat(t, y);
-    [x + 1] := z;
+    [x + 1] := z
     // [[ fold list(x, #vx @ #vy) ]]
   };
   return x
 }
 { list(ret,  #vx @ #vy) }
 
-// 05. Copying a given SLL
 { (x == #x) * list(#x, #vs) }
 function list_copy(x){
   y := null;
