@@ -1,23 +1,116 @@
+@config manual_fold : true
+// === EXERCISE ?? : binary search trees ===
+// 
+// In this exercise, we go through a more interesting
+// data structure. In particular, we go through a
+// binary search tree.
+
+// The binary search tree comprises a number of
+// components:
+//   1. key (which is an Int value for this exercise)
+//   2. left subtree
+//   3. right subtree
+// All keys in the left subtree must be less than the key,
+// and all keys in the right subtree must be greater than
+// the key. This restriction implies there are no 
+// duplicate keys in any given binary search tree.
+
+// === PREDICATES ===
+//
+// Before setting up the binary search tree
+// predicate, we must be able to express the following
+// properties:
+//   1. There are no duplicate key elements in a tree
+//   2. All keys in the left subtree are strictly less
+//      than the key on the root tree
+//   3. All keys in the right subtree are strictly
+//      greater than the key on the root tree.
+// There are many ways to express this property -- but
+// for this exercise, we will express these using
+// lists.  
+
+// TODO: Remove this and introduce a pure predicate instead
 predicate isInt(v : Int) {
   emp
 }
 
-//
-// Standard over-approximating SLL predicate with contents
-//
-predicate SLLSet(+x, vs) {
-  // Empty SLL
-  (x == null) * (vs == -{}-);
-  // One SLL node and the rest
-  (x -b> #v, #next) * SLLSet(#next, #vs) *
-  (vs == -{#v}- -u- #vs)
-}
-
+// We have the list_member predicate, which should be
+// familiar from the singly-linked list exercises.
 predicate list_member(+vs, +v, r : Bool){
   (vs == []) * (r == false);
   (vs == v :: #rest) * (r == true);
   (vs == #v :: #rest) * (#v != v) * list_member(#rest, v, r)
 }
+
+// We also have the list_gt and list_lt predicates.
+// list_lt(vs, v) states v < v' for all v' ∈ vs
+// list_gt(vs, v) states v > v' for all v' ∈ vs
+predicate list_gt(+vs, +v : Int){
+  (vs == []);
+  (vs == #v :: #rest) * (#v < v) * list_gt(#rest, v)
+}
+
+predicate list_lt(+vs, +v : Int){
+  (vs == []);
+  (vs == #v :: #rest) * (#v > v) * list_lt(#rest, v)
+}
+
+// ...and now we have the bst predicate.
+// In the base case, we have the empty tree.
+// In the inductive case, we have the following:
+//   - x -b> #v, #l, #r
+//     a ternary cell predicate, where
+//     + #v is the key
+//     + #l points to the left subtree
+//     + #r points to the right subtree
+//   - bst(#l, #vsl), the left subtree
+//   - bst(#r, #vsr), the right subtree
+//   - vs == #v :: #vsl@#vsr
+//     the 'keys' in the binary search tree pointed
+//     by x, where
+//     + #v is the key
+//     + #vsl is the list of keys in subtree pointed
+//       by #l,
+//     + #vsr is the list of keys in subtree pointed
+//       by #r
+//   - list_member(#vsl, #v, false)
+//     a predicate stating that duplicates of #v
+//     cannot exist in subtree pointed by #l
+//   - list_member(#vsr, #v, false)
+//     same as above for the right subtree
+//   - list_gt(#vsl, #v), a predicate stating that
+//     that the key #k is strictly greater than all
+//     keys in the subtree pointed by #l
+//   - list_gt(#vsr, #v), a predicate stating that
+//     that the key #k is strictly less than all
+//     keys in the subtree pointed by #r
+predicate bst(+x, vs : List) {
+  // Empty Node
+  (x == null) * (vs == []);
+  (x -b> #v, #l, #r) * bst(#l, #vsl) * bst(#r, #vsr) *
+  (vs == (#v::#vsl @ #vsr)) *
+  list_member(#vsl, #v, false) * 
+  list_member(#vsr, #v, false) *
+  list_gt(#vsl, #v) *
+  list_lt(#vsr, #v)
+}
+
+// We also have a predicate list_min, which states
+// given list_min(vs, v), v <= v' for all v' ∈ vs
+// This might be better thought of as list_lte,
+// i.e. the element v is less than or equal to all
+// elements in vs. This is not used for the binary
+// search tree predicate but is used elsewhere.
+predicate list_min(+vs, +v : Int){
+  (vs == []);
+  (vs == #v :: #rest) * (v <= #v) * list_min(#rest, v)
+}
+
+// === LEMMAS ===
+// We do not go through the lemmas in great detail,
+// but we provide a number of lemmas that you may
+// find useful for the purpose of completing this
+// exercise.
 
 lemma list_member_prepend {
   statement:
@@ -92,6 +185,9 @@ lemma list_member_concat_false_2 {
     }
 }
 
+
+// Note: lemmas with emp as an assumption essentially
+//       implies the lemma does not have an assumption
 lemma list_member_front {
   statement:
     forall v, vs.
@@ -99,21 +195,6 @@ lemma list_member_front {
 
   proof:
     unfold list_member(v::vs, v, true)
-}
-
-predicate list_gt(+vs, +v : Int){
-  (vs == []);
-  (vs == #v :: #rest) * (#v < v) * list_gt(#rest, v)
-}
-
-predicate list_lt(+vs, +v : Int){
-  (vs == []);
-  (vs == #v :: #rest) * (#v > v) * list_lt(#rest, v)
-}
-
-predicate list_min(+vs, +v : Int){
-  (vs == []);
-  (vs == #v :: #rest) * (v <= #v) * list_min(#rest, v)
 }
 
 lemma min_merge {
@@ -167,6 +248,10 @@ lemma min_include {
       if(true) {}
 }
 
+// Note: pure predicates can be duplicated -- you may
+// find a number of these 'duplicate' lemmas useful
+// before folding a predicate and consuming the pure
+// predicates.
 lemma min_duplicate {
   statement:
     forall vs, k.
@@ -241,17 +326,12 @@ lemma list_member_lt {
     }
 }
 
-predicate bst(+x, vs : List) {
-  // Empty Node
-  (x == null) * (vs == []);
-  (x -b> #v, #l, #r) * bst(#l, #vsl) * bst(#r, #vsr) *
-  (vs == #v :: #vsl @ #vsr) *
-  list_member(#vsl, #v, false) * 
-  list_member(#vsr, #v, false) *
-  list_gt(#vsl, #v) *
-  list_lt(#vsr, #v)
-}
 
+// 00. creating a BST with a single element
+//     This function is analogous to 
+//     SLLAlocateNode, but it will be more
+//     involved due to the fact that there
+//     are more predicates you need to fold.
 { (v == #v) * isInt(v) }
 function BSTAllocateLeaf(v) {
   t := new(3);
@@ -267,6 +347,9 @@ function BSTAllocateLeaf(v) {
 }
 { bst(ret, [#v]) }
 
+// 01. copying a binary search tree
+//     This function creates a copy of a given
+//     binary search tree.
 { (x == #x) * bst(#x, #vs) }
 function BSTCopy(x) {
   [[ unfold bst(#x, #vs) ]];
@@ -284,6 +367,7 @@ function BSTCopy(x) {
     t := [x + 2];
     t := BSTCopy(t);
     [y + 2] := t;
+    // Hint 1, 2
     [[ apply lt_duplicate(#vsr, #k) ]];
     [[ apply gt_duplicate(#vsl, #k) ]];
     [[ apply member_duplicate(#vsl, #k, false) ]];
@@ -298,26 +382,38 @@ function BSTCopy(x) {
 }
 { bst(#x, #vs) * bst(ret, #vs) }
 
+// Hint 1: Note that folding the bst predicate consumes
+//         the pure predicates. To ensure we can also
+//         fold the copied binary search tree, we need
+//         to duplicate the remaining pure predicates.
+// Hint 2: To duplicate the pure predicates, we need to
+//         be able to refer to the logical variables.
+//         The [[ assert {bind: ...} ... ]] tactic will
+//         come in handy.
 { (x == #x) * (a == #a) * bst(#x, #vs) * isInt(a) }
 function BSTSearch(x, a) {
   r := false;
   [[ unfold bst(#x, #vs) ]];
   if(x != null) {
+    // Hint 1
     [[ assert {bind: #k, #kl, #kr, #vsl, #vsr} (x -b> #k, #kl, #kr) *
              bst(#kl, #vsl) * bst(#kr, #vsr) *
              list_gt(#vsl, #k) * list_lt(#vsr, #k) *
              list_member(#vsl, #k, false) * list_member(#vsr, #k, false) ]];
     t := [x];
     if(a == t) {
+      // Hint 2
       [[ apply list_member_front(a, #vsl@#vsr) ]];
       r := true
     } else {
       if(a < t) {
+        // Hint 3
         [[ apply list_member_lt(#a, #k, #vsr) ]];
         t := [x + 1];
         r := BSTSearch(t, a);
         [[ apply list_member_concat_false(#vsl, #vsr, #a) ]]
       } else {
+        // Hint 3
         [[ apply list_member_gt(#a, #k, #vsl) ]];
         t := [x + 2];
         r := BSTSearch(t, a);
@@ -334,8 +430,24 @@ function BSTSearch(x, a) {
 }
 { bst(#x, #vs) * list_member(#vs, #a, ret) }
 
+// Hint 1: You may find the [[ assert {bind: ... } ]]
+//         tactic helpful to label the logical 
+//         variables.
+// Hint 2: Consider how the #vs looks at this point.
+//         What can you say about t ∈ #vs?
+// Hint 3: if a < t and list_lt(vs, t), what does this
+//         say about a ∈ vs? Like what about the case
+//         where a > t and list_gt(vs, t)?
+
+// 02. obtaining the minimum of a binary search tree
+//     This function returns the minimum key in a
+//     given binary serach tree. In other words,
+//     the function returns the left-most key in the
+//     tree. Note that the precondition states the 
+//     given tree is non-empty.
 { (x == #x) * (#x != null) * bst(#x, #vs) }
 function BSTFindMin(x) {
+  // Hint 1
   [[ unfold bst(#x, #vs) ]];
   [[ assert {bind: #k, #kl, #kr, #vsl, #vsr} (x -b> #k, #kl, #kr) *
           bst(#kl, #vsl) * bst(#kr, #vsr) *
@@ -348,11 +460,13 @@ function BSTFindMin(x) {
     [[ fold list_min(#vsl, #k) ]];
     [[ apply min_include(#k, #vsl) ]];
     min := [x];
+    // Hint 2
     [[ apply min_merge(#k, #k::#vsl, #vsr) ]];
     [[ apply list_member_concat(#k::#vsl, #vsr, #k) ]];
     [[ fold bst(#kl, #vsl) ]]
   } else {
     min := BSTFindMin(l);
+    // Hint 3, 4
     [[ unfold bst(#kl, #vsl)]];
     [[ apply min_gt_append(min, #k, #vsl) ]];
     [[ fold bst(#kl, #vsl)]];
@@ -364,3 +478,25 @@ function BSTFindMin(x) {
   return min
 }
 { (#x != null) * bst(#x, #vs) * list_member(#vs, ret, true) * list_min(#vs, ret) }
+
+// Hint 1: You may find the [[ assert {bind: ... } ]]
+//         tactic helpful to label the logical 
+//         variables.
+// Hint 2: x <= x1 for all x1 ∈ S1 /\ 
+//         x <  x2 for all x2 ∈ S2 ==> 
+//         x <= x3 for all x3 ∈ S1 ∪ S2
+// Hint 3: Currently, the structure of the tree at this
+//         state is as follows:
+//               #k
+//              /  \
+//             l    r
+//         ...where l != null, and #vsl is the list
+//         of elements in the subtree pointed by l.
+//         The recursive call to BSTFindMin(l) returns
+//         list_member(#vsl, min, true) and 
+//         list_min(#vsl, min). What now remains
+//         is to show how min relates to #k and
+//         and the keys in the subtree pointed by r.
+// Hint 4: min <= s for all s ∈ S /\ 
+//           k >  s for all s ∈ S ==>
+//         min <= s for all s ∈ {k} ∪ S 
