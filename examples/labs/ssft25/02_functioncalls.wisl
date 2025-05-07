@@ -3,8 +3,16 @@
 // === Function calls ===
 // As a follow-up from the last exercise, use fold/unfold to make list_prepend verify.
 
-// TODO: maybe write about the fact that this introduces function calls and what this mean in the context
-// of Gillian 
+// Function calls work based on the consume/produce paradigm: within the function body,
+// whenever there is a function call to f, the relevant part of the state that matches the 
+// precondition of f is "consumed" -- and the postcondition of f is produced.
+// 
+//  { P(x) * F }			{ P(n) }
+//    y := f(x) 	given		  f(n) { ...; return r }
+//  { Q(y) * F }			{ Q(r) }
+// 
+// In short, only the relevant parts of the assertion will be appropriately replaced
+// in a function call given the function's specification.
 
 predicate list(+x, alpha) {
     (x == null) * (alpha == nil);

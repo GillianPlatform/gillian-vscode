@@ -1,0 +1,5 @@
+Hint 1:
+  Note that applying the [[ fold list(t, [#v]) ]]; right away won't work.
+  This is because matching plan fails to match on either cases of the
+  predicate. In particular, for the inductive case, the list predicate
+  is missing.

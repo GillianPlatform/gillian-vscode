@@ -3,6 +3,17 @@
 // === Dealing with Ifs and Recursion ===
 // Using the same predicate, solve the following functions that deal with recursively going into the list.
 
+// Note that if we are given a function specification of the form
+//   { P(n) }
+//     f(n) { ...; return r }
+//   { Q(n) }
+// ... then this function specification is in some function specification context C.
+// Every time a function call is made to f, Gillian checks whether the function specification is in C
+// and proceeds with the consume/produce operation. 
+// For recursive calls, note that the specification of the function you are trying to verify is already
+// included in the function specification context C. This allows you to verify recursive functions without
+// any issues.
+
 // TODO: write more about how gillian works in this case? Or maybe this is already covered.
 
 predicate list(+x, alpha) {
