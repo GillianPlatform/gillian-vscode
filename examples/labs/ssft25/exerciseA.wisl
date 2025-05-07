@@ -144,11 +144,39 @@ function set_list_member(x, k){
 }
 { set_list(#x, #vs) * l_member(#vs, #k, #r) * (ret == #r) }
 
+{ (x == #x) * (k == #k) * list(#x, #vs) }
+function list_member(x, k){
+  found := false;
+  [[ unfold list(x, #vs) ]];
+  if (x == null){
+    skip;
+     [[ fold l_member(#vs, k, false) ]];
+     [[ fold list(x, #vs) ]]
+  } else {
+    v := [x];
+    t := [x + 1];
+    if (v == k){
+      found := true;
+      [[ assert {bind: #beta} (#vs == v :: #beta) ]];
+      [[ apply list_member_create(t, #k, #beta) ]];
+      [[ fold l_member(#vs, #k, found)]];
+      [[ fold list(#x, #vs)]]
+    } else {
+      found := list_member(t, k);
+      [[ fold l_member(#vs, k, found) ]];
+      [[ fold list(x, #vs) ]]
+    }
+  };
+  
+  return found
+}
+{ list(#x, #vs) * l_member(#vs, #k, #r) * (ret == #r) }
+
 { (x == #x) * list(x, #vs) }
 function remove_duplicates(x) {
  //  [[ unfold list(x, #vs)]];
   if (x == null) {
-    r := null;
+    r := null
     // [[ fold set_list(x, [])]];
     // [[ fold sub_list([], #vs)]]
   } else {
@@ -163,7 +191,7 @@ function remove_duplicates(x) {
     if (mem) {
       skip
     } else {
-      r := set_list_prepend(r, v);
+      r := set_list_prepend(r, v)
       // [[ apply list_member_create(next, #v, #beta) ]];
       // [[ fold l_member(#v :: #beta, #v, true) ]];
       // [[ fold sub_list(#v :: #s, #vs)]]
