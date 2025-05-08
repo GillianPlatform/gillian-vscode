@@ -27,14 +27,20 @@ lemma search_not_null {
 
 { (x == #x) * (i == #i) * (x != null) * list(x, #vs) * list_search(#vs, #i, #r) }
 function list_get(x, i) {
+  [[ unfold list(x, #vs)]];
+  [[ unfold list_search(#vs, #i, #r)]];
   v := [x];
   next := [x + 1];
   if (i == 1) {
     r := v
   } else {
     i := i - 1;
+    [[ assert {bind: #beta} list(next, #beta)]];
+    [[ apply search_not_null(next, #beta, i, #r) ]];
     r := list_get(next, i)
   };
+  [[ fold list(x, #vs)]];
+  [[ fold list_search(#vs, #i, #r)]];
   return r
 }
 { list(#x, #vs) * list_search(#vs, #i, #r) * (ret == #r) }
@@ -68,17 +74,22 @@ lemma list_member_create {
 { (x == #x) * (k == #k) * list(#x, #vs) }
 function list_member(x, k){
   found := false;
+  [[ unfold list(x, #vs) ]];
   if (x == null){
     skip
   } else {
     v := [x];
     t := [x + 1];
     if (v == k){
-      found := true
+      found := true;
+      [[ assert {bind: #beta} (#vs == v :: #beta) ]];
+      [[ apply list_member_create(t, #k, #beta) ]]
     } else {
       found := list_member(t, k)
     }
   };
+  [[ fold l_member(#vs, k, found) ]];
+  [[ fold list(x, #vs) ]];
   return found
 }
 { list(#x, #vs) * l_member(#vs, #k, #r) * (ret == #r) }

@@ -60,7 +60,39 @@ predicate nb(+c : String) {
 }
 
 predicate wbs(+a, +b, r : Bool) {
-  (a == []) * (b == []) * (r == true)
+  // base case
+  (a == []) * (b == []) * (r == true);
+
+  // base case when stack is non-empty
+  (a == []) * (b == #d :: #b) * (r == false);
+
+  // open brackets case
+  (a == #c :: #a) * 
+  ob(#c) * 
+  wbs(#a, #c :: b, r);
+
+  // close brackets true case
+  (a == #c :: #a) * 
+  cb(#c) * 
+  (b == #d :: #b) * 
+  ((#d == "<") /\ (#c == ">") \/ ((#d == "[") /\ (#c == "]"))) * 
+  wbs(#a, #b, r);
+
+  // close brackets empty case
+  (a == #c :: #a) * cb(#c) *  (b == []) * (r == false) * wbs(#a, [], #r);
+
+  // close brackets false case
+  (a == #c :: #a) * 
+  cb(#c) * 
+  (b == #d :: #b) * 
+  (((#d != "<") \/ (#c != ">")) /\ ((#d != "[") \/ (#c != "]"))) * 
+  (r == false) * 
+  wbs(#a, #b, #r);
+
+  // no brackets case
+  (a == #c :: #a) * 
+  nb(#c) * 
+  wbs(#a, b, r)
 }
 
 predicate wb(+a, r : Bool) {
@@ -70,7 +102,10 @@ predicate wb(+a, r : Bool) {
 { (x == #x) * (s == #s) * list(#x, #a) * list(#s, #b) * wbs(#a, #b, #r) }
 function wellBr_helper(x, s) {
   ok := true;
+  // [[ unfold list(#x, #a)]];
+  // [[ unfold wbs(#a, #b, #r) ]];
   if (x == null) {
+    // [[ unfold list(#s, #b)]];
     if (s != null) {
       ok := false
     } else {
@@ -84,9 +119,12 @@ function wellBr_helper(x, s) {
       ok := wellBr_helper(n, s)
     } else {
       if ((c == ">") || (c == "]")) {
+        // [[ unfold list(#s, #b)]];
         if (s == null) {
           ok := false
         } else {
+          // [[ assert {bind: #v, #beta} (#b == #v :: #beta) ]];
+          // [[ fold list(#s, #v :: #beta) ]];
           r := list_pop(s);
           d := [r];
           s := [r + 1];
@@ -99,6 +137,8 @@ function wellBr_helper(x, s) {
       }
     }
   };
+  // [[ fold wbs(#a, #b, ok)]];
+  // [[ fold list(#x, #a)]];
   return ok
 }
 { list(#x, #a) * wbs(#a, #b, #r) * (ret == #r) }
@@ -106,7 +146,9 @@ function wellBr_helper(x, s) {
 { (x == #x) * list(x, #a) * wb(#a, #r) }
 function wellBr(x) {
   s := null;
+  //[[ fold list(s, []) ]];
   r := wellBr_helper(x, s);
+  //[[ fold wb(#a, #r) ]];
   return r
 }
 { list(#x, #a) * wb(#a, #r) * (ret == #r) }

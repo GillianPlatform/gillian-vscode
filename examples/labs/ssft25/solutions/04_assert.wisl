@@ -24,13 +24,18 @@ function list_concat(x, y) {
 
 { (x == #x) *  list(#x, #vs) }
 function list_reverse(x){
+  [[ unfold list(x, #vs) ]];
   if (x != null) {
     t := [x + 1];
     [x + 1] := null;
+    [[ assert {bind: #v, #beta} (#vs == (#v :: #beta)) ]];
     z := list_reverse(t);
+    [[ fold list(null, [] )]];
+    [[ fold list(x, [ #v ])]];
     y := list_concat(z, x)
   } else {
-    y := null
+    y := null;
+    [[ fold list(y, rev(#vs)) ]]
   };
   return y
 }
@@ -48,10 +53,15 @@ predicate min(+alpha, v : Int) {
 
 { (x == #x) * (x != null) * list(x, #alpha) }
 function find_min(x) {
+  [[ unfold list(x, #alpha) ]];
   val := [x];
+  assume_type(val, Int); // TODO: change this to the new type assertion
   next := [x + 1];
   if (next == null) {
-    r := val
+    [[ assert {bind: #beta} list(next, #beta) ]];
+    [[ unfold list(next, #beta) ]];
+    r := val;
+    [[ fold list(null, [])]]
   } else {
     r := find_min(next, val);
     if (val <= r) {
@@ -60,6 +70,8 @@ function find_min(x) {
       skip
     }
   };
+  [[ fold min(#alpha, r) ]];
+  [[ fold list(x, #alpha) ]];
   return r
 }
 { list(#x, #alpha) * min(#alpha, #r) * (ret == #r)}

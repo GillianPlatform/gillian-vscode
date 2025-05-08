@@ -103,6 +103,9 @@ lemma sub_list_prepend {
 function set_list_allocate_node(v) {
   t := new(2);
   [t] := v;
+  [[ fold set_list(null, []) ]];
+  [[ fold l_member([], #v, false)]];
+  [[ fold set_list(t, [ #v ]) ]];
   return t
 }
 { set_list(ret, [ #v ]) }
@@ -110,7 +113,11 @@ function set_list_allocate_node(v) {
 { (x == #x) * (k == #k) *  set_list(#x, #vs) * l_member(#vs, #k, false) }
 function set_list_prepend(x, k){
     z := set_list_allocate_node(k);
+    [[ unfold set_list(z, [k]) ]];
     [z + 1] := x;
+    [[ apply list_member_duplicate(#vs, #k, false)]];
+    [[ fold set_list(z, (k :: #vs)) ]];
+    [[ fold l_member(#k :: #vs, #k, true)]];
     return z
 }
 { set_list(ret, #k :: #vs) * l_member(#k :: #vs, #k, true) }
@@ -118,6 +125,8 @@ function set_list_prepend(x, k){
 { (x == #x) * (k == #k) * set_list(#x, #vs) * l_member(#vs, #k, #r) }
 function set_list_member(x, k){
   found := false;
+  [[ unfold set_list(x, #vs) ]];
+  [[ unfold l_member(#vs, k, #r) ]];
   if (x == null){
     skip
   } else {
@@ -129,6 +138,8 @@ function set_list_member(x, k){
       found := set_list_member(t, k)
     }
   };
+  [[ fold l_member(#vs, k, #r) ]];
+  [[ fold set_list(x, #vs) ]];
   return found
 }
 { set_list(#x, #vs) * l_member(#vs, #k, #r) * (ret == #r) }
@@ -136,19 +147,30 @@ function set_list_member(x, k){
 
 { (x == #x) * list(x, #vs) }
 function remove_duplicates(x) {
+ //  [[ unfold list(x, #vs)]];
   if (x == null) {
     r := null
+    // [[ fold set_list(x, [])]];
+    // [[ fold sub_list([], #vs)]]
   } else {
     v := [x];
     next := [x + 1];
     r := remove_duplicates(next);
+    // [[ assert {bind: #s} set_list(r, #s)]];
+    // [[ assert {bind: #v, #beta} (#vs == #v :: #beta) ]];
+    // [[ apply set_list_member_create(r, v, #s) ]];
     mem := set_list_member(r, v);
+    // [[ apply sub_list_prepend(#s, #beta, #v)]];
     if (mem) {
       skip
     } else {
       r := set_list_prepend(r, v)
+      // [[ apply list_member_create(next, #v, #beta) ]];
+      // [[ fold l_member(#v :: #beta, #v, true) ]];
+      // [[ fold sub_list(#v :: #s, #vs)]]
     }
   };
+  // [[ fold list(x, #vs) ]];
   return r
 }
 { list(#x, #vs) * set_list(ret, #xs) * sub_list(#xs, #vs) }

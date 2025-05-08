@@ -16,6 +16,8 @@ predicate list(+x, alpha) {
 function list_allocate_node(v){
   t := new(2);
   [t] := v;
+  // [[ fold list(null, []) ]];
+  //[[ fold list(t, [ #v ]) ]];
   return t
 }
 { list(ret, [ #v ]) }
