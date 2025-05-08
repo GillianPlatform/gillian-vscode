@@ -1,11 +1,9 @@
 @config manual_fold : true
 
 // === Folding and Unfolding ===
-// Once again, add fold and/or unfold tactics to make this function verify.
+// Add fold and/or unfold tactics to make this function verify.
 
-
-// TODO: more comments? this one has the twist of folding the empty list
-
+// If you are stuck, you can find a hint on the hint folder.
 
 predicate list(+x, alpha) {
     (x == null) * (alpha == nil);

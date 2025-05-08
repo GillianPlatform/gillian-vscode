@@ -1,4 +1,4 @@
-
+@config manual_fold : true
 // === Exercise ?? : doubly-linked lists ===
 
 // Having dealt with singly-linked lists, it is time to move on to a more complicated, yet familiar data structure: doubly-linked lists.

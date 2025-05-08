@@ -1,3 +1,4 @@
+@config manual_fold : true
 // === EXERCISE ?? : Removing Duplicates ===
 // Having learned everything so far, it is now time to tackle harder problems. One key problem is 
 // transforming a list to a set. In order to do this, one could just make a set list predicate that utilizes
