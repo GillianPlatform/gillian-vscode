@@ -1,0 +1,45 @@
+@config manual_fold : true
+
+// ========= Exercise 6.1 : List removal With list membership =========
+// This will be the final exercise that you will have to in manual mode.
+
+// In this exercise, we will be looking at the many ways specifications
+// can be written and iterated upon. 
+
+// Using the list membership predicate, try to verify the following function
+
+predicate list(+x, alpha) {
+  (x == null) * (alpha == []);
+  (x -b> #v, #z) * list(#z, #beta) * (alpha == #v :: #beta)
+}
+
+predicate l_member(+vs, +v, r : Bool) {
+  (vs == []) * (r == false);
+  (vs == v :: #rest) * (r == true) * l_member(#rest, v, #mem);
+  (vs == #v :: #rest) * (!(#v == v)) * l_member(#rest, v, r)
+}
+
+{ (x == #x) * (k == #k) * list(#x, #vs) }
+function list_remove_weak(x, k) {
+  [[ unfold list(x, #vs) ]];
+  if (x == null) {
+    [[ fold list(x, #vs) ]];
+    [[ fold l_member([], #k, false) ]]
+  } else {
+    v := [x];
+    next := [x + 1];
+    if (v == k){
+      free(x);
+      x := list_remove_weak(next, k)
+    } else {
+      z := list_remove_weak(next, k);
+      [x + 1] := z;
+      [[ assert {bind: #zs} list(z, #zs) ]];
+      [[ fold list(x, (v :: #zs)) ]];
+      [[ fold l_member((v :: #zs), #k, false) ]]
+    }
+  };
+  return x
+}
+{ list(ret, #nvs) * l_member(#nvs, #k, false) }
+

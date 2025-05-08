@@ -1,5 +1,6 @@
 @config manual_fold : true
-// === Exercise ?? : doubly-linked lists ===
+
+// === Exercise B : doubly-linked lists ===
 
 // Having dealt with singly-linked lists, it is time to move on to a more complicated, yet familiar data structure: doubly-linked lists.
 // TODO: explain what dlsegl and dlsegr are and lemmas
@@ -138,5 +139,3 @@ function concat(x_a, v_a, x_b, v_b) {
   return r
 }
 { (ret -> #h, #t) * dlist(#h, #t, #alpha @ #beta) }
-
-// TODO: Put DLL to SLL function

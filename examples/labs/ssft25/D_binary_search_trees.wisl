@@ -1,5 +1,6 @@
 @config manual_fold : true
-// === EXERCISE ?? : binary search trees ===
+
+// === EXERCISE D : binary search trees ===
 // 
 // In this exercise, we go through a more interesting
 // data structure. In particular, we go through a

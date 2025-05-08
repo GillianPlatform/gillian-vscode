@@ -1,5 +1,6 @@
 @config manual_fold : true
-// === Exercise ?? : Well-bracked function ===
+
+// === Exercise C : Well-bracked function ===
 
 // Having worked with singly-linked lists, it is now time to work with an application of it. 
 
