@@ -1,9 +1,10 @@
-@config manual_fold : false
+@config manual_fold : true
 
-// ========= Exercise 6.2 : List removal Auto Mode =========
+// ========= Exercise 6.1 : List removal With list membership =========
+// In this exercise, we will be looking at the many ways specifications
+// can be written and iterated upon. 
 
-// Now, copy and paste your solution, and see what fold/unfolds you are able to remove.
-// You should be able to see auto mode allows most, if not all, folds/unfolds to be removed.
+// Using the list membership predicate, try to verify the following function.
 
 predicate list(+x, alpha) {
   (x == null) * (alpha == []);
@@ -18,8 +19,10 @@ predicate l_member(+vs, +v, r : Bool) {
 
 { (x == #x) * (k == #k) * list(#x, #vs) }
 function list_remove_weak(x, k) {
+  [[ unfold list(x, #vs) ]];
   if (x == null) {
-    skip
+    [[ fold list(x, #vs) ]];
+    [[ fold l_member([], #k, false) ]]
   } else {
     v := [x];
     next := [x + 1];
@@ -28,9 +31,13 @@ function list_remove_weak(x, k) {
       x := list_remove_weak(next, k)
     } else {
       z := list_remove_weak(next, k);
-      [x + 1] := z
+      [x + 1] := z;
+      [[ assert {bind: #zs} list(z, #zs) ]];
+      [[ fold list(x, (v :: #zs)) ]];
+      [[ fold l_member((v :: #zs), #k, false) ]]
     }
   };
   return x
 }
 { list(ret, #nvs) * l_member(#nvs, #k, false) }
+

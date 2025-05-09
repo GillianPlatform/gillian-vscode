@@ -1,8 +1,6 @@
 @config manual_fold : true
 
 // ========= Exercise 6.1 : List removal With list membership =========
-// This will be the final exercise that you will have to in manual mode.
-
 // In this exercise, we will be looking at the many ways specifications
 // can be written and iterated upon. 
 

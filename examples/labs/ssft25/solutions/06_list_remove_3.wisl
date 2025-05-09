@@ -14,26 +14,35 @@ predicate list(+x, alpha) {
   (x -b> #v, #z) * list(#z, #beta) * (alpha == #v :: #beta)
 }
 
-predicate list_pred(+new_list, +old_list, +val) {
-  (new_list == [])
+predicate list_without(+xs, +ys, +v) {
+  (xs == []) * (ys == []);
+  (xs == #x :: #xs) * (ys == #x :: #ys) * (v != #x) * list_without(#xs, #ys, v);
+  (ys == #y :: #ys) * (#y == v) * list_without(xs, #ys, v)
 }
 
 { (x == #x) * (k == #k) * list(#x, #vs) }
 function list_remove_strong(x, k) {
+  [[ unfold list(#x, #vs)]];
   if (x == null) {
-    skip
+    [[ fold list_without([], [], #k) ]];
+    [[ fold list(null, [])]]
   } else {
     v := [x];
     next := [x + 1];
     if (v == k){
       free(x);
-      x := list_remove_strong(next, k)
+      x := list_remove_strong(next, k); 
+      [[ assert {bind: #xs} list(x, #xs) ]];
+      [[ fold list_without(#xs, #vs, k)]]
     } else {
       z := list_remove_strong(next, k);
-      [x + 1] := z
+      [x + 1] := z;
+      [[ assert {bind: #zs} list(z, #zs) ]];
+      [[ fold list_without(v :: #zs, #vs, k)]];
+      [[ fold list(x, v :: #zs)]]
     }
   };
   return x
-  
 }
-{ list(ret, #nvs) * list_pred(#nvs, #vs, #k) }
+{ list(ret, #nvs) * list_without(#nvs, #vs, #k) }
+
