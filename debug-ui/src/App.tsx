@@ -44,7 +44,7 @@ const renderMapTab = (
   const rootId = parentRoot?.id || id;
   const name = parentRoot ? `${parentRoot.name} > ${name_}` : name_;
   const { nodes, selectedNodes, onNodeSelected, onNextStepSelected, ext } = mapState;
-  const substs = (ext && ext.substs && ext.substs[rootId]) || [];
+  const substs = (ext && ext.substs && ext.substs[rootId]) || undefined;
   const mapViewProps = {
     nodes,
     substs,

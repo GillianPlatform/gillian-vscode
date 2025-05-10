@@ -26,7 +26,7 @@ const MapWrap = styled.div`
 export type MapViewProps = {
   root: string;
   nodes: Nodes;
-  substs: Subst[];
+  substs?: Subst[] | undefined;
   selectedNodes: CurrentSteps;
   onNodeSelected: (id: string) => void;
   onNextStepSelected: (prev: NodePrev) => void;
