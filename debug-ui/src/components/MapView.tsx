@@ -57,6 +57,7 @@ function MapView({
       id: root,
       ...DEFAULT_REACT_FLOW_PROPS,
     },
+    nodeTooltips: true,
   };
 
   return (
