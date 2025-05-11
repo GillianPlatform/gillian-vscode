@@ -9,6 +9,7 @@ import Badge from "./Badge";
 import styled from "styled-components";
 import Sidebar, { Subst } from "./Sidebar";
 import { CurrentSteps, Nodes } from "@gillianplatform/sedap-vscode-ui";
+import MinimapControl, { MinimapControlProps } from "./MinimapControl";
 
 const Wrap = styled.div`
   width: 100%;
@@ -31,7 +32,7 @@ export type MapViewProps = {
   onNodeSelected: (id: string) => void;
   onNextStepSelected: (prev: NodePrev) => void;
   onZoomNode: (id: string, name: string) => void;
-};
+} & MinimapControlProps;
 
 function MapView({
   root,
@@ -41,6 +42,8 @@ function MapView({
   onNodeSelected,
   onNextStepSelected,
   onZoomNode,
+  minimapVisible,
+  toggleMinimap,
 }: MapViewProps) {
   const traceViewProps: TraceViewProps = {
     root,
@@ -49,6 +52,7 @@ function MapView({
     onNodeSelected,
     onNextStepSelected,
     onZoomNode,
+    showMinimap: minimapVisible,
     componentOverrides: {
       button: IconButton,
       badge: Badge,
@@ -63,7 +67,9 @@ function MapView({
   return (
     <Wrap>
       <MapWrap>
-        <TraceView {...traceViewProps} />
+        <TraceView {...traceViewProps}>
+          <MinimapControl {...{ minimapVisible, toggleMinimap }} />
+        </TraceView>
       </MapWrap>
       <Sidebar {...{ substs, selectedNodes: selectedNodes.primary || [], onNodeSelected }} />
     </Wrap>
