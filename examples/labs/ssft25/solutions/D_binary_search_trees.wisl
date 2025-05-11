@@ -1,5 +1,5 @@
 @config manual_fold : true
-// === EXERCISE ?? : binary search trees ===
+// === EXERCISE D : binary search trees ===
 // 
 // In this exercise, we go through a more interesting
 // data structure. In particular, we go through a
@@ -65,7 +65,7 @@ predicate list_lt(+vs, +v : Int){
 //     + #r points to the right subtree
 //   - bst(#l, #vsl), the left subtree
 //   - bst(#r, #vsr), the right subtree
-//   - vs == #v :: #vsl@#vsr
+//   - vs == #vsl @ [#v] @ #vsr
 //     the 'keys' in the binary search tree pointed
 //     by x, where
 //     + #v is the key
