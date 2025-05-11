@@ -1,16 +1,39 @@
-@config manual_fold : true
+@config manual_fold : false
 
-// === Exercise C : Well-bracked function ===
-
+// === Exercise C : Well-bracketed function ===
+//
 // Having worked with singly-linked lists, it is now time to work with an application of it. 
-
-// TODO: put a description of what well-bracketed means. We can decide later if we want them to figure out the predicate
-// or just figure out how to verify the function itself. Can also partially give the predicate and let them figure out the rest.
+//
+// The problem is as follows: given a string s, can we write a function that checks that it is 
+// well-bracketed? 
+//
+// Well-bracketed in this case means: 
+//
+// 1. The number of open brackets must match the number of close brackets (of the same type)
+// 2. Whenever there is an open bracket, there must be later on a close bracket that matches it
+// 3. The order of open brackets must match the order of close brackets. For example,
+// "[<]>" is not well-bracketed, while "[<>]" is. 
+// 4. Normal characters are ignored. 
+//
+// To give some clear examples:
+// "[<a>]" is well-bracketed
+// "[]<>>" is not well-bracketed
+// “<ab[c]e” is not well-bracketed
+//
+// For the sake of simplicity, we assume that the only brackets that we care for are "[]" and "<>".
+// 
+// parameter s in the functions is treated as a stack implemented as a singly-linked list.
+// Look over the function wellBr and wellBrhelper in which the correct code is provided for you.
+//
+// The goal for you is to provide the predicate wbs, which given the string list a and the stack b, 
+// the predicate should be able to deduce the parameter r which indicates whether list a is well-bracketed
+// or not.
+//
+// The predicates ob, cb, nb are provided to you, which indicate whether the character c is an open bracket,
+// close bracket, or neither respectively.
 
 predicate list(+x, vs) {
-  // Empty list
   (x == null) * (vs == []);
-  // One list node and the rest
   (x -b> #v, #next) * list(#next, #vs) *
   (vs == #v :: #vs)
 }
@@ -42,7 +65,7 @@ function list_pop(x) {
 }
 { list(#z, #vs) * (ret == #r) * #r -b> #k, #z }
 
-// Well bracked predicates
+// Well bracketed predicates
 
 predicate ob(+c : String) {
   ((c == "<") || (c == "["))
