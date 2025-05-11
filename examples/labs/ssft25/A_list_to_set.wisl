@@ -1,4 +1,4 @@
-@config manual_fold : true
+@config manual_fold : false
 
 // === EXERCISE A : Removing Duplicates ===
 // Having learned everything so far, it is now time to tackle harder problems. One key problem is 
@@ -10,7 +10,7 @@
 // With these two predicates, and a handful of lemmas, try to make the remove_predicates function verify.
 
 // Bonus challenge: Could you make a stronger postcondition than the one given in remove_duplicates?
-// write it in remove_duplicates2 and verify it.
+// write it in remove_duplicates_strong and verify it.
 
 predicate list(+x, vs) {
   (vs == []) * (x == null);
@@ -88,7 +88,7 @@ lemma list_member_true {
     fold l_member(v :: vs, k, true)
 }
 
-lemma sub_list_prepend {
+lemma contains_all_prepend {
   statement:
     forall xs, vs, v.
       contains_all(xs, vs) |- contains_all(xs, v :: vs) 
@@ -96,7 +96,7 @@ lemma sub_list_prepend {
     if (xs != []) {
       unfold contains_all(xs, vs);
       assert {bind: #xss, #x} (xs == #x :: #xss);
-      apply sub_list_prepend(#xss, vs, v);
+      apply contains_all_prepend(#xss, vs, v);
       apply list_member_true(vs, #x, v);
       fold contains_all(xs, v :: vs)
     }
@@ -156,14 +156,17 @@ function remove_duplicates(x) {
 }
 { list(#x, #vs) * set_list(ret, #xs) * contains_all(#xs, #vs) }
 
+
+// ====== Bonus challenge start here ======
+
 { (x == #x) * list(x, #vs) }
-function remove_duplicates2(x) {
+function remove_duplicates_strong(x) {
   if (x == null) {
     r := null
   } else {
     v := [x];
     next := [x + 1];
-    r := remove_duplicates2(next);
+    r := remove_duplicates_strong(next);
     mem := set_list_member(r, v);
     if (mem) {
       skip
