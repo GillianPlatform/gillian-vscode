@@ -1,6 +1,5 @@
 @config manual_fold : true
-
-// === EXERCISE D : binary search trees ===
+// === EXERCISE ?? : binary search trees ===
 // 
 // In this exercise, we go through a more interesting
 // data structure. In particular, we go through a
@@ -89,7 +88,7 @@ predicate bst(+x, vs : List) {
   // Empty Node
   (x == null) * (vs == []);
   (x -b> #v, #l, #r) * bst(#l, #vsl) * bst(#r, #vsr) *
-  (vs == (#v::#vsl @ #vsr)) *
+  (vs == (#vsl @ [#v] @ #vsr)) *
   list_member(#vsl, #v, false) * 
   list_member(#vsr, #v, false) *
   list_gt(#vsl, #v) *
@@ -112,22 +111,6 @@ predicate list_min(+vs, +v : Int){
 // but we provide a number of lemmas that you may
 // find useful for the purpose of completing this
 // exercise.
-
-lemma list_member_prepend {
-  statement:
-    forall vs, k, v.
-      list_member(vs, v, true) |- list_member(k::vs, v, true)
-
-  proof:
-    if(#vs == []) {
-      unfold list_member(#vs, #v, true)
-    } else {
-      unfold list_member(#vs, #v, true);
-      assert {bind: #u, #vss} (#vs == #u::#vss);
-      fold list_member(#vs, #v, true);
-      apply list_member_prepend(#vs, #k, #v)
-    } 
-}
 
 lemma list_member_prepend_neq {
   statement:
@@ -158,44 +141,48 @@ lemma list_member_concat {
     }
 }
 
-lemma list_member_concat_false {
+lemma list_member_concat_gen {
   statement:
     forall vs1, vs2, v.
-      list_member(vs1, v, #r) * list_member(vs2, v, false) |- list_member(vs1 @ vs2, v, #r)
+      list_member(vs1, v, #r1) * list_member(vs2, v, #r2) |- list_member(vs1 @ vs2, v, (#r1 || #r2))
+
   proof:
-    if (vs2 != []) {
-      unfold list_member(#vs2, #v, false);
-      assert {bind: #vr, #vssr} (#vs2 == #vr::#vssr) * list_member(#vssr, #v, false);
-      fold list_member([], #v, false);
-      fold list_member([#vr], #v, false);
-      apply list_member_concat_false(#vs1, [#vr], #v);
-      apply list_member_concat_false(#vs1@[#vr], #vssr, #v)
+    if (#vs1 != []) {
+      assert {bind: #nv1, #nvs1} (#vs1 == #nv1 :: #nvs1);
+      if(#nv1==#v) {
+        fold list_member([#v], #v, true);
+        apply list_member_concat([#v], #nvs1, #v);
+        apply list_member_concat_gen(#vs1, #vs2, #v)
+      } else {
+        assert {bind: #nv1, #nvs1, #nr1} (#vs1 == #nv1 :: #nvs1) * list_member(#nvs1, #v, #nr1);
+        apply list_member_concat_gen(#nvs1, #vs2, v);
+        fold list_member(#vs1@vs2, #v, (#nr1 || #r2))
+      }
     }
 }
-
-lemma list_member_concat_false_2 {
-  statement:
-    forall vs1, vs2, v.
-      list_member(vs1, v, false) * list_member(vs2, v, #r) |- list_member(vs1 @ vs2, v, #r)
-  proof:
-    if (vs1 != []) {
-      unfold list_member(#vs1, #v, false);
-      assert {bind: #vl, #vssl} (#vs1 == #vl::#vssl) * list_member(#vssl, #v, false);
-      apply list_member_concat_false_2(#vssl, #vs2, #v);
-      apply list_member_concat_false_2([#vl], #vssl@#vs2, #v)
-    }
-}
-
 
 // Note: lemmas with emp as an assumption essentially
 //       implies the lemma does not have an assumption
-lemma list_member_front {
+lemma list_member_front_helper {
   statement:
     forall v, vs.
       emp |- list_member(v::vs, v, true)
 
   proof:
     unfold list_member(v::vs, v, true)
+}
+
+lemma list_member_mid {
+  statement:
+    forall v, vsl, vsr.
+      emp |- list_member(vsl @ [v] @ vsr, v, true)
+
+  proof:
+    if (#vsl == []) {
+       apply list_member_front_helper(#v, #vsr)
+     } else {
+       apply list_member_mid(#v, #vsl, #vsr)
+     }
 }
 
 lemma min_merge {
@@ -217,28 +204,26 @@ lemma min_merge {
 lemma min_merge_k {
   statement:
     forall min, k, vsl, vsr.
-      list_min(k::vsl, min) * list_lt(vsr, k) |- list_min(k::vsl@vsr, min) * list_lt(vsr, k)
+      list_min(vsl@[k], min) * list_lt(vsr, k) |- list_min(vsl@[k]@vsr, min) * list_lt(vsr, k)
   proof:
-    if(vsr != []) {
-      unfold list_lt(#vsr, #k);
-      assert {bind: #vr, #vssr} (#vsr == #vr::#vssr) * list_lt(#vssr, #k);
-      fold list_lt([], #k);
-      fold list_lt([#vr], #k);
-      apply min_merge_k(#min, #k, #vsl, [#vr]);
-      apply min_merge_k(#min, #k, #vsl@[#vr], #vssr);
-      fold list_lt(#vsr, #k)
-    } 
+    if(vsl == []) {
+      apply min_merge_k(#min, #k, [], #vsr)
+    } else {
+      unfold list_min(#vsl@[#k], #min);
+      assert {bind: #vl, #vssl} (#vsl == #vl::#vssl);
+      apply min_merge_k(#min, #k, #vssl, #vsr);
+      fold list_min(#vsl@[#k]@#vsr, #min)
+    }
 }
 
 lemma min_gt_append {
   statement:
     forall min, k, vs.
-      list_min(vs, min) * list_gt(vs, k) * (vs != []) |- list_min(k::vs, min) * list_gt(vs, k)
+      list_min(vs, min) * list_gt(vs, k) * (vs != []) |- list_min(vs @ [k], min) * list_gt(vs, k)
   proof:
     if(#vs != []) {
-      unfold list_min(#vs, #min);
-      unfold list_gt(#vs, #k)
-     }
+      apply min_gt_append(#min, #k, #vs)
+    }
 }
 
 lemma min_include {
@@ -328,7 +313,7 @@ lemma list_member_lt {
 }
 
 
-// 00. creating a BST with a single element
+// 00. creating a BST with a single element (EASY)
 //     This function is analogous to 
 //     SLLAlocateNode, but it will be more
 //     involved due to the fact that there
@@ -341,7 +326,7 @@ function BSTAllocateLeaf(v) {
 }
 { bst(ret, [#v]) }
 
-// 01. copying a binary search tree
+// 01. copying a binary search tree (MEDIUM)
 //     This function creates a copy of a given
 //     binary search tree.
 { (x == #x) * bst(#x, #vs) }
@@ -364,30 +349,23 @@ function BSTCopy(x) {
 }
 { bst(#x, #vs) * bst(ret, #vs) }
 
-// Hint 1: Note that folding the bst predicate consumes
-//         the pure predicates. To ensure we can also
-//         fold the copied binary search tree, we need
-//         to duplicate the remaining pure predicates.
-// Hint 2: To duplicate the pure predicates, we need to
-//         be able to refer to the logical variables.
-//         The [[ assert {bind: ...} ... ]] tactic will
-//         come in handy.
+// 02. Searching for a value in a BST (MEDIUM)
 { (x == #x) * (a == #a) * bst(#x, #vs) * isInt(a) }
 function BSTSearch(x, a) {
   r := false;
   if(x != null) {
-    // Hint 1
+    // Hint 3
     t := [x];
     if(a == t) {
-      // Hint 2
+      // Hint 4
       r := true
     } else {
       if(a < t) {
-        // Hint 3
+        // Hint 5
         t := [x + 1];
         r := BSTSearch(t, a)
       } else {
-        // Hint 3
+        // Hint 5
         t := [x + 2];
         r := BSTSearch(t, a)
       }
@@ -395,20 +373,12 @@ function BSTSearch(x, a) {
   } else {
     skip
   };
+  [[ fold bst(#x, #vs) ]];
   return r
 }
 { bst(#x, #vs) * list_member(#vs, #a, ret) }
 
-// Hint 1: You may find the [[ assert {bind: ... } ]]
-//         tactic helpful to label the logical 
-//         variables.
-// Hint 2: Consider how the #vs looks at this point.
-//         What can you say about t ∈ #vs?
-// Hint 3: if a < t and list_lt(vs, t), what does this
-//         say about a ∈ vs? Like what about the case
-//         where a > t and list_gt(vs, t)?
-
-// 02. obtaining the minimum of a binary search tree
+// 02. obtaining the minimum of a binary search tree (HARD)
 //     This function returns the minimum key in a
 //     given binary serach tree. In other words,
 //     the function returns the left-most key in the
@@ -416,37 +386,15 @@ function BSTSearch(x, a) {
 //     given tree is non-empty.
 { (x == #x) * (#x != null) * bst(#x, #vs) }
 function BSTFindMin(x) {
-  // Hint 1
+  // Hint 6
   l := [x + 1];
   if (l == null) {
     min := [x]
-    // Hint 2
+    // Hint 7
   } else {
     min := BSTFindMin(l)
-    // Hint 3, 4
+    // Hint 8, 9
   };
   return min
 }
 { (#x != null) * bst(#x, #vs) * list_member(#vs, ret, true) * list_min(#vs, ret) }
-
-// Hint 1: You may find the [[ assert {bind: ... } ]]
-//         tactic helpful to label the logical 
-//         variables.
-// Hint 2: x <= x1 for all x1 ∈ S1 /\ 
-//         x <  x2 for all x2 ∈ S2 ==> 
-//         x <= x3 for all x3 ∈ S1 ∪ S2
-// Hint 3: Currently, the structure of the tree at this
-//         state is as follows:
-//               #k
-//              /  \
-//             l    r
-//         ...where l != null, and #vsl is the list
-//         of elements in the subtree pointed by l.
-//         The recursive call to BSTFindMin(l) returns
-//         list_member(#vsl, min, true) and 
-//         list_min(#vsl, min). What now remains
-//         is to show how min relates to #k and
-//         and the keys in the subtree pointed by r.
-// Hint 4: min <= s for all s ∈ S /\ 
-//           k >  s for all s ∈ S ==>
-//         min <= s for all s ∈ {k} ∪ S 
