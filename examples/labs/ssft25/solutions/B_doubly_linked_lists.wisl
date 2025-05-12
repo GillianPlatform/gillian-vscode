@@ -1,22 +1,43 @@
-@config manual_fold : false
+@config manual_fold : true
 // === Exercise B : doubly-linked lists ===
 
-// Having dealt with singly-linked lists, it is time to move on to a more complicated, yet familiar data structure: doubly-linked lists.
-// TODO: explain what dlsegl and dlsegr are and lemmas
+// Having dealt with singly-linked lists, it is time to move on to a 
+// more complicated, yet familiar data structure: doubly-linked lists.
 
-// Doubly-linked list segment, unfolding from the left
+// A node in a doubly-linked list contains references to the next
+// and previous nodes. In this formalisation, we represent
+// a node as follows: a node is a ternary cell of the form
+// x -b> v, n, p, where:
+// - v is the value of the node
+// - n is a reference to the next node
+// - p is a reference to the previous node
+
+// Before writing the doubly-linked list predicate, we will first
+// write predicates for representing segments of a doubly-linked list.
+// The segment of a doubly-linked list only represents a part of the
+// whole list.
+// As we will see, the predicate can be written in two ways, but they
+// both take the general form of: dlseg(x, y, v, w, alpha)
+// This block of memory contains part of a doubly-linked list, which
+// begins at x, just after w, and ends at v, just before we get to y. The
+// values in in this list segment are those given by the mathematical list
+// alpha.
+
+// The first is the doubly-linked list segment, unfolding from the left. 
 predicate dlsegl(+x, +y, +v, +w, alpha : List) {
   (x == y) * (v == w) * (alpha == nil);
   (x -b> #a, #z, w) * (alpha == #a :: #beta) * dlsegl(#z, y, v, x, #beta)
 }
 
-// Doubly-linked list segment, unfolding from the right
+// The second is thhe doubly-linked list segment, unfolding from the right
 predicate dlsegr(+x, +y, +v, +w, alpha : List) {
   (x == y) * (v == w) * (alpha == nil);
   (v -b> #a, y, #z) * (alpha == #beta @ [#a]) * dlsegr(x, v, #z, w, #beta)
 }
 
-// Appending an element from the right to the left-unfolding dlseg
+// We have a number of lemmas that allow us to append/prepend nodes to a
+// doubly linked list. For dlsegl, it would be helpful if we could append
+// a node to the end of the list.
 lemma dlsegl_append_right {
   statement:
     forall x, v, z, w, alpha, a, y.
@@ -36,7 +57,8 @@ lemma dlsegl_append_right {
     }
 }
 
-// Appending an element from the left to the right-unfolding dlseg
+// Similarly, for dlsegr, it would be helpful if we could prepend a node to the start
+// of the list. 
 lemma dlsegr_append_left {
   statement:
     forall x, a, z, w, y, v, alpha.
@@ -56,7 +78,9 @@ lemma dlsegr_append_left {
     }
 }
 
-// Left-to-right
+// Note that dlsegl(x, y, v, w alpha) and dlsegr(x, y, v, w, alpha)
+// represent the same lists, so one can change between these two
+// representations when needed.
 lemma dlseg_l_to_r {
   statement:
     forall x, y, v, w, alpha.
@@ -75,7 +99,7 @@ lemma dlseg_l_to_r {
     }
 }
 
-// Right-to-left
+// The same property holds vice-versa.
 lemma dlseg_r_to_l {
   statement:
     forall x, y, v, w, alpha.
@@ -94,13 +118,18 @@ lemma dlseg_r_to_l {
     }
 }
 
-// Doubly-linked list
+// Finally, we represent the doubly-linked list predicate.
+// To put simply, the doubly linked list predicate is
+// represented using the dlsegl predicate, with both end
+// points being null. Note that one can also represent
+// this predicate using dlsegr via the dlseg_l_to_r lemma.
 predicate dlist(+x, +y, alpha) {
   dlsegl(x, null, y, null, alpha)
 }
 
 
-// Concatenation of two dlsegs
+// Finally, we have the dlseg_concat lemma, which concatenates two
+// doubly-linked list segments. 
 lemma dlseg_concat {
   statement:
     forall x_a, v_a, w_a, alpha, x_b, y_b, v_b, beta.
@@ -116,7 +145,11 @@ lemma dlseg_concat {
     }
 }
 
-// List concatenation (MEDIUM)
+// 00. List concatenation (MEDIUM)
+//     Note that unlike the singly-linked list variant, list
+//     concatentation for doubly-linked lists does not require
+//     recursion and is an O(1) time operation, but verification
+//     of this function is more involved.
 { (x_a == #x_a) * (v_a == #v_a) * (x_b == #x_b) * (v_b == #v_b) *
   dlist(#x_a, #v_a, #alpha) * dlist(#x_b, #v_b, #beta) }
 function concat(x_a, v_a, x_b, v_b) {
@@ -149,31 +182,3 @@ function concat(x_a, v_a, x_b, v_b) {
   return r
 }
 { (ret -> #h, #t) * dlist(#h, #t, #alpha @ #beta) }
-
-// TODO: Put DLL to SLL function
-
-predicate DLL(+x, +v, alpha : List) {
-  dlsegl(x, null, v, null, alpha)
-}
-
-predicate SLL(+x, alpha : List) {
-    (x == null) * (alpha == nil);
-    (x -> #v, #z) * SLL(#z, #beta) * (alpha == #v::#beta)
-}
-
-{ (x == #x) * (v == #v) * dlsegl(#x, null, #v, null, #xs) }
-function DLL_to_SLL(x, v) {
-  y := null;
-  if(x != null) {
-    y := new(2);
-    t := [x];
-    [y] := t;
-    t := [x + 1];
-    t := DLL_to_SLL(t);
-    [y + 1] := t
-  } else {
-    skip
-  };
-  return y
-}
-{ dlsegl(#x, null, #v, null, #xs) * SLL(ret, #xs) }
