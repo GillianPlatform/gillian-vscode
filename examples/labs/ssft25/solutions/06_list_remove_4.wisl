@@ -10,9 +10,9 @@
 //
 // You may copy and utilize any functions from the previous exercises
 
-predicate list(+x, alpha) {
-  (x == null) * (alpha == []);
-  (x -b> #v, #z) * list(#z, #beta) * (alpha == #v :: #beta)
+predicate list(+x, vs) {
+  (x == null) * (vs == []);
+  (x -b> #v, #z) * list(#z, #vss) * (vs == #v :: #vss)
 }
 
 predicate list_without(+xs, +ys, +v) {

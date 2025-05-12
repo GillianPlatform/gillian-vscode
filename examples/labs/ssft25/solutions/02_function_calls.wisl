@@ -15,9 +15,9 @@
 // In short, only the relevant parts of the assertion will be appropriately replaced
 // in a function call given the function's specification.
 
-predicate list(+x, alpha) {
-    (x == null) * (alpha == nil);
-    (x -> #v, #z) * list(#z, #beta) * (alpha == #v::#beta)
+predicate list(+x, vs) {
+    (x == null) * (vs == nil);
+    (x -> #v, #z) * list(#z, #vss) * (vs == #v::#vss)
 }
 
 // TODO maybe make this function be "admitted"? Can't show the solution.

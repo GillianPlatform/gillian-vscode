@@ -52,9 +52,9 @@ function list_allocate_node(v){
 }
 { list(ret, [ #v ]) }
 
-predicate list(+x, alpha) {
-    (x == null) * (alpha == nil);
-    (x -> #v, #z) * list(#z, #beta) * (alpha == #v::#beta)
+predicate list(+x, vs) {
+    (x == null) * (vs == nil);
+    (x -> #v, #z) * list(#z, #vss) * (vs == #v::#vss)
 }
 
 predicate list_search(+vs, +i, v) {
@@ -83,8 +83,8 @@ function list_get(x, i) {
     r := v
   } else {
     i := i - 1;
-    [[ assert {bind: #beta} list(next, #beta)]];
-    [[ apply search_not_null(next, #beta, i, #r) ]];
+    [[ assert {bind: #vss} list(next, #vss)]];
+    [[ apply search_not_null(next, #vss, i, #r) ]];
     r := list_get(next, i)
   };
   [[ fold list(x, #vs)]];
@@ -95,8 +95,8 @@ function list_get(x, i) {
 
 predicate l_member(+vs, +v, r : Bool){
   (vs == []) * (r == false);
-  (vs == v :: #rest) * (r == true) * l_member(#rest, v, #mem);
-  (vs == #v :: #rest) * (! (#v == v)) * l_member(#rest, v, r)
+  (vs == v :: #ws) * (r == true) * l_member(#ws, v, #mem);
+  (vs == #v :: #ws) * (! (#v == v)) * l_member(#ws, v, r)
 }
 
 lemma list_member_create {
@@ -109,8 +109,8 @@ lemma list_member_create {
       fold list(x, vs);
       fold l_member(vs, k, false)
     } else {
-      assert {bind: #v, #beta} (#vs == #v :: #beta) * (x -> #v, #z);
-      apply list_member_create(#z, k, #beta);
+      assert {bind: #v, #vss} (#vs == #v :: #vss) * (x -> #v, #z);
+      apply list_member_create(#z, k, #vss);
       if (#v == k) {
         fold l_member(vs, k, true)
       } else {
@@ -130,8 +130,8 @@ function list_member(x, k){
     t := [x + 1];
     if (v == k){
       found := true;
-      [[ assert {bind: #beta} (#vs == v :: #beta) ]];
-      [[ apply list_member_create(t, #k, #beta) ]]
+      [[ assert {bind: #vss} (#vs == v :: #vss) ]];
+      [[ apply list_member_create(t, #k, #vss) ]]
     } else {
       found := list_member(t, k)
     }

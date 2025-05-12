@@ -18,14 +18,14 @@
 // If you get stuck with verifing a function, sometimes hints are in the 
 // 'hints' folder
 
-predicate list(+x, alpha) {
-    (x == null) * (alpha == nil);
-    (x -> #v, #z) * list(#z, #beta) * (alpha == #v::#beta)
+predicate list(+x, vs) {
+    (x == null) * (vs == nil);
+    (x -> #v, #z) * list(#z, #vss) * (vs == #v::#vss)
 }
 
-{ (x == #x) * list(#x, #alpha) }
+{ (x == #x) * list(#x, #vs) }
 function llen(x) {
-    // [[ unfold list(#x, #alpha) ]];
+    // [[ unfold list(#x, #vs) ]];
     if (x == null) {
         n := 0
     } else {
@@ -33,7 +33,7 @@ function llen(x) {
         n := llen(t);
         n := n + 1
     };
-    // [[ fold list(#x, #alpha) ]];
+    // [[ fold list(#x, #vs) ]];
     return n
 }
-{ list(#x, #alpha) * (ret == len(#alpha)) }
+{ list(#x, #vs) * (ret == len(#vs)) }

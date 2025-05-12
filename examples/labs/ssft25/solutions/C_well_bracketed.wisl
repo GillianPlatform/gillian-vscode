@@ -148,8 +148,8 @@ function wellBr_helper(x, s) {
         if (s == null) {
           ok := false
         } else {
-          // [[ assert {bind: #v, #beta} (#b == #v :: #beta) ]];
-          // [[ fold list(#s, #v :: #beta) ]];
+          // [[ assert {bind: #v, #vss} (#b == #v :: #vss) ]];
+          // [[ fold list(#s, #v :: #vss) ]];
           r := list_pop(s);
           d := [r];
           s := [r + 1];

@@ -9,15 +9,15 @@
 // To illustrate this, try running the debugger and stepping to the recursive
 // call to `llen()`; Gillian performs a match to check that the precondition for
 // the recursive call holds (and then know what to consume from the state).
-// In this case, it checks some basic properties (e.g. #alpha is a list) and
+// In this case, it checks some basic properties (e.g. #vs is a list) and
 // most notably, that the list predicate holds.
 
-predicate list(+x, alpha) {
-    (x == null) * (alpha == nil);
-    (x -> #v, #z) * list(#z, #beta) * (alpha == #v::#beta)
+predicate list(+x, vs) {
+    (x == null) * (vs == nil);
+    (x -> #v, #z) * list(#z, #vss) * (vs == #v::#vss)
 }
 
-{ (x == #x) * list(#x, #alpha) }
+{ (x == #x) * list(#x, #vs) }
 function llen(x) {
     if (x == null) {
         n := 0
@@ -28,4 +28,4 @@ function llen(x) {
     };
     return n
 }
-{ list(#x, #alpha) * (ret == len(#alpha)) }
+{ list(#x, #vs) * (ret == len(#vs)) }

@@ -1,7 +1,7 @@
 @config manual_fold : true
 // === EXERCISE D : binary search trees ===
 // 
-// In this exercise, we go through a more interesting
+// In this exercise, we go through a more intewsing
 // data structure. In particular, we go through a
 // binary search tree.
 
@@ -12,7 +12,7 @@
 //   3. right subtree
 // All keys in the left subtree must be less than the key,
 // and all keys in the right subtree must be greater than
-// the key. This restriction implies there are no 
+// the key. This wsriction implies there are no 
 // duplicate keys in any given binary search tree.
 
 // === PREDICATES ===
@@ -38,8 +38,8 @@ predicate isInt(v : Int) {
 // familiar from the singly-linked list exercises.
 predicate list_member(+vs, +v, r : Bool){
   (vs == []) * (r == false);
-  (vs == v :: #rest) * (r == true);
-  (vs == #v :: #rest) * (#v != v) * list_member(#rest, v, r)
+  (vs == v :: #ws) * (r == true);
+  (vs == #v :: #ws) * (#v != v) * list_member(#ws, v, r)
 }
 
 // We also have the list_gt and list_lt predicates.
@@ -47,12 +47,12 @@ predicate list_member(+vs, +v, r : Bool){
 // list_gt(vs, v) states v > v' for all v' ∈ vs
 predicate list_gt(+vs, +v : Int){
   (vs == []);
-  (vs == #v :: #rest) * (#v < v) * list_gt(#rest, v)
+  (vs == #v :: #ws) * (#v < v) * list_gt(#ws, v)
 }
 
 predicate list_lt(+vs, +v : Int){
   (vs == []);
-  (vs == #v :: #rest) * (#v > v) * list_lt(#rest, v)
+  (vs == #v :: #ws) * (#v > v) * list_lt(#ws, v)
 }
 
 // ...and now we have the bst predicate.
@@ -103,7 +103,7 @@ predicate bst(+x, vs : List) {
 // search tree predicate but is used elsewhere.
 predicate list_min(+vs, +v : Int){
   (vs == []);
-  (vs == #v :: #rest) * (v <= #v) * list_min(#rest, v)
+  (vs == #v :: #ws) * (v <= #v) * list_min(#ws, v)
 }
 
 // === LEMMAS ===

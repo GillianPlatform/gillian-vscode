@@ -1,4 +1,4 @@
-@config manual_fold : true
+@config manual_fold : false
 // === EXERCISE D : binary search trees ===
 // 
 // In this exercise, we go through a more interesting

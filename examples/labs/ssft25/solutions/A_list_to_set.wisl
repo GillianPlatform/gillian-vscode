@@ -20,8 +20,8 @@ predicate list(+x, vs) {
 
 predicate l_member(+vs, +v, r : Bool){
   (vs == []) * (r == false);
-  (vs == v :: #rest) * (r == true) * l_member(#rest, v, #mem);
-  (vs == #v :: #rest) * (! (#v == v)) * l_member(#rest, v, r)
+  (vs == v :: #ws) * (r == true) * l_member(#ws, v, #mem);
+  (vs == #v :: #ws) * (! (#v == v)) * l_member(#ws, v, r)
 }
 
 predicate set_list(+x, vs) {
@@ -44,8 +44,8 @@ lemma list_member_create {
       fold list(x, vs);
       fold l_member(vs, k, false)
     } else {
-      assert {bind: #v, #beta} (#vs == #v :: #beta) * (x -> #v, #z);
-      apply list_member_create(#z, k, #beta);
+      assert {bind: #v, #vss} (#vs == #v :: #vss) * (x -> #v, #z);
+      apply list_member_create(#z, k, #vss);
       if (#v == k) {
         fold l_member(vs, k, true)
       } else {
@@ -64,8 +64,8 @@ lemma set_list_member_create {
       fold set_list(x, vs);
       fold l_member(vs, k, false)
     } else {
-      assert {bind: #v, #beta} (#vs == #v :: #beta) * (x -> #v, #z);
-      apply set_list_member_create(#z, k, #beta);
+      assert {bind: #v, #vss} (#vs == #v :: #vss) * (x -> #v, #z);
+      apply set_list_member_create(#z, k, #vss);
       if (#v == k) {
         fold l_member(vs, k, true)
       } else {
@@ -161,16 +161,16 @@ function remove_duplicates(x) {
     next := [x + 1];
     r := remove_duplicates(next);
     [[ assert {bind: #s} set_list(r, #s)]];
-    [[ assert {bind: #v, #beta} (#vs == #v :: #beta) ]];
+    [[ assert {bind: #v, #vss} (#vs == #v :: #vss) ]];
     [[ apply set_list_member_create(r, v, #s) ]];
     mem := set_list_member(r, v);
-    [[ apply contains_all_prepend(#s, #beta, #v)]];
+    [[ apply contains_all_prepend(#s, #vss, #v)]];
     if (mem) {
       skip
     } else {
       r := set_list_prepend(r, v);
-      [[ apply list_member_create(next, #v, #beta) ]];
-      [[ fold l_member(#v :: #beta, #v, true) ]];
+      [[ apply list_member_create(next, #v, #vss) ]];
+      [[ fold l_member(#v :: #vss, #v, true) ]];
       [[ fold contains_all(#v :: #s, #vs)]]
     }
   };
@@ -194,17 +194,17 @@ function remove_duplicates_strong(x) {
     next := [x + 1];
     r := remove_duplicates_strong(next);
     [[ assert {bind: #s} set_list(r, #s)]];
-    [[ assert {bind: #v, #beta} (#vs == #v :: #beta) ]];
+    [[ assert {bind: #v, #vss} (#vs == #v :: #vss) ]];
     [[ apply set_list_member_create(r, v, #s) ]];
     mem := set_list_member(r, v);
-    [[ apply contains_all_prepend(#s, #beta, #v)]];
+    [[ apply contains_all_prepend(#s, #vss, #v)]];
     if (mem) {
       [[ fold contains_all(#vs, #s)]]
     } else {
-      [[ apply contains_all_prepend(#beta, #s, #v)]];
+      [[ apply contains_all_prepend(#vss, #s, #v)]];
       r := set_list_prepend(r, v);
-      [[ apply list_member_create(next, #v, #beta) ]];
-      [[ fold l_member(#v :: #beta, #v, true) ]];
+      [[ apply list_member_create(next, #v, #vss) ]];
+      [[ fold l_member(#v :: #vss, #v, true) ]];
       [[ fold contains_all(#v :: #s, #vs)]];
       [[ fold contains_all(#vs, #v :: #s)]]
     }
