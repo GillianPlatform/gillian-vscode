@@ -1,5 +1,5 @@
-
-// === Exercise ?? : doubly-linked lists ===
+@config manual_fold : false
+// === Exercise B : doubly-linked lists ===
 
 // Having dealt with singly-linked lists, it is time to move on to a more complicated, yet familiar data structure: doubly-linked lists.
 // TODO: explain what dlsegl and dlsegr are and lemmas
@@ -47,7 +47,7 @@ lemma dlsegr_append_left {
   proof:
     unfold dlsegr(z, y, v, x, alpha);
     if (#alpha == nil) {
-      fold dlsegr(x, x, w, w, [], 0);
+      fold dlsegr(x, x, w, w, []);
       fold dlsegr(x, y, v, w, a :: alpha)
     } else {
       assert {bind: #b, #l, #beta} (alpha == #beta @ [#b]) * (v -> #b, y, #l) * dlsegr(z, v, #l, x, #beta);
@@ -116,7 +116,7 @@ lemma dlseg_concat {
     }
 }
 
-// List concatenation
+// List concatenation (MEDIUM)
 { (x_a == #x_a) * (v_a == #v_a) * (x_b == #x_b) * (v_b == #v_b) *
   dlist(#x_a, #v_a, #alpha) * dlist(#x_b, #v_b, #beta) }
 function concat(x_a, v_a, x_b, v_b) {
@@ -133,15 +133,15 @@ function concat(x_a, v_a, x_b, v_b) {
       // [[ fold dlsegl(x_a, null, v_a, null) ]]
     } else {
       // [[ fold dlsegl(x_a, null, v_a, null, #alpha) ]];
-      // [[ apply dlseg_l_to_r(x_a, null, v_a, null, #alpha) ]];
+      [[ apply dlseg_l_to_r(x_a, null, v_a, null, #alpha) ]];
       // [[ unfold dlsegr(x_a, null, v_a, null, #alpha) ]];
       // [[ unfold dlsegl(x_b, null, v_b, null, #beta) ]];
       [v_a + 1] := x_b;
       [x_b + 2] := v_a;
       // [[ fold dlsegr(x_a, x_b, v_a, null, #alpha) ]];
-      // [[ apply dlseg_r_to_l(x_a, x_b, v_a, null, #alpha) ]];
+      [[ apply dlseg_r_to_l(x_a, x_b, v_a, null, #alpha) ]];
       // [[ fold dlsegl(x_b, null, v_b, v_a) ]];
-      // [[ apply dlseg_concat(x_a, v_a, null, #alpha, x_b, null, v_b, #beta) ]];
+      [[ apply dlseg_concat(x_a, v_a, null, #alpha, x_b, null, v_b, #beta) ]];
       [r] := x_a;
       [r+1] := v_b
     }
@@ -151,3 +151,29 @@ function concat(x_a, v_a, x_b, v_b) {
 { (ret -> #h, #t) * dlist(#h, #t, #alpha @ #beta) }
 
 // TODO: Put DLL to SLL function
+
+predicate DLL(+x, +v, alpha : List) {
+  dlsegl(x, null, v, null, alpha)
+}
+
+predicate SLL(+x, alpha : List) {
+    (x == null) * (alpha == nil);
+    (x -> #v, #z) * SLL(#z, #beta) * (alpha == #v::#beta)
+}
+
+{ (x == #x) * (v == #v) * dlsegl(#x, null, #v, null, #xs) }
+function DLL_to_SLL(x, v) {
+  y := null;
+  if(x != null) {
+    y := new(2);
+    t := [x];
+    [y] := t;
+    t := [x + 1];
+    t := DLL_to_SLL(t);
+    [y + 1] := t
+  } else {
+    skip
+  };
+  return y
+}
+{ dlsegl(#x, null, #v, null, #xs) * SLL(ret, #xs) }
