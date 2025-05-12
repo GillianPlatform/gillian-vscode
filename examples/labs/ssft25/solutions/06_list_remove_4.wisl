@@ -1,13 +1,13 @@
 @config manual_fold : true
 
-// ========= Exercise 6.4 : List removal new specification =========
-
+// ========= List removal new specification =========
+//
 // Now, suppose that we want to create a new list without the element k instead of 
 // doing it inplace. 
-
+//
 // Modify the postcondition and the code itself to fit the new specification. 
 // Keep in mind to make the postcondition as strong as possible.
-
+//
 // You may copy and utilize any functions from the previous exercises
 
 predicate list(+x, alpha) {

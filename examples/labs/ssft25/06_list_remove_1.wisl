@@ -1,10 +1,11 @@
 @config manual_fold : true
 
-// ========= Exercise 6.1 : List removal With list membership =========
+// ========= List removal With list membership =========
+//
 // In this exercise, we will be looking at the many ways specifications
 // can be written and iterated upon. 
-
-// Using the list membership predicate, try to verify the following function
+//
+// Using the list membership predicate, try to verify the function list_remove_weak
 
 predicate list(+x, alpha) {
   (x == null) * (alpha == []);

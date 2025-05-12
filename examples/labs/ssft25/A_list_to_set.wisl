@@ -1,14 +1,15 @@
 @config manual_fold : false
 
 // === EXERCISE A : Removing Duplicates ===
+//
 // Having learned everything so far, it is now time to tackle harder problems. One key problem is 
 // transforming a list to a set. In order to do this, one could just make a set list predicate that utilizes
 // the l_member predicate and checks that the tail of the list does not contain the head. This works just fine,
 // but how do we connect the new list to the old list? The contains_all predicate comes in, which takes in two lists and 
 // is denoted as true if and only if the first list is a sub list of the other.
-
+//
 // With these two predicates, and a handful of lemmas, try to make the remove_predicates function verify.
-
+//
 // Bonus challenge: Could you make a stronger postcondition than the one given in remove_duplicates?
 // write it in remove_duplicates_strong and verify it.
 

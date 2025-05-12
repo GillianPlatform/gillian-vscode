@@ -1,8 +1,9 @@
 @config manual_fold : true
 
 // === Dealing with Ifs and Recursion ===
-// Using the same predicate, solve the following functions that deal with recursively going into the list.
-
+// Using the same predicate, verify the functions concat and copy that 
+// deal with recursively going into the list.
+//
 // Note that if we are given a function specification of the form
 //   { P(n) }
 //     f(n) { ...; return r }
@@ -19,7 +20,6 @@ predicate list(+x, alpha) {
     (x -> #v, #z) * list(#z, #beta) * (alpha == #v::#beta)
 }
 
-// TODO: make this admitted/not shown to the user
 { (v == #v) }
 function list_allocate_node(v){
   t := new(2);

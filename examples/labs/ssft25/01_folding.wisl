@@ -1,8 +1,9 @@
 @config manual_fold : true
 
 // === Folding and Unfolding ===
+//
 // Add fold and/or unfold tactics to make this function verify.
-
+//
 // If you are stuck, you can find a hint on the hint folder.
 
 predicate list(+x, alpha) {

@@ -1,6 +1,6 @@
 @config manual_fold : false
 
-// ========= Exercise 6.2 : List removal Auto Mode =========
+// ========= List removal Auto Mode =========
 
 // Now, copy and paste your solution, and see what fold/unfolds you are able to remove.
 // You should be able to see auto mode allows most, if not all, folds/unfolds to be removed.
@@ -17,7 +17,7 @@ predicate l_member(+vs, +v, r : Bool) {
 }
 
 { (x == #x) * (k == #k) * list(#x, #vs) }
-function list_remove_weak(x, k) {
+function list_remove_weak_auto(x, k) {
   if (x == null) {
     skip
   } else {
@@ -25,9 +25,9 @@ function list_remove_weak(x, k) {
     next := [x + 1];
     if (v == k){
       free(x);
-      x := list_remove_weak(next, k)
+      x := list_remove_weak_auto(next, k)
     } else {
-      z := list_remove_weak(next, k);
+      z := list_remove_weak_auto(next, k);
       [x + 1] := z
     }
   };

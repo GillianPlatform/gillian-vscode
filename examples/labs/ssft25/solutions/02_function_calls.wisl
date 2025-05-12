@@ -1,8 +1,9 @@
 @config manual_fold : true
 
 // === Function calls ===
+//
 // As a follow-up from the last exercise, use fold/unfold to make list_prepend verify.
-
+//
 // Function calls work based on the consume/produce paradigm: within the function body,
 // whenever there is a function call to f, the relevant part of the state that matches the 
 // precondition of f is "consumed" -- and the postcondition of f is produced.

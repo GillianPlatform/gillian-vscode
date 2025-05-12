@@ -1,6 +1,7 @@
 @config manual_fold : true
 
 // === Assert tactic ===
+//
 // In this exercise, you will learn one of Gillian's proof tactics: the assert tactic.
 //
 // Sometimes when verifying a function you need to a specific logical condition.

@@ -1,8 +1,9 @@
 @config manual_fold : true
 
 // === Dealing with Ifs and Recursion ===
+//
 // Using the same predicate, solve the following functions that deal with recursively going into the list.
-
+//
 // Note that if we are given a function specification of the form
 //   { P(n) }
 //     f(n) { ...; return r }

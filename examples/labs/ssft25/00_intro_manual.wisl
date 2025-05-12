@@ -1,6 +1,7 @@
 @config manual_fold : true
 
 // === INTRO ===
+//
 // Gillian's predicates are *iso-recursive*, meaning that a predicate is not
 // considered equivalent to its definition, but can be freely *folded*
 // (converted from definition to predicate) and *unfolded* (converted from
@@ -13,7 +14,7 @@
 //   [[ unfold P(x, y) ]];
 //
 // Try adding folds and unfolds to make this function verify!
-
+//
 // If you get stuck with verifing a function, sometimes hints are in the 
 // 'hints' folder
 
