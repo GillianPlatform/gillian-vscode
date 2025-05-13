@@ -3,6 +3,7 @@ body {
   padding: 0;
   background-color: var(--vscode-editor-background);
   color: var(--vscode-editor-foreground);
+  --tooltip-background: var(--vscode-editorWidget-background)
 }
 
 .sedap__nodeWrap {
@@ -42,10 +43,36 @@ body {
     linear-gradient(var(--vscode-editor-background), var(--vscode-editor-background));
 }
 
+[data-sedap-node-highlight="error"] .sedap__node {
+  border-color: var(--vscode-editorError-foreground);
+}
+
+.sedap__nodeWrap[data-sedap-node-highlight="error"] {
+  border-color: var(--vscode-editorError-foreground);
+}
+
 .sedap__nodeText {
   font-family: var(--vscode-editor-font-family);
   text-wrap: nowrap;
+  text-align: center;
+  width: 100%;
+  display: inline-block;
+}
+
+.sedap__nodeWrap .sedap__nodeText {
+  display: inline-block;
+  width: calc(100% - 0.5em);
   text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.sedap__nodeTooltipItem {
+    border-bottom: 1px solid white;
+    padding: 5px;
+}
+
+.sedap__nodeTooltipItem:last-child {
+    border-bottom: none;
 }
 
 .react-flow__edge-textbg {
@@ -64,6 +91,15 @@ body {
   background-color: var(--vscode-editor-background);
 }
 
+.react-flow__controls.minimapControl {
+  padding: 5px;
+}
+
+.react-flow__controls.minimapControl svg {
+  max-width: unset;
+  max-height: unset;
+}
+
 .react-flow__controls-button {
   color: var(--vscode-button-foreground);
   background: var(--vscode-button-background);
@@ -71,6 +107,15 @@ body {
 
 .react-flow__controls-button:hover {
   background: var(--vscode-button-hoverBackground);
+}
+
+.react-flow__controls-button.secondary {
+  color: var(--vscode-button-secondaryForeground);
+  background: var(--vscode-button-secondaryBackground);
+}
+
+.react-flow__controls-button.secondary:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
 }
 
 .react-flow__minimap {

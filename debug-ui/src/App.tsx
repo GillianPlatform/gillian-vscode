@@ -38,13 +38,15 @@ const renderMapTab = (
   name_: string,
   onZoom: OnZoom,
   mapState: MapState<Ext>,
+  minimapVisible: boolean,
+  toggleMinimap: () => void,
   onClose_?: (id: string) => void,
   parentRoot?: MapRoot,
 ): Tab => {
   const rootId = parentRoot?.id || id;
   const name = parentRoot ? `${parentRoot.name} > ${name_}` : name_;
   const { nodes, selectedNodes, onNodeSelected, onNextStepSelected, ext } = mapState;
-  const substs = (ext && ext.substs && ext.substs[rootId]) || [];
+  const substs = (ext && ext.substs && ext.substs[rootId]) || undefined;
   const mapViewProps = {
     nodes,
     substs,
@@ -52,6 +54,8 @@ const renderMapTab = (
     onNodeSelected,
     onNextStepSelected,
     onZoomNode: onZoom(rootId),
+    minimapVisible,
+    toggleMinimap,
   };
   const content = (
     <MapView
@@ -75,6 +79,11 @@ function App() {
   const { roots, nodes } = mapState;
   const [activeTab, setActiveTab] = useState<string | undefined>();
   const [derivedRoots, setDerivedRoots] = useState<DerivedRoots>({});
+
+  const [minimapVisible, setMinimapVisible] = useState(true);
+  const toggleMinimap = useCallback(() => {
+    setMinimapVisible((prev) => !prev);
+  }, []);
 
   useEffect(() => {
     let modified = false;
@@ -146,14 +155,23 @@ function App() {
 
   const tabs: Tab[] = [];
   for (const { id: rootId, name: rootName } of roots) {
-    const tab = renderMapTab(rootId, rootName, onZoomNode, mapState);
+    const tab = renderMapTab(rootId, rootName, onZoomNode, mapState, minimapVisible, toggleMinimap);
     tabs.push(tab);
 
     for (const [derivedId, derivedName] of Object.entries(derivedRoots[rootId] || {})) {
-      const tab = renderMapTab(derivedId, derivedName, onZoomNode, mapState, onTabClose(rootId), {
-        id: rootId,
-        name: rootName,
-      });
+      const tab = renderMapTab(
+        derivedId,
+        derivedName,
+        onZoomNode,
+        mapState,
+        minimapVisible,
+        toggleMinimap,
+        onTabClose(rootId),
+        {
+          id: rootId,
+          name: rootName,
+        },
+      );
       tabs.push(tab);
     }
   }
