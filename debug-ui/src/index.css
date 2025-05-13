@@ -3,7 +3,7 @@ body {
   padding: 0;
   background-color: var(--vscode-editor-background);
   color: var(--vscode-editor-foreground);
-  --tooltip-background: var(--vscode-toolbar-hoverBackground)
+  --tooltip-background: var(--vscode-editorWidget-background)
 }
 
 .sedap__nodeWrap {
@@ -43,9 +43,20 @@ body {
     linear-gradient(var(--vscode-editor-background), var(--vscode-editor-background));
 }
 
+[data-sedap-node-highlight="error"] .sedap__node {
+  border-color: var(--vscode-editorError-foreground);
+}
+
+.sedap__nodeWrap[data-sedap-node-highlight="error"] {
+  border-color: var(--vscode-editorError-foreground);
+}
+
 .sedap__nodeText {
   font-family: var(--vscode-editor-font-family);
   text-wrap: nowrap;
+  text-align: center;
+  width: 100%;
+  display: inline-block;
 }
 
 .sedap__nodeWrap .sedap__nodeText {
@@ -53,7 +64,15 @@ body {
   width: calc(100% - 0.5em);
   text-overflow: ellipsis;
   overflow: hidden;
-  text-align: center;
+}
+
+.sedap__nodeTooltipItem {
+    border-bottom: 1px solid white;
+    padding: 5px;
+}
+
+.sedap__nodeTooltipItem:last-child {
+    border-bottom: none;
 }
 
 .react-flow__edge-textbg {
