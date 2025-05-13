@@ -36,14 +36,14 @@
     "lint-check": "eslint"
   },
   "dependencies": {
-    "@gillianplatform/sedap-vscode-ext": "0.0.2",
+    "@gillianplatform/sedap-vscode-ext": "0.0.3",
     "vscode-languageclient": "^9.0.1"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.4",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.17.0",
-    "@gillianplatform/sedap-types": "0.0.2",
+    "@gillianplatform/sedap-types": "0.0.3",
     "@types/glob": "^7.2.0",
     "@types/node": "22.x",
     "@types/vscode": "^1.96.0",
