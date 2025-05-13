@@ -7,7 +7,7 @@
 // Try to make the function below have a stronger specification, by creating
 // a new predicate that models the relationship between the new list and the old list.
 //
-// A skeleton predicate is provided for you, feel free to modify it.
+// A skeleton predicate named list_pred is provided for you below, feel free to modify it.
 
 predicate list(+x, alpha) {
   (x == null) * (alpha == []);

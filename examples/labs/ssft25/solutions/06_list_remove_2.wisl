@@ -13,7 +13,7 @@ predicate list(+x, vs) {
 predicate l_member(+vs, +v, r : Bool) {
   (vs == []) * (r == false);
   (vs == v :: #ws) * (r == true) * l_member(#ws, v, #mem);
-  (vs == #v :: #ws) * (!(#v == v)) * l_member(#ws, v, r)
+  (vs == #v :: #ws) * (#v != v) * l_member(#ws, v, r)
 }
 
 { (x == #x) * (k == #k) * list(#x, #vs) }

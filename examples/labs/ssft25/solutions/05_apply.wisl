@@ -1,6 +1,6 @@
 @config manual_fold : true
 
-// === Apply tactic ===
+// === Apply Lemma tactic ===
 //
 // In this exercise, we will go through the final tactic you will need: the apply tactic.
 //
@@ -9,7 +9,7 @@
 //
 // Lemmas have the following structure: 
 //
-//     lemma {lemma name} {
+//     lemma {lemma-name} {
 //       statement:
 //         forall param_1, param_2, ..., param_n.
 //            {premises} |- {conclusion}
@@ -17,7 +17,7 @@
 //
 // And the apply tactic is as follows: 
 //
-//     [[ apply {lemma name}(param_1, param_2, ..., param_n) ]]. 
+//     [[ apply {lemma-name}(param_1, param_2, ..., param_n) ]]. 
 //
 // The apply tactic will succeed when all premises do in fact hold and are in your proof state. The lemma
 // will consume your premises and produce the conclusion on your proof state.

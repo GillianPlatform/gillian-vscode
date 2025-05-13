@@ -1,10 +1,11 @@
 @config manual_fold : true
+
 // === EXERCISE D : binary search trees ===
 // 
 // In this exercise, we go through a more intewsing
 // data structure. In particular, we go through a
 // binary search tree.
-
+//
 // The binary search tree comprises a number of
 // components:
 //   1. key (which is an Int value for this exercise)
@@ -14,7 +15,7 @@
 // and all keys in the right subtree must be greater than
 // the key. This wsriction implies there are no 
 // duplicate keys in any given binary search tree.
-
+//
 // === PREDICATES ===
 //
 // Before setting up the binary search tree
@@ -28,11 +29,6 @@
 // There are many ways to express this property -- but
 // for this exercise, we will express these using
 // lists.  
-
-// TODO: Remove this and introduce a pure predicate instead
-predicate isInt(v : Int) {
-  emp
-}
 
 // We have the list_member predicate, which should be
 // familiar from the singly-linked list exercises.
@@ -318,7 +314,7 @@ lemma list_member_lt {
 //     SLLAlocateNode, but it will be more
 //     involved due to the fact that there
 //     are more predicates you need to fold.
-{ (v == #v) * isInt(v) }
+{ (v == #v) * (v : Int) }
 function BSTAllocateLeaf(v) {
   t := new(3);
   [t] := v;
@@ -368,7 +364,7 @@ function BSTCopy(x) {
 { bst(#x, #vs) * bst(ret, #vs) }
 
 // 02. Searching for a value in a BST (MEDIUM)
-{ (x == #x) * (a == #a) * bst(#x, #vs) * isInt(a) }
+{ (x == #x) * (a == #a) * bst(#x, #vs) * a : Int }
 function BSTSearch(x, a) {
   r := false;
   [[ unfold bst(#x, #vs) ]];

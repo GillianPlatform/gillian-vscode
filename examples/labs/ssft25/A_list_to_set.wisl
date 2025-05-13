@@ -38,40 +38,12 @@ lemma list_member_create {
   statement:
     forall x, k, vs.
       list(x, vs) |- list(x, vs) * l_member(vs, k, #r)
-  proof:
-    unfold list(x, vs);
-    if (x == null) {
-      fold list(x, vs);
-      fold l_member(vs, k, false)
-    } else {
-      assert {bind: #v, #beta} (#vs == #v :: #beta) * (x -> #v, #z);
-      apply list_member_create(#z, k, #beta);
-      if (#v == k) {
-        fold l_member(vs, k, true)
-      } else {
-        fold l_member(vs, k, #r)
-      }
-    }
 }
 
 lemma set_list_member_create {
   statement:
     forall x, k, vs.
       set_list(x, vs) |- set_list(x, vs) * l_member(vs, k, #r)
-  proof:
-    unfold set_list(x, vs);
-    if (x == null) {
-      fold set_list(x, vs);
-      fold l_member(vs, k, false)
-    } else {
-      assert {bind: #v, #beta} (#vs == #v :: #beta) * (x -> #v, #z);
-      apply set_list_member_create(#z, k, #beta);
-      if (#v == k) {
-        fold l_member(vs, k, true)
-      } else {
-        fold l_member(vs, k, #r)
-      }
-    }
 }
 
 lemma list_member_duplicate {
@@ -84,23 +56,12 @@ lemma list_member_true {
   statement:
     forall vs, k, v.
       l_member(vs, k, true) |- l_member(v :: vs, k, true)
-  proof:
-    if (v == k) {} else {};
-    fold l_member(v :: vs, k, true)
 }
 
 lemma contains_all_prepend {
   statement:
     forall xs, vs, v.
       contains_all(xs, vs) |- contains_all(xs, v :: vs) 
-  proof:
-    if (xs != []) {
-      unfold contains_all(xs, vs);
-      assert {bind: #xss, #x} (xs == #x :: #xss);
-      apply contains_all_prepend(#xss, vs, v);
-      apply list_member_true(vs, #x, v);
-      fold contains_all(xs, v :: vs)
-    }
 }
 
 { (v == #v) }

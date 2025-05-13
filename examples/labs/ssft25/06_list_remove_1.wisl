@@ -20,10 +20,8 @@ predicate l_member(+vs, +v, r : Bool) {
 
 { (x == #x) * (k == #k) * list(#x, #vs) }
 function list_remove_weak(x, k) {
-  [[ unfold list(x, #vs) ]];
   if (x == null) {
-    [[ fold list(x, #vs) ]];
-    [[ fold l_member([], #k, false) ]]
+    skip
   } else {
     v := [x];
     next := [x + 1];
@@ -33,9 +31,6 @@ function list_remove_weak(x, k) {
     } else {
       z := list_remove_weak(next, k);
       [x + 1] := z;
-      [[ assert {bind: #zs} list(z, #zs) ]];
-      [[ fold list(x, (v :: #zs)) ]];
-      [[ fold l_member((v :: #zs), #k, false) ]]
     }
   };
   return x

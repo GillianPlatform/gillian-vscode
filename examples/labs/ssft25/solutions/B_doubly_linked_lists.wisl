@@ -1,9 +1,10 @@
 @config manual_fold : false
-// === Exercise B : doubly-linked lists ===
 
+// === Exercise B : doubly-linked lists ===
+//
 // Having dealt with singly-linked lists, it is time to move on to a 
 // more complicated, yet familiar data structure: doubly-linked lists.
-
+//
 // A node in a doubly-linked list contains references to the next
 // and previous nodes. In this formalisation, we represent
 // a node as follows: a node is a ternary cell of the form
@@ -11,7 +12,7 @@
 // - v is the value of the node
 // - n is a reference to the next node
 // - p is a reference to the previous node
-
+//
 // Before writing the doubly-linked list predicate, we will first
 // write predicates for representing segments of a doubly-linked list.
 // The segment of a doubly-linked list only represents a part of the

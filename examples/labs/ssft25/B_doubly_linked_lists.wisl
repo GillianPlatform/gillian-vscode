@@ -44,17 +44,6 @@ lemma dlsegl_append_right {
       dlsegl(x, v, z, w, alpha) * (v -> a, y, z) |- dlsegl(x, y, v, w, alpha @ [ a ])
 
   variant: len alpha
-
-  proof:
-    unfold dlsegl(x, v, z, w, alpha);
-    if (alpha == nil) {
-      fold dlsegl(y, y, v, v, []);
-      fold dlsegl(x, y, v, w, a :: alpha)
-    } else {
-      assert {bind: #b, #l, #beta} (alpha == #b :: #beta) * (x -> #b, #l, w) * dlsegl(#l, v, z, x, #beta);
-      apply dlsegl_append_right(#l, v, z, x, #beta, a, y);
-      fold dlsegl(x, y, v, w, alpha @ [ a ])
-    }
 }
 
 // Similarly, for dlsegr, it would be helpful if we could prepend a node to the start
@@ -65,17 +54,6 @@ lemma dlsegr_append_left {
       (x -> a, z, w) * dlsegr(z, y, v, x, alpha) |- dlsegr(x, y, v, w, a :: alpha)
 
   variant: len alpha
-
-  proof:
-    unfold dlsegr(z, y, v, x, alpha);
-    if (#alpha == nil) {
-      fold dlsegr(x, x, w, w, []);
-      fold dlsegr(x, y, v, w, a :: alpha)
-    } else {
-      assert {bind: #b, #l, #beta} (alpha == #beta @ [#b]) * (v -> #b, y, #l) * dlsegr(z, v, #l, x, #beta);
-      apply dlsegr_append_left(x, a, z, w, v, #l, #beta);
-      fold dlsegr(x, y, v, w, a :: alpha)
-    }
 }
 
 // Note that dlsegl(x, y, v, w alpha) and dlsegr(x, y, v, w, alpha)
@@ -87,16 +65,6 @@ lemma dlseg_l_to_r {
       dlsegl(x, y, v, w, alpha) |- dlsegr(x, y, v, w, alpha)
 
   variant: len alpha
-
-  proof:
-    unfold dlsegl(x, y, v, w, alpha);
-    if (alpha == nil) {
-      fold dlsegr(x, y, v, w, alpha)
-    } else {
-      assert {bind: #a, #z, #beta} (x -> #a, #z, w) * dlsegl(#z, y, v, x, #beta);
-      apply dlseg_l_to_r(#z, y, v, x, #beta);
-      apply dlsegr_append_left(x, #a, #z, w, y, v, #beta)
-    }
 }
 
 // The same property holds vice-versa.
@@ -106,16 +74,6 @@ lemma dlseg_r_to_l {
       dlsegr(x, y, v, w, alpha) |- dlsegl(x, y, v, w, alpha)
 
   variant: len alpha
-
-  proof:
-    unfold dlsegr(x, y, v, w, alpha);
-    if (alpha == nil) {
-      fold dlsegl(x, y, v, w, alpha)
-    } else {
-      assert {bind: #a, #z, #beta} (v -b> #a, y, #z) * dlsegr(x, v, #z, w, #beta);
-      apply dlseg_r_to_l(x, v, #z, w, #beta);
-      apply dlsegl_append_right(x, v, #z, w, #beta, #a, y)
-    }
 }
 
 // Finally, we represent the doubly-linked list predicate.

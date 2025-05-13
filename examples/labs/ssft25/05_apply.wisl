@@ -1,6 +1,6 @@
 @config manual_fold : true
 
-// === Apply tactic ===
+// === Apply Lemma tactic ===
 //
 // In this exercise, we will go through the final tactic you will need: the apply tactic.
 //
@@ -9,7 +9,7 @@
 //
 // Lemmas have the following structure: 
 //
-//     lemma {lemma name} {
+//     lemma {lemma-name} {
 //       statement:
 //         forall param_1, param_2, ..., param_n.
 //            {premises} |- {conclusion}
@@ -17,7 +17,7 @@
 //
 // And the apply tactic is as follows: 
 //
-//     [[ apply {lemma name}(param_1, param_2, ..., param_n) ]]. 
+//     [[ apply {lemma-name}(param_1, param_2, ..., param_n) ]]. 
 //
 // The apply tactic will succeed when all premises do in fact hold and are in your proof state. The lemma
 // will consume your premises and produce the conclusion on your proof state.
@@ -66,11 +66,6 @@ lemma search_not_null {
   statement:
     forall x, vs, i, r.
       list(x, vs) * list_search(vs, i, r) * (i != 0) |- list(x, vs) * list_search(vs, i, r) * (x != null)
-  proof:
-    unfold list_search(vs, i, r);
-    unfold list(x, #vs);
-    fold list(x, #vs);
-    fold list_search(#vs, #i, #r)
 }
 
 { (x == #x) * (i == #i) * (x != null) * list(x, #vs) * list_search(#vs, #i, #r) }
@@ -97,20 +92,6 @@ lemma list_member_create {
   statement:
     forall x, k, vs.
       list(x, vs) |- list(x, vs) * l_member(vs, k, #r)
-  proof:
-    unfold list(x, vs);
-    if (x == null) {
-      fold list(x, vs);
-      fold l_member(vs, k, false)
-    } else {
-      assert {bind: #v, #beta} (#vs == #v :: #beta) * (x -> #v, #z);
-      apply list_member_create(#z, k, #beta);
-      if (#v == k) {
-        fold l_member(vs, k, true)
-      } else {
-        fold l_member(vs, k, #r)
-      }
-    }
 }
 
 { (x == #x) * (k == #k) * list(#x, #vs) }

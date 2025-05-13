@@ -18,7 +18,7 @@
 
 // To give a small example, say we have unfolded the list and know that it is not empty.
 // Gillian will naturally generate some logical variables for #v and #z, and #beta (from the list predicate).
-// It will generally be of the form "lvar_{some number}". But how do we reference these logical variables?
+// It will generally be of the form "#lvar_{some-number}". But how do we reference these logical variables?
 // This is where the "bind" part comes in! We can apply the following assert tactic:
 // [[ assert {bind: #v, #beta, #z} (x -> #v, #z) * list(#z, #beta) ]]
 //
@@ -42,7 +42,7 @@ function list_pop(x) {
   [r + 1] := z;
   return r
 }
-{ list(#z, #vs) * (ret == #r) * #r -b> #k, #z }
+{ list(#nz, #vs) * ret -b> #k, #nz }
 
 predicate list(+x, alpha) {
     (x == null) * (alpha == nil);
@@ -76,13 +76,18 @@ function list_reverse(x){
 }
 { list(ret, rev #vs) }
 
-predicate min(+alpha, v : Int) {
-  (alpha == [v]);
-  (alpha == #v :: #vs) * (v < #v) * min(#vs, v);
-  (alpha == #v :: #vs) * (#v <= #min) * min(#vs, #min) * (v == #v)
+predicate intlist(+x, vs) {
+    (x == null) * (vs == nil);
+    (x -> #v, #z) * (#v : Int) * intlist(#z, #vss) * (vs == #v::#vss)
 }
 
-{ (x == #x) * (x != null) * list(x, #alpha) }
+predicate min(+vs, v : Int) {
+  (vs == [v]);
+  (vs == #v :: #vs) * (v < #v) * min(#vs, v);
+  (vs == #v :: #vs) * (#v <= #min) * min(#vs, #min) * (v == #v)
+}
+
+{ (x == #x) * (x != null) * intlist(x, #vs) }
 function find_min(x) {
   val := [x];
   next := [x + 1];
@@ -98,4 +103,4 @@ function find_min(x) {
   };
   return r
 }
-{ list(#x, #alpha) * min(#alpha, #r) * (ret == #r)}
+{ intlist(#x, #vs) * min(#vs, #r) * (ret == #r) }

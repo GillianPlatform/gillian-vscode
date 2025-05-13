@@ -116,49 +116,18 @@ lemma list_member_prepend_neq {
   statement:
     forall vs, k, v.
       list_member(vs, v, #r) * (k != v) |- list_member(k::vs, v, #r)
-
-  proof:
-    if(#vs == []) {
-      unfold list_member(#vs, #v, #r)
-    } else {
-      unfold list_member(#vs, #v, #r);
-      assert {bind: #u, #vss} (#vs == #u::#vss);
-      fold list_member(#vs, #v, #r);
-      apply list_member_prepend_neq(#vs, #k, #v)
-    } 
 }
 
 lemma list_member_concat {
   statement:
     forall vs1, vs2, v.
       list_member(vs1, v, true) |- list_member(vs1 @ vs2, v, true)
-
-  proof:
-    if(vs2 != []) {
-      assert {bind: #v2, #vss2} (#vs2 == #v2::#vss2);
-      apply list_member_concat(#vs1, [#v2], #v);
-      apply list_member_concat(#vs1@[#v2], #vss2, #v)
-    }
 }
 
 lemma list_member_concat_gen {
   statement:
     forall vs1, vs2, v.
       list_member(vs1, v, #r1) * list_member(vs2, v, #r2) |- list_member(vs1 @ vs2, v, (#r1 || #r2))
-
-  proof:
-    if (#vs1 != []) {
-      assert {bind: #nv1, #nvs1} (#vs1 == #nv1 :: #nvs1);
-      if(#nv1==#v) {
-        fold list_member([#v], #v, true);
-        apply list_member_concat([#v], #nvs1, #v);
-        apply list_member_concat_gen(#vs1, #vs2, #v)
-      } else {
-        assert {bind: #nv1, #nvs1, #nr1} (#vs1 == #nv1 :: #nvs1) * list_member(#nvs1, #v, #nr1);
-        apply list_member_concat_gen(#nvs1, #vs2, v);
-        fold list_member(#vs1@vs2, #v, (#nr1 || #r2))
-      }
-    }
 }
 
 // Note: lemmas with emp as an assumption essentially
@@ -167,71 +136,36 @@ lemma list_member_front_helper {
   statement:
     forall v, vs.
       emp |- list_member(v::vs, v, true)
-
-  proof:
-    unfold list_member(v::vs, v, true)
 }
 
 lemma list_member_mid {
   statement:
     forall v, vsl, vsr.
       emp |- list_member(vsl @ [v] @ vsr, v, true)
-
-  proof:
-    if (#vsl == []) {
-       apply list_member_front_helper(#v, #vsr)
-     } else {
-       apply list_member_mid(#v, #vsl, #vsr)
-     }
 }
 
 lemma min_merge {
   statement:
     forall min, vsl, vsr.
       list_min(vsl, min) * list_lt(vsr, min) |- list_min(vsl@vsr, min) * list_lt(vsr, min)
-  proof:
-    if(vsr != []) {
-      unfold list_lt(#vsr, #min);
-      assert {bind: #vr, #vssr} (#vsr == #vr::#vssr) * list_lt(#vssr, #min);
-      fold list_lt([], #min);
-      fold list_lt([#vr], #min);
-      apply min_merge(#min, #vsl, [#vr]);
-      apply min_merge(#min, #vsl@[#vr], #vssr);
-      fold list_lt(#vsr, #min)
-    } 
 }
 
 lemma min_merge_k {
   statement:
     forall min, k, vsl, vsr.
       list_min(vsl@[k], min) * list_lt(vsr, k) |- list_min(vsl@[k]@vsr, min) * list_lt(vsr, k)
-  proof:
-    if(vsl == []) {
-      apply min_merge_k(#min, #k, [], #vsr)
-    } else {
-      unfold list_min(#vsl@[#k], #min);
-      assert {bind: #vl, #vssl} (#vsl == #vl::#vssl);
-      apply min_merge_k(#min, #k, #vssl, #vsr);
-      fold list_min(#vsl@[#k]@#vsr, #min)
-    }
 }
 
 lemma min_gt_append {
   statement:
     forall min, k, vs.
       list_min(vs, min) * list_gt(vs, k) * (vs != []) |- list_min(vs @ [k], min) * list_gt(vs, k)
-  proof:
-    if(#vs != []) {
-      apply min_gt_append(#min, #k, #vs)
-    }
 }
 
 lemma min_include {
   statement:
     forall k, vs.
       list_min(vs, k) |- list_min(k::vs, k)
-    proof:
-      if(true) {}
 }
 
 // Note: pure predicates can be duplicated -- you may
@@ -242,74 +176,36 @@ lemma min_duplicate {
   statement:
     forall vs, k.
       list_min(vs, k) |- list_min(vs, k) * list_min(vs, k)
-  proof:
-    unfold list_min(vs, k);
-    if(vs != []) {
-      assert {bind: #v, #vss} (vs == #v::#vss) * list_min(#vss, k);
-      apply min_duplicate(#vss, k)
-  }
 }
 
 lemma lt_duplicate {
   statement:
     forall vs, k.
       list_lt(vs, k) |- list_lt(vs, k) * list_lt(vs, k)
-  proof:
-    unfold list_lt(vs, k);
-    if(vs != []) {
-      assert {bind: #v, #vss} (vs == #v::#vss) * list_lt(#vss, k);
-      apply lt_duplicate(#vss, k)
-  }
 }
 
 lemma gt_duplicate {
   statement:
     forall vs, k.
       list_gt(vs, k) |- list_gt(vs, k) * list_gt(vs, k)
-  proof:
-    unfold list_gt(vs, k);
-    if(vs != []) {
-      assert {bind: #v, #vss} (vs == #v::#vss) * list_gt(#vss, k);
-      apply gt_duplicate(#vss, k)
-  }
 }
 
 lemma member_duplicate {
   statement:
     forall vs, k, r.
       list_member(vs, k, r) |- list_member(vs, k, r) * list_member(vs, k, r)
-  proof:
-    unfold list_member(#vs, #k, #r);
-    if (#vs != []) {
-      assert {bind: #v, #vss} (#vs == #v::#vss);
-      if (#v != #k) {
-        apply member_duplicate(#vss, #k, #r)
-      }
-    }
 }
 
 lemma list_member_gt {
   statement:
     forall a, k, vs.
       (k < a) * list_gt(vs, k) |- list_member(vs, a, false) * list_gt(vs, k)
-  proof:
-    if(vs != []) {
-      assert {bind: #v, #vss} (#vs == #v::#vss);
-      unfold list_gt(#v::#vss, #k);
-      apply list_member_gt(#a, #k, #vss)
-    }
 }
 
 lemma list_member_lt {
   statement:
     forall a, k, vs.
       (a < k) * list_lt(vs, k) |- list_member(vs, a, false) * list_lt(vs, k)
-  proof:
-    if(vs != []) {
-      assert {bind: #v, #vss} (#vs == #v::#vss);
-      unfold list_lt(#v::#vss, #k);
-      apply list_member_lt(#a, #k, #vss)
-    }
 }
 
 

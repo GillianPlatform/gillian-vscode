@@ -2,12 +2,12 @@
 
 // ========= List removal Stronger postcondition =========
 //
-// Notice that the postcondition of the function above is weak: we could 
+// Notice that the postcondition of the function in the previous exercise is weak: we could 
 // potentially just return any list, as long as it does not have the element k.
 // Try to make the function below have a stronger specification, by creating
 // a new predicate that models the relationship between the new list and the old list.
 //
-// A skeleton predicate is provided for you, feel free to modify it.
+// A skeleton predicate is provided for you below, feel free to modify it.
 
 predicate list(+x, vs) {
   (x == null) * (vs == []);
