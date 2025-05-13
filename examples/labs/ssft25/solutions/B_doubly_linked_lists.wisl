@@ -182,29 +182,3 @@ function concat(x_a, v_a, x_b, v_b) {
   return r
 }
 { (ret -> #h, #t) * dlist(#h, #t, #vs @ #vss) }
-
-predicate list(+x, vs) {
-  (x == null) * (vs == []);
-  (x -b> #v, #z) * list(#z, #vss) * (vs == #v :: #vss)
-}
-
-// TODO
-{ (x == #x) * (v == #v) * dlist(#x, #v, #vs) }
-function DLL_to_SLL(x, v) {
-  r := null;
-  if(x != null) {
-    r := new(2);
-    t := [x];
-    [r] := t;
-    t := [x + 1];
-    [[ fold dlsegl(#x, null, #v, null, #vs) ]];
-    [[ fold dlist(#x, #v, #vs)]];
-    t := DLL_to_SLL(t, v);
-    [r + 1] := t;
-    skip
-  } else {
-    skip
-  };
-  return r
-}
-{ dlist(#x, #v, #vs) * list(ret, #vs) }

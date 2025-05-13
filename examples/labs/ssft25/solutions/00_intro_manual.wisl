@@ -2,10 +2,33 @@
 
 // === INTRO ===
 //
-// Gillian's predicates are *iso-recursive*, meaning that a predicate is not
-// considered equivalent to its definition, but can be freely *folded*
-// (converted from definition to predicate) and *unfolded* (converted from
-// predicate to definition) in one step.
+// In Gillian, predicates are assertions and can be defined recursively.
+// The body of the predicate may comprise many cases, which are separated
+// by semicolons (;).
+//
+// One can 'unfold' predicates to expose the body of the predicate. Also,
+// if part of the state matches one of the cases of the predicate, then
+// one can also 'fold' the predicate. 
+// e.g. 
+//
+// predicate foo(p1, p2, ..., po) {
+//   P_1 * P_2 * ... * P_n;
+//   Q_1 * Q_2 * ... * Q_m
+// }
+//
+// If we are given the current state as follows:
+// { A * (P_1 * P_2 * ... * P_n) * B * C }
+// ...then part of the state corresponds to the first case of foo, thus,
+// one can fold the predicate and obtain the following state:
+// { A * foo(x1, x2, ..., xo) * B * C }
+//
+// For unfolding, if we are given the current state
+// { A * foo(x1, x2, ..., xo) * B * C }
+// ...then unfolding generates two branches, one with the following state:
+// { A * (P_1 * P_2 * ... * P_n) * B * C }
+// ...and the other with the following state:
+// { A * (Q_1 * Q_2 * ... * Q_m) * B * C }
+//
 // Normally, in most cases, Gillian can automatically fold and unfold as needed.
 // For clarity, however, this automatic fold/unfold has been disabled for some
 // exercises (including this one). You'll have to add these tactics yourself!
@@ -18,14 +41,14 @@
 // If you get stuck with verifing a function, sometimes hints are in the 
 // 'hints' folder
 
-predicate list(+x, vs) {
-    (x == null) * (vs == nil);
-    (x -> #v, #z) * list(#z, #vss) * (vs == #v::#vss)
+predicate list(+x, alpha) {
+    (x == null) * (alpha == nil);
+    (x -> #v, #z) * list(#z, #beta) * (alpha == #v::#beta)
 }
 
-{ (x == #x) * list(#x, #vs) }
+{ (x == #x) * list(#x, #alpha) }
 function llen(x) {
-    // [[ unfold list(#x, #vs) ]];
+    // [[ unfold list(#x, #alpha) ]];
     if (x == null) {
         n := 0
     } else {
@@ -33,7 +56,7 @@ function llen(x) {
         n := llen(t);
         n := n + 1
     };
-    // [[ fold list(#x, #vs) ]];
+    // [[ fold list(#x, #alpha) ]];
     return n
 }
-{ list(#x, #vs) * (ret == len(#vs)) }
+{ list(#x, #alpha) * (ret == len(#alpha)) }
