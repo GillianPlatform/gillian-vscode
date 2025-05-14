@@ -1,11 +1,13 @@
-@config manual_fold : true
-
-// ========= List removal With list membership =========
+// ========== 06a - List removal ==========
 //
-// In this exercise, we will be looking at the many ways specifications
+// In group of exercises, we will be looking at the many ways specifications
 // can be written and iterated upon. 
 //
 // Using the list membership predicate, try to verify the following function.
+
+// === DON'T EDIT THIS ===
+
+@config manual_fold : true
 
 predicate list(+x, vs) {
   (x == null) * (vs == []);
@@ -17,6 +19,8 @@ predicate l_member(+vs, +v, r : Bool) {
   (vs == v :: #ws) * (r == true) * l_member(#ws, v, #mem);
   (vs == #v :: #ws) * (#v != v) * l_member(#ws, v, r)
 }
+
+// === EDIT BELOW HERE ===
 
 { (x == #x) * (k == #k) * list(#x, #vs) }
 function list_remove_weak(x, k) {
@@ -42,4 +46,3 @@ function list_remove_weak(x, k) {
   return x
 }
 { list(ret, #nvs) * l_member(#nvs, #k, false) }
-

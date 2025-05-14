@@ -1,9 +1,13 @@
+// ========== 06b - Auto mode ==========
+//
+// From now on, we're re-enabling Gillian's automatic folding and unfolding!
+//
+// Copy your solution from the previous exercise and paste it down below, and
+// see which tactics you can remove while still passing verification.
+
+// === DON'T EDIT THIS ===
+
 @config manual_fold : false
-
-// ========= List-removal: auto Mode =========
-
-// Now, copy and paste your solution, and see what fold/unfolds you are able to remove.
-// You should be able to see auto mode allows most, if not all, folds/unfolds to be removed.
 
 predicate list(+x, vs) {
   (x == null) * (vs == []);
@@ -16,8 +20,10 @@ predicate l_member(+vs, +v, r : Bool) {
   (vs == #v :: #ws) * (#v != v) * l_member(#ws, v, r)
 }
 
+// === EDIT BELOW HERE ===
+
 { (x == #x) * (k == #k) * list(#x, #vs) }
-function list_remove_weak_auto(x, k) {
+function list_remove_weak(x, k) {
   //-if (x == null) {
   //-  skip
   //-} else {
@@ -25,9 +31,9 @@ function list_remove_weak_auto(x, k) {
   //-  next := [x + 1];
   //-  if (v == k){
   //-    free(x);
-  //-    x := list_remove_weak_auto(next, k)
+  //-    x := list_remove_weak(next, k)
   //-  } else {
-  //-    z := list_remove_weak_auto(next, k);
+  //-    z := list_remove_weak(next, k);
   //-    [x + 1] := z
   //-};
   //+// Paste your solution from the previous exercise here!
