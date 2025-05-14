@@ -268,6 +268,14 @@ function BSTCopy(x) {
     t := BSTCopy(t);
     [y + 2] := t;
     //+// Hints 1 & 2 may help here
+    //?? Note that folding the bst predicate consumes
+    //? the pure predicates. To ensure we can also
+    //? fold the copied binary search tree, we need
+    //? to duplicate the remaining pure predicates.
+    //?? To duplicate the pure predicates, we need to
+    //? be able to refer to the logical variables.
+    //? The [[ assert {bind: ...} ... ]] tactic will
+    //? come in handy.
     //-[[ apply lt_duplicate(#vsr, #k) ]];
     //-[[ apply gt_duplicate(#vsl, #k) ]];
     //-[[ apply member_duplicate(#vsl, #k, false) ]];
@@ -287,6 +295,9 @@ function BSTSearch(x, a) {
   [[ unfold bst(#x, #vs) ]];
   if(x != null) {
     //+// Hint 3 may help here
+    //?? You may find the [[ assert {bind: ... } ]]
+    //? tactic helpful to label the logical 
+    //? variables.
     //-[[ assert {bind: #k, #kl, #kr, #vsl, #vsr} (x -b> #k, #kl, #kr) *
     //-         bst(#kl, #vsl) * bst(#kr, #vsr) *
     //-         list_gt(#vsl, #k) * list_lt(#vsr, #k) *
@@ -294,16 +305,24 @@ function BSTSearch(x, a) {
     t := [x];
     if(a == t) {
       //+// Hint 4 may help here
+      //?? Consider how the #vs looks at this point.
+      //? What can you say about t ∈ #vs?
       //-[[ apply list_member_mid(a, #vsl, #vsr) ]];
       r := true
     } else {
       if(a < t) {
         //+// Hint 5 may help here
+	//?? if a < t and list_lt(vs, t), what does this
+        //? say about a ∈ vs? Like what about the case
+        //? where a > t and list_gt(vs, t)?
         //-[[ apply list_member_lt(#a, #k, #vsr) ]];
         t := [x + 1];
         r := BSTSearch(t, a)
       } else {
-        // Hint 5 may help here
+        //+// Hint 5 may help here
+	//?? if a < t and list_lt(vs, t), what does this
+        //? say about a ∈ vs? Like what about the case
+        //? where a > t and list_gt(vs, t)?
         //-[[ apply list_member_gt(#a, #k, #vsl) ]];
         t := [x + 2];
         r := BSTSearch(t, a)
@@ -328,6 +347,9 @@ function BSTSearch(x, a) {
 { (x == #x) * (#x != null) * bst(#x, #vs) }
 function BSTFindMin(x) {
   //+// Hint 6 may help here
+  //?? You may find the [[ assert {bind: ... } ]]
+  //? tactic helpful to label the logical 
+  //? variables.
   //-[[ assert {bind: #k, #kl, #kr, #vsl, #vsr} (x -b> #k, #kl, #kr) *
   //-        bst(#kl, #vsl) * bst(#kr, #vsr) *
   //-        list_gt(#vsl, #k) * list_lt(#vsr, #k) *
@@ -336,12 +358,30 @@ function BSTFindMin(x) {
   if (l == null) {
     //-[[ apply min_include(#k, #vsl) ]];
     min := [x];
-    //+// Hint 2 may help here
+    //+// Hint 7 may help here
+    //?? x <= x1 for all x1 ∈ S1 /\ 
+    //? x <  x2 for all x2 ∈ S2 ==> 
+    //? x <= x3 for all x3 ∈ S1 ∪ S2
     //-[[ apply min_merge(#k, #k::#vsl, #vsr) ]];
     //-[[ apply list_member_concat(#k::#vsl, #vsr, #k) ]]
   } else {
     min := BSTFindMin(l);
-    //+// Hint 3, 4
+    //+// Hint 8, 9 may help here
+    //?? Currently, the structure of the tree at this
+    //? state is as follows:
+    //?     #k
+    //?    /  \
+    //?   l    r
+    //? ...where l != null, and #vsl is the list
+    //? of elements in the subtree pointed by l.
+    //? The recursive call to BSTFindMin(l) returns
+    //? list_member(#vsl, min, true) and 
+    //? list_min(#vsl, min). What now remains
+    //? is to show how min relates to #k and
+    //? and the keys in the subtree pointed by r.
+    //?? min <= s for all s ∈ S /\ 
+    //? k >  s for all s ∈ S ==>
+    //? min <= s for all s ∈ {k} ∪ S 
     //-[[ apply min_gt_append(min, #k, #vsl) ]];
     //-[[ apply min_merge_k(min, #k, #vsl, #vsr) ]];
     //-[[ apply list_member_concat_gen(#vsl, [#k], min)]];
