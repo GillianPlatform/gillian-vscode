@@ -5,23 +5,25 @@
 // In this exercise, we will be looking at the many ways specifications
 // can be written and iterated upon. 
 //
-// Using the list membership predicate, try to verify the function list_remove_weak
+// Using the list membership predicate, try to verify the following function.
 
-predicate list(+x, alpha) {
-  (x == null) * (alpha == []);
-  (x -b> #v, #z) * list(#z, #beta) * (alpha == #v :: #beta)
+predicate list(+x, vs) {
+  (x == null) * (vs == []);
+  (x -b> #v, #z) * list(#z, #vss) * (vs == #v :: #vss)
 }
 
 predicate l_member(+vs, +v, r : Bool) {
   (vs == []) * (r == false);
-  (vs == v :: #rest) * (r == true) * l_member(#rest, v, #mem);
-  (vs == #v :: #rest) * (!(#v == v)) * l_member(#rest, v, r)
+  (vs == v :: #ws) * (r == true) * l_member(#ws, v, #mem);
+  (vs == #v :: #ws) * (#v != v) * l_member(#ws, v, r)
 }
 
 { (x == #x) * (k == #k) * list(#x, #vs) }
 function list_remove_weak(x, k) {
+  //-[[ unfold list(x, #vs) ]];
   if (x == null) {
-    skip
+    //-[[ fold list(x, #vs) ]];
+    //-[[ fold l_member([], #k, false) ]]
   } else {
     v := [x];
     next := [x + 1];
@@ -30,7 +32,11 @@ function list_remove_weak(x, k) {
       x := list_remove_weak(next, k)
     } else {
       z := list_remove_weak(next, k);
-      [x + 1] := z;
+      //+[x + 1] := z
+      //-[x + 1] := z;
+      //-[[ assert {bind: #zs} list(z, #zs) ]];
+      //-[[ fold list(x, (v :: #zs)) ]];
+      //-[[ fold l_member((v :: #zs), #k, false) ]]
     }
   };
   return x

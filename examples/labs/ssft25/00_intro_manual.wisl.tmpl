@@ -48,7 +48,7 @@ predicate list(+x, vs) {
 
 { (x == #x) * list(#x, #vs) }
 function llen(x) {
-    // [[ unfold list(#x, #vs) ]];
+    //-[[ unfold list(#x, #vs) ]];
     if (x == null) {
         n := 0
     } else {
@@ -56,7 +56,7 @@ function llen(x) {
         n := llen(t);
         n := n + 1
     };
-    // [[ fold list(#x, #vs) ]];
+    //-[[ fold list(#x, #vs) ]];
     return n
 }
 { list(#x, #vs) * (ret == len(#vs)) }

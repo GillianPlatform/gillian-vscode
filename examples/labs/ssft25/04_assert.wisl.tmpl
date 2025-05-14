@@ -51,14 +51,14 @@ predicate list(+x, vs) {
 
 {(x == #x) * (y == #y) * list(#x, #xs) * list(#y, #ys) }
 function list_concat(x, y) {
-  [[ unfold list(x, #xs) ]];
+  //-[[ unfold list(x, #xs) ]];
   if (x == null){
     x := y
   } else {
     t := [x + 1];
     z := list_concat(t, y);
     [x + 1] := z;
-    [[ fold list(x, #xs @ #ys) ]]
+    //-[[ fold list(x, #xs @ #ys) ]]
   };
   return x
 }
@@ -66,18 +66,18 @@ function list_concat(x, y) {
 
 { (x == #x) *  list(#x, #vs) }
 function list_reverse(x) {
-  [[ unfold list(x, #vs) ]];
+  //-[[ unfold list(x, #vs) ]];
   if (x != null) {
     t := [x + 1];
     [x + 1] := null;
-    [[ assert {bind: #v, #vss} (#vs == (#v :: #vss)) ]];
+    //-[[ assert {bind: #v, #vss} (#vs == (#v :: #vss)) ]];
     z := list_reverse(t);
-    [[ fold list(null, [] ) ]];
-    [[ fold list(x, [ #v ]) ]];
+    //-[[ fold list(null, [] ) ]];
+    //-[[ fold list(x, [ #v ]) ]];
     y := list_concat(z, x)
   } else {
     y := null;
-    [[ fold list(y, rev(#vs)) ]]
+    //-[[ fold list(y, rev(#vs)) ]]
   };
   return y
 }
@@ -96,16 +96,16 @@ predicate min(+vs, v : Int) {
 
 { (x == #x) * (x != null) * intlist(x, #vs) }
 function find_min(x) {
-  [[ unfold intlist(x, #vs) ]];
+  //-[[ unfold intlist(x, #vs) ]];
   val := [x];
   next := [x + 1];
-  [[ assert {bind: #vss} intlist(next, #vss) ]];
-  [[ unfold intlist(next, #vss) ]];
+  //-[[ assert {bind: #vss} intlist(next, #vss) ]];
+  //-[[ unfold intlist(next, #vss) ]];
   if (next == null) {
     r := val;
-    [[ fold intlist(null, []) ]]
+    //-[[ fold intlist(null, []) ]]
   } else {
-    [[ fold intlist(next, #vss) ]];
+    //-[[ fold intlist(next, #vss) ]];
     r := find_min(next, val);
     if (val <= r) {
       r := val
@@ -113,8 +113,8 @@ function find_min(x) {
       skip
     }
   };
-  [[ fold min(#vs, r) ]];
-  [[ fold intlist(x, #vs) ]];
+  //-[[ fold min(#vs, r) ]];
+  //-[[ fold intlist(x, #vs) ]];
   return r
 }
 { intlist(#x, #vs) * min(#vs, #r) * (ret == #r) }

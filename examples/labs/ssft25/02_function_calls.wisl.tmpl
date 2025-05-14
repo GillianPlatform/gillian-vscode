@@ -25,8 +25,8 @@ predicate list(+x, vs) {
 function list_allocate_node(v){
   t := new(2);
   [t] := v;
-  [[ fold list(null, []) ]];
-  [[ fold list(t, [ #v ]) ]];
+  //-[[ fold list(null, []) ]];
+  //-[[ fold list(t, [ #v ]) ]];
   return t
 }
 { list(ret, [ #v ]) }
@@ -34,9 +34,9 @@ function list_allocate_node(v){
 { (x == #x) * (k == #k) * list(#x, #vs) }
 function list_prepend(x, k){
     z := list_allocate_node(k);
-    [[ unfold list(z, [ k ]) ]];
+    //-[[ unfold list(z, [ k ]) ]];
     [z + 1] := x;
-    [[ fold list(z, (k :: #vs)) ]];
+    //-[[ fold list(z, (k :: #vs)) ]];
     return z
 }
 { list(ret, #k :: #vs) }

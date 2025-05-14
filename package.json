@@ -9,7 +9,8 @@
     "package": "npm run package --workspace ./extension && cp ./extension/*.vsix ./",
     "lint": "npm run lint --workspaces",
     "lint-check": "npm run lint-check --workspaces",
-    "link-sedap": "npm link @gillianplatform/sedap-types @gillianplatform/sedap-react @gillianplatform/sedap-vscode-ui @gillianplatform/sedap-vscode-ext @gillianplatform/sedap-vscode-types --workspaces"
+    "link-sedap": "npm link @gillianplatform/sedap-types @gillianplatform/sedap-react @gillianplatform/sedap-vscode-ui @gillianplatform/sedap-vscode-ext @gillianplatform/sedap-vscode-types --workspaces",
+    "gen-lab": "node ./scripts/processTemplates.js ./examples/labs/ssft25"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

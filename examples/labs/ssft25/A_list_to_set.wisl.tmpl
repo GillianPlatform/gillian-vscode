@@ -38,40 +38,12 @@ lemma list_member_create {
   statement:
     forall x, k, vs.
       list(x, vs) |- list(x, vs) * l_member(vs, k, #r)
-  proof:
-    unfold list(x, vs);
-    if (x == null) {
-      fold list(x, vs);
-      fold l_member(vs, k, false)
-    } else {
-      assert {bind: #v, #vss} (#vs == #v :: #vss) * (x -> #v, #z);
-      apply list_member_create(#z, k, #vss);
-      if (#v == k) {
-        fold l_member(vs, k, true)
-      } else {
-        fold l_member(vs, k, #r)
-      }
-    }
 }
 
 lemma set_list_member_create {
   statement:
     forall x, k, vs.
       set_list(x, vs) |- set_list(x, vs) * l_member(vs, k, #r)
-  proof:
-    unfold set_list(x, vs);
-    if (x == null) {
-      fold set_list(x, vs);
-      fold l_member(vs, k, false)
-    } else {
-      assert {bind: #v, #vss} (#vs == #v :: #vss) * (x -> #v, #z);
-      apply set_list_member_create(#z, k, #vss);
-      if (#v == k) {
-        fold l_member(vs, k, true)
-      } else {
-        fold l_member(vs, k, #r)
-      }
-    }
 }
 
 lemma list_member_duplicate {
@@ -84,23 +56,12 @@ lemma list_member_true {
   statement:
     forall vs, k, v.
       l_member(vs, k, true) |- l_member(v :: vs, k, true)
-  proof:
-    if (v == k) {} else {};
-    fold l_member(v :: vs, k, true)
 }
 
 lemma contains_all_prepend {
   statement:
     forall xs, vs, v.
-      contains_all(xs, vs) |- contains_all(xs, v :: vs) 
-  proof:
-    if (xs != []) {
-      unfold contains_all(xs, vs);
-      assert {bind: #xss, #x} (xs == #x :: #xss);
-      apply contains_all_prepend(#xss, vs, v);
-      apply list_member_true(vs, #x, v);
-      fold contains_all(xs, v :: vs)
-    }
+      contains_all(xs, vs) |- contains_all(xs, v :: vs)
 }
 
 { (v == #v) }
@@ -117,11 +78,11 @@ function set_list_allocate_node(v) {
 { (x == #x) * (k == #k) *  set_list(#x, #vs) * l_member(#vs, #k, false) }
 function set_list_prepend(x, k){
     z := set_list_allocate_node(k);
-    [[ unfold set_list(z, [k]) ]];
+    //-[[ unfold set_list(z, [k]) ]];
     [z + 1] := x;
-    [[ apply list_member_duplicate(#vs, #k, false)]];
-    [[ fold set_list(z, (k :: #vs)) ]];
-    [[ fold l_member(#k :: #vs, #k, true)]];
+    //-[[ apply list_member_duplicate(#vs, #k, false)]];
+    //-[[ fold set_list(z, (k :: #vs)) ]];
+    //-[[ fold l_member(#k :: #vs, #k, true)]];
     return z
 }
 { set_list(ret, #k :: #vs) * l_member(#k :: #vs, #k, true) }
@@ -129,8 +90,8 @@ function set_list_prepend(x, k){
 { (x == #x) * (k == #k) * set_list(#x, #vs) * l_member(#vs, #k, #r) }
 function set_list_member(x, k){
   found := false;
-  [[ unfold set_list(x, #vs) ]];
-  [[ unfold l_member(#vs, k, #r) ]];
+  //-[[ unfold set_list(x, #vs) ]];
+  //-[[ unfold l_member(#vs, k, #r) ]];
   if (x == null){
     skip
   } else {
@@ -142,8 +103,8 @@ function set_list_member(x, k){
       found := set_list_member(t, k)
     }
   };
-  [[ fold l_member(#vs, k, #r) ]];
-  [[ fold set_list(x, #vs) ]];
+  //-[[ fold l_member(#vs, k, #r) ]];
+  //-[[ fold set_list(x, #vs) ]];
   return found
 }
 { set_list(#x, #vs) * l_member(#vs, #k, #r) * (ret == #r) }
@@ -151,30 +112,30 @@ function set_list_member(x, k){
 
 { (x == #x) * list(x, #vs) }
 function remove_duplicates(x) {
-  [[ unfold list(x, #vs)]];
+  //-[[ unfold list(x, #vs)]];
   if (x == null) {
     r := null;
-    [[ fold set_list(x, [])]];
-    [[ fold contains_all([], #vs)]]
+    //-[[ fold set_list(x, [])]];
+    //-[[ fold contains_all([], #vs)]]
   } else {
     v := [x];
     next := [x + 1];
     r := remove_duplicates(next);
-    [[ assert {bind: #s} set_list(r, #s)]];
-    [[ assert {bind: #v, #vss} (#vs == #v :: #vss) ]];
-    [[ apply set_list_member_create(r, v, #s) ]];
+    //-[[ assert {bind: #s} set_list(r, #s)]];
+    //-[[ assert {bind: #v, #vss} (#vs == #v :: #vss) ]];
+    //-[[ apply set_list_member_create(r, v, #s) ]];
     mem := set_list_member(r, v);
-    [[ apply contains_all_prepend(#s, #vss, #v)]];
+    //-[[ apply contains_all_prepend(#s, #vss, #v)]];
     if (mem) {
       skip
     } else {
       r := set_list_prepend(r, v);
-      [[ apply list_member_create(next, #v, #vss) ]];
-      [[ fold l_member(#v :: #vss, #v, true) ]];
-      [[ fold contains_all(#v :: #s, #vs)]]
+      //-[[ apply list_member_create(next, #v, #vss) ]];
+      //-[[ fold l_member(#v :: #vss, #v, true) ]];
+      //-[[ fold contains_all(#v :: #s, #vs)]]
     }
   };
-  [[ fold list(x, #vs) ]];
+  //-[[ fold list(x, #vs) ]];
   return r
 }
 { list(#x, #vs) * set_list(ret, #xs) * contains_all(#xs, #vs) }
@@ -183,33 +144,34 @@ function remove_duplicates(x) {
 
 { (x == #x) * list(x, #vs) }
 function remove_duplicates_strong(x) {
-  [[ unfold list(x, #vs)]];
+  //-[[ unfold list(x, #vs)]];
   if (x == null) {
     r := null;
-    [[ fold set_list(x, [])]];
-    [[ fold contains_all([], #vs)]];
-    [[ fold contains_all(#vs, [])]]
+    //-[[ fold set_list(x, [])]];
+    //-[[ fold contains_all([], #vs)]];
+    //-[[ fold contains_all(#vs, [])]]
   } else {
     v := [x];
     next := [x + 1];
     r := remove_duplicates_strong(next);
-    [[ assert {bind: #s} set_list(r, #s)]];
-    [[ assert {bind: #v, #vss} (#vs == #v :: #vss) ]];
-    [[ apply set_list_member_create(r, v, #s) ]];
+    //-[[ assert {bind: #s} set_list(r, #s)]];
+    //-[[ assert {bind: #v, #vss} (#vs == #v :: #vss) ]];
+    //-[[ apply set_list_member_create(r, v, #s) ]];
     mem := set_list_member(r, v);
-    [[ apply contains_all_prepend(#s, #vss, #v)]];
+    //-[[ apply contains_all_prepend(#s, #vss, #v)]];
     if (mem) {
-      [[ fold contains_all(#vs, #s)]]
+      //-[[ fold contains_all(#vs, #s)]]
     } else {
-      [[ apply contains_all_prepend(#vss, #s, #v)]];
+      //-[[ apply contains_all_prepend(#vss, #s, #v)]];
       r := set_list_prepend(r, v);
-      [[ apply list_member_create(next, #v, #vss) ]];
-      [[ fold l_member(#v :: #vss, #v, true) ]];
-      [[ fold contains_all(#v :: #s, #vs)]];
-      [[ fold contains_all(#vs, #v :: #s)]]
+      //-[[ apply list_member_create(next, #v, #vss) ]];
+      //-[[ fold l_member(#v :: #vss, #v, true) ]];
+      //-[[ fold contains_all(#v :: #s, #vs)]];
+      //-[[ fold contains_all(#vs, #v :: #s)]]
     }
   };
   [[ fold list(x, #vs) ]];
   return r
 }
-{ list(#x, #vs) * set_list(ret, #xs) * contains_all(#xs, #vs) * contains_all(#vs, #xs) }
+//+{ list(#x, #vs) * set_list(ret, #xs) * contains_all(#xs, #vs) * contains_all(#vs, #xs) }
+//-{ emp }
