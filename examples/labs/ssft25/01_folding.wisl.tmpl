@@ -9,7 +9,7 @@
 
 predicate list(+x, vs) {
     (x == null) * (vs == nil);
-    (x -> #v, #z) * list(#z, #vss) * (vs == #v::#vss)
+    (x -b> #v, #z) * list(#z, #vss) * (vs == #v::#vss)
 }
 
 // === EDIT BELOW HERE ===

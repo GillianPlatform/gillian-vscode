@@ -48,7 +48,7 @@ predicate dlsegr(+x, +y, +v, +w, vs : List) {
 lemma dlsegl_append_right {
   statement:
     forall x, v, z, w, vs, a, y.
-      dlsegl(x, v, z, w, vs) * (v -> a, y, z) |- dlsegl(x, y, v, w, vs @ [ a ])
+      dlsegl(x, v, z, w, vs) * (v -b> a, y, z) |- dlsegl(x, y, v, w, vs @ [ a ])
 
   variant: len vs
 }
@@ -58,7 +58,7 @@ lemma dlsegl_append_right {
 lemma dlsegr_append_left {
   statement:
     forall x, a, z, w, y, v, vs.
-      (x -> a, z, w) * dlsegr(z, y, v, x, vs) |- dlsegr(x, y, v, w, a :: vs)
+      (x -b> a, z, w) * dlsegr(z, y, v, x, vs) |- dlsegr(x, y, v, w, a :: vs)
 
   variant: len vs
 }
@@ -124,4 +124,4 @@ function concat(x_a, v_a, x_b, v_b) {
   };
   return r
 }
-{ (ret -> #h, #t) * dlist(#h, #t, #vs_a @ #vs_b) }
+{ (ret -b> #h, #t) * dlist(#h, #t, #vs_a @ #vs_b) }

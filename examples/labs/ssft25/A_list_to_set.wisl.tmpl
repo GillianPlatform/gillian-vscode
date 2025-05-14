@@ -16,7 +16,7 @@
 
 predicate list(+x, vs) {
   (vs == []) * (x == null);
-  (x -> #v, #z) * list(#z, #vs) * (vs == #v :: #vs)
+  (x -b> #v, #z) * list(#z, #vs) * (vs == #v :: #vs)
 }
 
 predicate l_member(+vs, +v, r : Bool){
@@ -27,7 +27,7 @@ predicate l_member(+vs, +v, r : Bool){
 
 predicate set_list(+x, vs) {
   (vs == []) * (x == null);
-  (x -> #v, #z) * set_list(#z, #vs) * (vs == #v :: #vs)
+  (x -b> #v, #z) * set_list(#z, #vs) * (vs == #v :: #vs)
     * l_member(#vs, #v, false)
 }
 

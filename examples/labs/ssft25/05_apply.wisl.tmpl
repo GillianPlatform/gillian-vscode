@@ -29,7 +29,7 @@
 // As an example, look at list_allocate_node below. Instead of applying fold
 // twice (once for the empty list, and once for the single element), we can use
 // the 'singleton_list' lemma, which takes in as a premise the cell assertion
-// (t -> v, null) (established by the previous two instructions), and produces
+// (t -b> v, null) (established by the previous two instructions), and produces
 // the completed predicate. 
 //
 // Try verifying list_get and list_member using the provided lemmas.
@@ -43,7 +43,7 @@
 lemma singleton_list {
   statement:
     forall t, v. 
-      (t -> v, null) |- list(t, [ #v ])
+      (t -b> v, null) |- list(t, [ #v ])
   proof:
     fold list(null, []);
     fold list(t, [ #v ])
@@ -60,7 +60,7 @@ function list_allocate_node(v){
 
 predicate list(+x, vs) {
     (x == null) * (vs == nil);
-    (x -> #v, #z) * list(#z, #vss) * (vs == #v::#vss)
+    (x -b> #v, #z) * list(#z, #vss) * (vs == #v::#vss)
 }
 
 predicate list_search(+vs, +i, v) {

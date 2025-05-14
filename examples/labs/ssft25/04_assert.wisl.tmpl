@@ -18,7 +18,7 @@
 // #x must point to the first element of #vs and a pointer to the tail of the
 // list; we also know that the list predicate holds for the tail. To give a
 // known name to these values and refer to them later, we can assert with bind:
-//   [[ assert {bind: #v, #tail, #z} (x -> #v, #z) * list(#z, #tail) ]]
+//   [[ assert {bind: #v, #tail, #z} (x -b> #v, #z) * list(#z, #tail) ]]
 //
 // This is demonstrated below; try stepping through list_pop with the debugger
 // and observe how the state changes after performing the assert tactic.
@@ -31,13 +31,13 @@
 
 predicate list(+x, vs) {
   (x == null) * (vs == nil);
-  (x -> #v, #z) * list(#z, #vss) * (vs == #v::#vss)
+  (x -b> #v, #z) * list(#z, #vss) * (vs == #v::#vss)
 }
 
 { (x == #x) * (x != null) * list(#x, #k :: #vs) }
 function list_pop(x) {
   [[ unfold list(#x, #k :: #vs) ]];
-  [[ assert {bind: #z} (x -> #k, #z) * list(#z, #vs) ]];
+  [[ assert {bind: #z} (x -b> #k, #z) * list(#z, #vs) ]];
   r := new(2);
   k := [x];
   z := [x + 1];
@@ -64,7 +64,7 @@ function list_concat(x, y) {
 
 predicate intList(+x, vs) {
   (x == null) * (vs == nil);
-  (x -> #v, #z) * (#v : Int) * intList(#z, #vss) * (vs == #v::#vss)
+  (x -b> #v, #z) * (#v : Int) * intList(#z, #vss) * (vs == #v::#vss)
 }
 
 predicate min(+vs, v : Int) {
