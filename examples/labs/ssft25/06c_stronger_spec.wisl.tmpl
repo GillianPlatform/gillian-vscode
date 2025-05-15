@@ -34,10 +34,10 @@ function list_remove_strong(x, k) {
     skip
   } else {
     v := [x];
-    next := [x + 1]
+    next := [x + 1];
     if (v == k){
       free(x);
-      x := list_remove_weak(next, k)
+      x := list_remove_strong(next, k)
     } else {
       z := list_remove_strong(next, k);
       [x + 1] := z

@@ -86,6 +86,7 @@ function set_list_prepend(x, k){
 { (x == #x) * (k == #k) * set_list(#x, #vs) * l_member(#vs, #k, #r) }
 function set_list_member(x, k){
   found := false;
+  [[ unfold l_member(#vs, k, #r) ]];
   if (x == null){
     skip
   } else {
@@ -156,6 +157,6 @@ function remove_duplicates_strong(x) {
   };
   return r
 }
-//+{ list(#x, #vs) * set_list(ret, #xs) * contains_all(#xs, #vs)
-//+  * contains_all(#vs, #xs) }
-//-{ emp }
+//+{ emp }
+//-{ list(#x, #vs) * set_list(ret, #xs) * contains_all(#xs, #vs)
+//-  * contains_all(#vs, #xs) }
