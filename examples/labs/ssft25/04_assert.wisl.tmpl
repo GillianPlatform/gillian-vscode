@@ -106,7 +106,7 @@ function find_min(x) {
     //-[[ fold intList(null, []) ]]
   } else {
     //-[[ fold intList(next, #vss) ]];
-    r := find_min(next, val);
+    r := find_min(next);
     if (val <= r) {
       r := val
     } else {
