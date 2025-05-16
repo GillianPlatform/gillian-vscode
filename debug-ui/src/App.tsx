@@ -40,6 +40,8 @@ const renderMapTab = (
   mapState: MapState<Ext>,
   minimapVisible: boolean,
   toggleMinimap: () => void,
+  substitutionsVisible: boolean = true,
+  toggleSubstitutions: () => void = () => {},
   onClose_?: (id: string) => void,
   parentRoot?: MapRoot,
 ): Tab => {
@@ -56,6 +58,8 @@ const renderMapTab = (
     onZoomNode: onZoom(rootId),
     minimapVisible,
     toggleMinimap,
+    substitutionsVisible,
+    toggleSubstitutions,
   };
   const content = (
     <MapView
@@ -81,8 +85,12 @@ function App() {
   const [derivedRoots, setDerivedRoots] = useState<DerivedRoots>({});
 
   const [minimapVisible, setMinimapVisible] = useState(true);
+  const [substitutionsVisible, setSubstitutionsVisible] = useState(true);
   const toggleMinimap = useCallback(() => {
     setMinimapVisible((prev) => !prev);
+  }, []);
+  const toggleSubstitutions = useCallback(() => {
+    setSubstitutionsVisible((prev) => !prev);
   }, []);
 
   useEffect(() => {
@@ -166,6 +174,8 @@ function App() {
         mapState,
         minimapVisible,
         toggleMinimap,
+        substitutionsVisible,
+        toggleSubstitutions,
         onTabClose(rootId),
         {
           id: rootId,
