@@ -40,7 +40,7 @@ const renderMapTab = (
   mapState: MapState<Ext>,
   minimapVisible: boolean,
   toggleMinimap: () => void,
-  substitutionsVisible: boolean = true,
+  substitutionsVisible: boolean = false,
   toggleSubstitutions: () => void = () => {},
   onClose_?: (id: string) => void,
   parentRoot?: MapRoot,
@@ -85,7 +85,7 @@ function App() {
   const [derivedRoots, setDerivedRoots] = useState<DerivedRoots>({});
 
   const [minimapVisible, setMinimapVisible] = useState(true);
-  const [substitutionsVisible, setSubstitutionsVisible] = useState(true);
+  const [substitutionsVisible, setSubstitutionsVisible] = useState(false);
   const toggleMinimap = useCallback(() => {
     setMinimapVisible((prev) => !prev);
   }, []);
@@ -163,7 +163,16 @@ function App() {
 
   const tabs: Tab[] = [];
   for (const { id: rootId, name: rootName } of roots) {
-    const tab = renderMapTab(rootId, rootName, onZoomNode, mapState, minimapVisible, toggleMinimap);
+    const tab = renderMapTab(
+      rootId,
+      rootName,
+      onZoomNode,
+      mapState,
+      minimapVisible,
+      toggleMinimap,
+      substitutionsVisible,
+      toggleSubstitutions,
+    );
     tabs.push(tab);
 
     for (const [derivedId, derivedName] of Object.entries(derivedRoots[rootId] || {})) {
