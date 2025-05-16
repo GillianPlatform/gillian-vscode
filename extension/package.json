@@ -75,8 +75,7 @@
         ],
         "extensions": [
           ".jsil"
-        ],
-        "configuration": "./language-configuration.json"
+        ]
       },
       {
         "id": "wisl",
@@ -86,7 +85,7 @@
         "extensions": [
           ".wisl"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./syntaxes/wisl.language-config.json"
       },
       {
         "id": "gil",
@@ -96,7 +95,7 @@
         "extensions": [
           ".gil"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./syntaxes/gil.language-config.json"
       }
     ],
     "grammars": [
