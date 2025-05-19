@@ -17,19 +17,9 @@ async function checkForExistingDebugSession() {
   if (!debug.activeDebugSession) {
     debugSession = null;
   }
-  if (debugSession === null) {
-    return true;
-  }
-  const response = await window.showInformationMessage(
-    "Only one Gillian debugger can run at a time.\nTerminate old session and continue?",
-    "OK",
-    "Cancel",
-  );
-  if (response === "OK") {
+  if (debugSession !== null) {
     await debug.stopDebugging(debugSession);
-    return true;
   }
-  return false;
 }
 
 export async function startDebugging(config: DebugConfiguration, noDebug = false) {
@@ -38,10 +28,7 @@ export async function startDebugging(config: DebugConfiguration, noDebug = false
   }
   isDebugStarting = true;
   try {
-    const canContinue = await checkForExistingDebugSession();
-    if (!canContinue) {
-      return;
-    }
+    await checkForExistingDebugSession();
     const validLangs = ["WISL", "JS", "C (CompCert)", "C (CBMC)"];
     const langOptions: Map<string, string> = new Map([
       ["WISL", "wisl"],
