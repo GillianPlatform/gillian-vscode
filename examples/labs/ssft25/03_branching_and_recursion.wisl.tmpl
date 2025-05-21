@@ -23,6 +23,11 @@
 // For recursive calls, note that the specification of the function you are
 // trying to verify is already included in the function specification context C.
 // This allows you to verify recursive functions without any issues.
+//
+// Bonus challenge: Try to write a recursive function for copying a list, 
+// and fill out the specification, trying to make it as strong as possible.
+// A skeleton of the function, list_copy, is provided for you with the precondition.
+// You might want to use the list_allocate_node function.
 
 // === DON'T EDIT THIS ===
 
@@ -62,20 +67,22 @@ function list_concat(x, y) {
 
 { (x == #x) * list(#x, #vs) }
 function list_copy(x){
-  y := null;
+  //-y := null;
   //-[[ unfold list(x, #vs) ]];
-  if (x != null) {
-    k := [x];
-    y := list_allocate_node(k);
+  //-if (x != null) {
+    //-k := [x];
+    //-y := list_allocate_node(k);
     //-[[ unfold list(y, [ k ]) ]];
-    t := [x + 1];
-    z := list_copy(t);
-    [y + 1] := z
-  } else {
-    skip
-  };
+    //-t := [x + 1];
+    //-z := list_copy(t);
+    //-[y + 1] := z
+  //-} else {
+    //-skip
+  //-};
   //-[[ fold list(x, #vs) ]];
   //-[[ fold list(y, #vs) ]];
-  return y
+  //+return null
+  //-return y
 }
-{ list(#x, #vs) * list(ret, #vs) }
+//-{ list(#x, #vs) * list(ret, #vs) }
+//+{ (ret == null) }
