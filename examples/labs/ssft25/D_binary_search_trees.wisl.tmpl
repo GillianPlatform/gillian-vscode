@@ -161,6 +161,12 @@ lemma list_member_lt {
       (a < k) * list_lt(vs, k) |- list_member(vs, a, false) * list_lt(vs, k)
 }
 
+lemma list_member_elem_neq {
+  statement:
+    forall vs, a, b.
+      list_member(vs, a, false) * list_member(vs, b, true) |- list_member(vs, a, false) * list_member(vs, b, true) * (a != b)
+}
+
 { (v == #v) * (v : Int) }
 function BSTAllocateLeaf(v) {
   t := new(3);
@@ -201,7 +207,7 @@ function BSTCopy(x) {
     //-[[ apply gt_duplicate(#vsl, #k) ]];
     //-[[ apply member_duplicate(#vsl, #k, false) ]];
     //-[[ apply member_duplicate(#vsr, #k, false) ]];
-    [[ fold bst(y, #vs) ]]
+    //-[[ fold bst(y, #vs) ]]
   } else {
     y := null
   };
@@ -298,6 +304,7 @@ function BSTFindMin(x) {
     //? min <= s for all s ∈ {k} ∪ S 
     //-[[ apply min_gt_append(min, #k, #vsl) ]];
     //-[[ apply min_merge_k(min, #k, #vsl, #vsr) ]];
+    //-[[ apply list_member_elem_neq(#vsl, #k, min) ]];
     //-[[ apply list_member_concat_gen(#vsl, [#k], min)]];
     //-[[ apply list_member_concat(#vsl@[#k], #vsr, min) ]]
   };
