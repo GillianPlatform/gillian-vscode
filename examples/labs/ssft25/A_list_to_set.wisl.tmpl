@@ -21,7 +21,7 @@ predicate list(+x, vs) {
 
 predicate list_member(+vs, +v, r : Bool){
   (vs == []) * (r == false);
-  (vs == v :: #ws) * (r == true) * list_member(#ws, v, #mem);
+  (vs == v :: #ws) * (r == true);
   (vs == #v :: #ws) * (#v != v) * list_member(#ws, v, r)
 }
 
