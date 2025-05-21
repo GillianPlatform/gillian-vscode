@@ -1,4 +1,4 @@
-@config manual_fold : true
+@config manual_fold : false
 predicate sll(+x, alpha, delta) {
     // empty
     (x == null) * (alpha == nil) * (delta == nil);
@@ -11,13 +11,13 @@ predicate lseg(+x, +y, alpha, delta) {
   (x -b> #v, #z) * lseg(#z, y, #beta, #gamma) * (alpha == #v::#beta) * (delta == x::#gamma)
 }
 
-predicate cc_sll_ht(+x, +h, +t, alpha, delta) {
+predicate nounfold cc_sll_ht(+x, h, t, alpha, delta) {
   // Full cc_slist_s object: length, head, tail
   (x -b> 0, h, t) *
   (alpha == []) * (delta == []) *
   (h == null) * (t == null);
 
-  (x -b> #l, h, t) *
+  (x -b> #l, #h, #t) *
   (h == #h) * (t == #t) *
   lseg(#h, #t, #beta, #gamma) *
   sll(#t, [ #last ], [ #t ]) *
@@ -33,17 +33,16 @@ predicate cc_sll(+x, alpha, delta) {
 lemma lseg_to_sll {
   statement:
     forall x, alpha.
-      lseg(x, null, alpha, delta) |- sll(x, alpha, delta)
-
+      lseg(x, null, alpha, #delta) |- sll(x, alpha, #delta)
   proof: // do later
-    unfold lseg(x, null, alpha, delta);
-    if (x != null) {
-      assert {bind:  #next, #beta, #gamma} (x + 1 -> #next) * lseg(#next, null, #beta, #gamma) ;
-      apply lseg_to_sll(#next, #beta);
-      fold sll(x, #alpha)
-    } else {
-      fold sll(x, #alpha)
-    }
+  unfold lseg(x, null, alpha, delta);
+  if (x != null) {
+    assert {bind:  #next, #beta, #gamma} (x + 1 -> #next) * lseg(#next, null, #beta, #gamma) ;
+    apply lseg_to_sll(#next, #beta);
+    fold sll(x, #alpha)
+  } else {
+    fold sll(x, #alpha)
+  }
 }
 
 lemma concat_lseg_sll {
@@ -151,3 +150,80 @@ lemma a {
     forall xs, ys, v, l, j.
     list_nth(xs @ [v, l] @ ys, j, v) |- list_nth(xs @ [v, l] @ ys, j + 1, l)
 }
+
+
+predicate list_count(+vs, +k, n : Int) {
+  (vs == []) * (n == 0);
+  (vs == k :: #vss) * list_count(#vss, k, #m) * (n == #m + 1);
+  (vs == #v :: #vss) * (#v != k) * list_count(#vss, k, n) 
+}
+
+lemma list_count_create {
+  statement:
+    forall v, vs, xs, k.
+      sll(v, vs, xs) |- sll(v, vs, xs) * list_count(vs, k, #n)
+}
+
+lemma list_count_append_true {
+  statement:
+    forall vs, k, n, v.
+      list_count(vs, k, n) * (k == v) |- list_count(vs @ [v], k, n + 1)
+}
+
+lemma list_count_append_false {
+  statement:
+    forall vs, k, n, v.
+      list_count(vs, k, n) * (k != v) |- list_count(vs @ [v], k, n)
+}
+
+{ (v == #v) * (k == #k) * cc_sll(#v, #vs, #xs) }
+function cc_slist_contains(v, k) {
+  [[ unfold cc_sll_ht(#v, #h, #t, #vs, #xs)]];
+  [[ assert {bind: #size} (v -b> #size, #h, #t)]];
+  head := [v + 1];
+  node := head;
+  count := 0;
+  [[ if (#size != 0) {
+    fold list_count([], k, 0);
+    fold lseg(head, node, [], []);
+    assert {bind: #beta, #last, #gamma} lseg(head, #t, #beta, #gamma) * sll(#t, [ #last ], [ #t ]);
+    apply concat_lseg_sll(#h, #t, #beta, [#last], #gamma, [#t]);
+    apply list_count_create(node, #beta @ [#last], #gamma @ [#t], k)
+  } else {
+    fold list_count([], k, 0);
+    fold lseg(head, node, [], []);
+    fold sll(null, [], []);
+    fold list_count([], k, 0)
+  }
+  ]];
+  [[ invariant {bind: node, count, #start, #startp, #rg, #end, #endp} 
+  lseg(head, node, #start, #startp) * sll(node, #end, #endp) * 
+  (#vs == #start @ #end) * (#xs == #startp @ #endp) *
+  list_count(#start, k, count) * list_count(#end, k, #rg)
+  ]];
+  while (node != null) {
+    [[ unfold sll(node, #end, #endp)]];
+    [[ assert {bind: #node} (node == #node)]];
+    [[ unfold list_count(#end, k, #rg)]];
+    val := [node];
+    if (val == k) {
+      [[ apply list_count_append_true(#start, k, count, val) ]];
+      count := count + 1;
+    } else {
+      [[ apply list_count_append_false(#start, k, count, val) ]];
+    };
+    node := [node + 1];
+    [[ apply lseg_append(head, #node, #start, val, node, #startp) ]]
+  };
+  
+  [[ if (#size != 0) {
+    apply lseg_to_sll(head, #beta @ [#last]);
+    apply sll_split_last(#h, #beta, #last, #gamma, #t);
+    fold cc_sll_ht(#v, #h, #t, #vs, #xs)
+  } else {
+    fold sll(null, [], []);
+    fold cc_sll_ht(#v, null, null, [], [])
+  }]];
+  return count
+}
+{ cc_sll(#v, #vs, #xs) * list_count(#vs, #k, ret) }
