@@ -39,13 +39,14 @@ const Wrap = styled.div`
 export type Subst = readonly [string, string, string];
 
 export type SidebarProps = {
+  visible?: boolean | undefined;
   substs?: Subst[] | undefined;
   selectedNodes: readonly string[];
   onNodeSelected: (id: string) => void;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ substs, selectedNodes, onNodeSelected }) => {
-  if (!substs) {
+const Sidebar: React.FC<SidebarProps> = ({ visible, substs, selectedNodes, onNodeSelected }) => {
+  if (!visible || !substs) {
     return <></>;
   }
   let content: ReactNode;
