@@ -1,4 +1,13 @@
+// ========== Exercise E: Collections-C SLL Library ==========
+// 
+//
+//
+
+// === DON'T EDIT THIS ===
+//#region
+
 @config manual_fold : false
+
 predicate sll(+x, alpha, delta) {
     // empty
     (x == null) * (alpha == nil) * (delta == nil);
@@ -30,19 +39,31 @@ predicate cc_sll(+x, alpha, delta) {
   cc_sll_ht(x, #h, #t, alpha, delta)
 }
 
+predicate list_nth(+vs, +i : Int, +v) {
+  (i == 0) * (vs == v :: #vs) ;
+  (i > 0) * (i == (#j + 1)) * (i < len(vs)) * (vs == #v :: #vs) * list_nth(#vs, #j, v)
+}
+
+predicate list_count(+vs, +k, n : Int) {
+  (vs == []) * (n == 0);
+  (vs == k :: #vss) * list_count(#vss, k, #m) * (n == #m + 1);
+  (vs == #v :: #vss) * (#v != k) * list_count(#vss, k, n) 
+}
+
+
 lemma lseg_to_sll {
   statement:
     forall x, alpha.
       lseg(x, null, alpha, #delta) |- sll(x, alpha, #delta)
-  proof: // do later
-  unfold lseg(x, null, alpha, delta);
-  if (x != null) {
-    assert {bind:  #next, #beta, #gamma} (x + 1 -> #next) * lseg(#next, null, #beta, #gamma) ;
-    apply lseg_to_sll(#next, #beta);
-    fold sll(x, #alpha)
-  } else {
-    fold sll(x, #alpha)
-  }
+//-  proof: // do later
+//-  unfold lseg(x, null, alpha, delta);
+//-  if (x != null) {
+//-    assert {bind:  #next, #beta, #gamma} (x + 1 -> #next) * lseg(#next, null, #beta, #gamma) ;
+//-    apply lseg_to_sll(#next, #beta);
+//-    fold sll(x, #alpha)
+//-  } else {
+//-    fold sll(x, #alpha)
+//-  }
 }
 
 lemma concat_lseg_sll {
@@ -50,17 +71,17 @@ lemma concat_lseg_sll {
     forall x, y, alpha, beta, delta, gamma.
       lseg(x, y, alpha, delta) * sll(y, beta, gamma) |- sll(x, alpha @ beta, delta @ gamma)
 
-  proof: // do later
-    unfold sll(y, beta);
-    if (y == null) {
-      apply lseg_to_sll(x, alpha)
-    } else {
-      assert (y != null);
-      unfold sll(y, beta);
-      assert {bind: #z, #t, #rest} (y -> #z, #t) * sll(#t, #rest) * (beta == #z::#rest);
-      apply lseg_append(x, y, alpha, #z, #t);
-      apply concat_lseg_sll(x, #t, alpha @ [ #z ], #rest)
-    }
+//-  proof: // do later
+//-    unfold sll(y, beta);
+//-    if (y == null) {
+//-      apply lseg_to_sll(x, alpha)
+//-    } else {
+//-      assert (y != null);
+//-      unfold sll(y, beta);
+//-      assert {bind: #z, #t, #rest} (y -> #z, #t) * sll(#t, #rest) * (beta == #z::#rest);
+//-      apply lseg_append(x, y, alpha, #z, #t);
+//-      apply concat_lseg_sll(x, #t, alpha @ [ #z ], #rest)
+//-    }
 }
 
 lemma sll_split_last {
@@ -74,21 +95,43 @@ lemma lseg_append {
     forall x, y, alpha, yval, ynext, delta.
       lseg(x, y, alpha, delta) * (y -b> yval, ynext) |- lseg(x, ynext, alpha @ [ yval ], delta @ [y])
 
-  proof:
-    unfold lseg(x, y, alpha);
-    if (alpha != []) {
-      assert {bind: #next, #beta} (x + 1 -> #next) * lseg(#next, y, #beta) ;
-      apply lseg_append(#next, y, #beta, yval, ynext);
-      fold lseg(x, ynext, alpha @ [yval])
-    } else {
-      fold lseg(x, ynext, alpha @ [yval])
-    }
+//-  proof:
+//-    unfold lseg(x, y, alpha);
+//-    if (alpha != []) {
+//-      assert {bind: #next, #beta} (x + 1 -> #next) * lseg(#next, y, #beta) ;
+//-      apply lseg_append(#next, y, #beta, yval, ynext);
+//-      fold lseg(x, ynext, alpha @ [yval])
+//-    } else {
+//-      fold lseg(x, ynext, alpha @ [yval])
+//-    }
 }
 
-predicate list_nth(+vs, +i : Int, +v) {
-  (i == 0) * (vs == v :: #vs) ;
-  (i > 0) * (i == (#j + 1)) * (i < len(vs)) * (vs == #v :: #vs) * list_nth(#vs, #j, v)
+lemma list_nth_next {
+  statement:
+    forall xs, ys, v, l, j.
+    list_nth(xs @ [v, l] @ ys, j, v) |- list_nth(xs @ [v, l] @ ys, j + 1, l)
 }
+
+lemma list_count_create {
+  statement:
+    forall v, vs, xs, k.
+      sll(v, vs, xs) |- sll(v, vs, xs) * list_count(vs, k, #n)
+}
+
+lemma list_count_append_true {
+  statement:
+    forall vs, k, n, v.
+      list_count(vs, k, n) * (k == v) |- list_count(vs @ [v], k, n + 1)
+}
+
+lemma list_count_append_false {
+  statement:
+    forall vs, k, n, v.
+      list_count(vs, k, n) * (k != v) |- list_count(vs @ [v], k, n)
+}
+
+//#endregion
+// === EDIT BELOW HERE ===
 
 { (v == #v) * (i == #i) *  cc_sll(#v, #vs, #xs) * (0 <= #i) * (#i < (len #vs)) }
 function get_node_at(v, i, n) {
@@ -127,7 +170,7 @@ function get_node_at(v, i, n) {
         node := [node + 1];
         [[ assert (#end == val :: #beta) ]];
         [[ assert (#endp == prev :: #gamma) ]];
-        [[ apply a(#startp, #gamma, #oldp, prev, j) ]];
+        [[ apply list_nth_next(#startp, #gamma, #oldp, prev, j) ]];
         j := j + 1
       };
       r := new(3);
@@ -145,85 +188,43 @@ function get_node_at(v, i, n) {
 }
 { (ret -b> #val, #node, #prev) * cc_sll(#v, #vs, #xs) * list_nth(#xs, #i, #prev) }
 
-lemma a {
-  statement:
-    forall xs, ys, v, l, j.
-    list_nth(xs @ [v, l] @ ys, j, v) |- list_nth(xs @ [v, l] @ ys, j + 1, l)
-}
-
-
-predicate list_count(+vs, +k, n : Int) {
-  (vs == []) * (n == 0);
-  (vs == k :: #vss) * list_count(#vss, k, #m) * (n == #m + 1);
-  (vs == #v :: #vss) * (#v != k) * list_count(#vss, k, n) 
-}
-
-lemma list_count_create {
-  statement:
-    forall v, vs, xs, k.
-      sll(v, vs, xs) |- sll(v, vs, xs) * list_count(vs, k, #n)
-}
-
-lemma list_count_append_true {
-  statement:
-    forall vs, k, n, v.
-      list_count(vs, k, n) * (k == v) |- list_count(vs @ [v], k, n + 1)
-}
-
-lemma list_count_append_false {
-  statement:
-    forall vs, k, n, v.
-      list_count(vs, k, n) * (k != v) |- list_count(vs @ [v], k, n)
-}
 
 { (v == #v) * (k == #k) * cc_sll(#v, #vs, #xs) }
 function cc_slist_contains(v, k) {
-  [[ unfold cc_sll_ht(#v, #h, #t, #vs, #xs)]];
-  [[ assert {bind: #size} (v -b> #size, #h, #t)]];
+  //-[[ assert {bind: #size} (v -b> #size, #h, #t) ]];
   head := [v + 1];
   node := head;
   count := 0;
-  [[ if (#size != 0) {
-    fold list_count([], k, 0);
-    fold lseg(head, node, [], []);
-    assert {bind: #beta, #last, #gamma} lseg(head, #t, #beta, #gamma) * sll(#t, [ #last ], [ #t ]);
-    apply concat_lseg_sll(#h, #t, #beta, [#last], #gamma, [#t]);
-    apply list_count_create(node, #beta @ [#last], #gamma @ [#t], k)
-  } else {
-    fold list_count([], k, 0);
-    fold lseg(head, node, [], []);
-    fold sll(null, [], []);
-    fold list_count([], k, 0)
-  }
-  ]];
+  //-[[ if (#size != 0) {
+  //-  assert {bind: #beta, #last, #gamma} lseg(head, #t, #beta, #gamma) * sll(#t, [ #last ], [ #t ]);
+  //-  apply concat_lseg_sll(#h, #t, #beta, [#last], #gamma, [#t]);
+  //-  apply list_count_create(node, #beta @ [#last], #gamma @ [#t], k)
+  //-} else {}
+  //-]];
   [[ invariant {bind: node, count, #start, #startp, #rg, #end, #endp} 
-  lseg(head, node, #start, #startp) * sll(node, #end, #endp) * 
-  (#vs == #start @ #end) * (#xs == #startp @ #endp) *
-  list_count(#start, k, count) * list_count(#end, k, #rg)
-  ]];
+    lseg(head, node, #start, #startp) * sll(node, #end, #endp) * 
+    (#vs == #start @ #end) * (#xs == #startp @ #endp) *
+    list_count(#start, k, count) * list_count(#end, k, #rg) ]];
   while (node != null) {
-    [[ unfold sll(node, #end, #endp)]];
-    [[ assert {bind: #node} (node == #node)]];
-    [[ unfold list_count(#end, k, #rg)]];
+    //-[[ unfold sll(node, #end, #endp) ]];
+    //-[[ assert {bind: #node} (node == #node) ]];
+    //-[[ unfold list_count(#end, k, #rg) ]];
     val := [node];
     if (val == k) {
-      [[ apply list_count_append_true(#start, k, count, val) ]];
-      count := count + 1;
+      //-[[ apply list_count_append_true(#start, k, count, val) ]];
+      count := count + 1
     } else {
-      [[ apply list_count_append_false(#start, k, count, val) ]];
+      skip
+      //-[[ apply list_count_append_false(#start, k, count, val) ]];
     };
     node := [node + 1];
-    [[ apply lseg_append(head, #node, #start, val, node, #startp) ]]
+    //-[[ apply lseg_append(head, #node, #start, val, node, #startp) ]]
   };
   
-  [[ if (#size != 0) {
-    apply lseg_to_sll(head, #beta @ [#last]);
-    apply sll_split_last(#h, #beta, #last, #gamma, #t);
-    fold cc_sll_ht(#v, #h, #t, #vs, #xs)
-  } else {
-    fold sll(null, [], []);
-    fold cc_sll_ht(#v, null, null, [], [])
-  }]];
+  //-[[ if (#size != 0) {
+  //-  apply lseg_to_sll(head, #beta @ [#last]);
+  //-  apply sll_split_last(#h, #beta, #last, #gamma, #t)
+  //-} else {} ]];
   return count
 }
 { cc_sll(#v, #vs, #xs) * list_count(#vs, #k, ret) }
