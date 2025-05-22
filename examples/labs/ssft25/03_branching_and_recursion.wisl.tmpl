@@ -30,6 +30,7 @@
 // You might want to use the list_allocate_node function.
 
 // === DON'T EDIT THIS ===
+//#region
 
 @config manual_fold : true
 
@@ -48,6 +49,7 @@ function list_allocate_node(v){
 }
 { list(ret, [ #v ]) }
 
+//#endregion
 // === EDIT BELOW HERE ===
 
 {(x == #x) * (y == #y) * list(#x, #xs) * list(#y, #ys) }

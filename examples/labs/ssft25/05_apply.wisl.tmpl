@@ -39,6 +39,7 @@
 //                    Can we remove it by modifying something else?
 
 // === DON'T EDIT THIS ===
+//#region
 
 @config manual_fold : true
 
@@ -88,6 +89,7 @@ lemma list_member_create {
       list(x, vs) |- list(x, vs) * list_member(vs, k, #r)
 }
 
+//#endregion
 // === EDIT BELOW HERE ===
 
 { (x == #x) * (i == #i) * (x != null) * list(x, #vs)

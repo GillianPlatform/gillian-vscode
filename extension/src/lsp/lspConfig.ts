@@ -45,6 +45,15 @@ function startLsp(langCmd: string, name: string, language: string) {
 
   const clientOptions: LanguageClientOptions = {
     documentSelector: [{ scheme: "file", language: language }],
+    middleware: {
+      async provideDiagnostics(doc, prevId, token, next) {
+        const requestPromise = next(doc, prevId, token);
+        const timeoutPromise: Promise<never> = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error("WISL LSP timed out")), 5000);
+        });
+        return Promise.race([requestPromise, timeoutPromise]);
+      },
+    },
   };
 
   const id = `gillian-lsp-${langCmd}`;

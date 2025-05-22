@@ -82,7 +82,13 @@ function MapView({
               onClick={toggleSubstitutions}
               title="Toggle substitutions"
             >
-              &alpha;
+              {substs ? (
+                <b>
+                  <i>&alpha;</i>
+                </b>
+              ) : (
+                <>&alpha;</>
+              )}
             </ControlButton>
             <ControlButton active={!minimapVisible} onClick={toggleMinimap} title="Toggle minimap">
               <VscMap />
@@ -90,7 +96,14 @@ function MapView({
           </Controls>
         </TraceView>
       </MapWrap>
-      <Sidebar {...{ substs, selectedNodes: selectedNodes.primary || [], onNodeSelected }} />
+      <Sidebar
+        visible={substitutionsVisible}
+        selectedNodes={selectedNodes.primary || []}
+        {...{
+          substs,
+          onNodeSelected,
+        }}
+      />
     </Wrap>
   );
 }
