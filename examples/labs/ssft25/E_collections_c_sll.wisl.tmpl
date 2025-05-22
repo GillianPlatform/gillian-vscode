@@ -140,6 +140,45 @@ lemma list_nth_next {
 //#endregion
 // === EDIT BELOW HERE ===
 
+{ (v == #v) * (x == #x) * cc_sll(#v, #vs, #xs) }
+function cc_slist_add_first(v, x) {
+  node := new(2);
+  [node] := x;
+  size := [v];
+  if (size == 0) {
+    [v + 1] := node;
+    [v + 2] := node
+  } else {
+    head := [v + 1];
+    [node + 1] := head;
+    [v + 1] := node
+  };
+  [v] := size + 1;
+  return v
+}
+{ cc_sll(ret, #x::#vs, #nxs) }
+
+{ (v == #v) * cc_sll(#v, #vs, #xs) * (x == #x) }
+function cc_slist_add_last(v, x) {
+  node := new(2);
+  [node] := x;
+  size := [v];
+  if (size == 0) {
+    [v + 1] := node;
+    [v + 2] := node
+  } else {
+    //- [[ assert {bind: #l, #h, #t, #beta, #last, #gamma}
+    //-  (#v -b> #l, #h, #t) * lseg(#h, #t, #beta, #gamma) * sll(#t, [ #last ], [ #t ]) ]];
+    tail := [v + 2];
+    [tail + 1] := node;
+    //- [[ apply lseg_append(#h, #t, #beta, #last, node, #gamma) ]];
+    [v + 2] := node
+  };
+  [v] := size + 1;
+  return v
+}
+{ cc_sll(ret, #vs @ [ #x ], #nxs) }
+
 { (v == #v) * (i == #i) * cc_sll(#v, #vs, #xs) * (0 <= #i) * (#i < (len #vs)) }
 function get_node_at(v, i) {
   size := [v];
