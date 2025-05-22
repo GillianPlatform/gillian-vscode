@@ -15,12 +15,23 @@ predicate fib(+n, res: Int) {
   (n >= 2) * fib(n-1, #a) * fib(n-2, #b) * (res == (#a+#b))
 }
 
-lemma fib_fold {
+lemma fib_copy {
   statement:
     forall n, r.
-      fib(n-1, #a) * fib(n-2, #b) * (r == (#a + #b))
-      |- fib(n-1, #a) * fib(n-2, #b) * fib(n, r)
-  // TODO: remove this, instead do something like lemma fib_copy
+      fib(n, r) |- fib(n, r) * fib(n, r)
+  
+  proof:
+    unfold fib(n, r);
+    if(n <= 1) {
+      assert true
+    } else {
+      assert fib(n-1, #a);
+      assert fib(n-2, #b);
+      apply fib_copy(n-1, #a);
+      apply fib_copy(n-2, #b)
+    };
+    fold fib(n, r);
+    fold fib(n, r)
 }
 
 // === EDIT BELOW HERE ===
@@ -71,9 +82,8 @@ function fib_iter(n) {
       r := a + b;
       //?? Here, you need to consume both fib(n-2) and fib(n-1) predicates to get the
       //? fib(n) predicates, but these are pure so you should be able to duplicate them!
-      //-[[ assert fib(i - 1, b) ]];
-      //-[[ assert fib(i - 2, a) ]];
-      //-[[ apply fib_fold(i, r) ]];
+      //-[[ apply fib_copy(i - 1, b) ]];
+      //-[[ apply fib_copy(i - 2, a) ]];
     }
   };
   return r
