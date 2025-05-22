@@ -177,6 +177,9 @@ lemma list_nth_next {
 //#endregion
 // === EDIT BELOW HERE ===
 
+// 1. prepending a value to the front of the list (EASY)
+//    (Note: this function verifies correctly in auto mode
+//     without any tactics)
 { (v == #v) * (x == #x) * cc_sll(#v, #vs, #xs) }
 function cc_slist_add_first(v, x) {
   node := new(2);
@@ -195,6 +198,7 @@ function cc_slist_add_first(v, x) {
 }
 { cc_sll(ret, #x::#vs, #nxs) }
 
+// 2. appending a value to the element (EASY)
 { (v == #v) * cc_sll(#v, #vs, #xs) * (x == #x) }
 function cc_slist_add_last(v, x) {
   node := new(2);
@@ -216,7 +220,7 @@ function cc_slist_add_last(v, x) {
 }
 { cc_sll(ret, #vs @ [ #x ], #nxs) }
 
-// 1. getting the i-th node of linked list (HARD)
+// 3. getting the i-th node of linked list (HARD)
 { (v == #v) * (i == #i) * cc_sll(#v, #vs, #xs) * (0 <= #i) * (#i < (len #vs)) }
 function get_node_at(v, i) {
   size := [v];
@@ -290,7 +294,7 @@ function get_node_at(v, i) {
 { (ret -b> #val, #node, #prev) * cc_sll(#v, #vs, #xs) * list_nth(#xs, #i, #prev) * list_nth(#vs, #i, #val) }
 
 
-// 2. counting the number of v's in a singly-linked list (MEDIUM)
+// 4. counting the number of v's in a singly-linked list (MEDIUM)
 { (v == #v) * (k == #k) * cc_sll(#v, #vs, #xs) }
 function cc_slist_contains(v, k) {
   //-[[ assert {bind: #size} (v -b> #size, #h, #t) ]];
