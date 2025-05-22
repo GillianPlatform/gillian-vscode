@@ -1,0 +1,177 @@
+@config manual_fold : false
+
+predicate list(+x, vs) {
+  (x == null) * (vs == []);
+  (x -b> #v, #next) * list(#next, #vs) *
+  (vs == #v :: #vs)
+}
+
+predicate lseg(+x, y, vs) {
+  (x == y) * (vs == []);
+  (x -b> #v, #next) * lseg(#next, y, #vs) * (vs == #v :: #vs)
+}
+
+lemma lseg_append {
+  statement:
+    forall x, vs, v, z.
+      lseg(x, #y, vs) * (#y -b> v, z) |- lseg(x, z, vs @ [ v ])
+
+  proof:
+    unfold lseg(x, #y, vs);
+    if (x != #y) {
+      assert {bind: #nv, #nnext, #nvs}
+        (x -b> #nv, #nnext) * lseg(#nnext, #y, #nvs) *
+        (vs == #nv :: #nvs);
+      apply lseg_append(#nnext, #nvs, v, z);
+      fold lseg(x, z, vs @ [ v ])
+    } else {
+      fold lseg(#y, z, [ v ])
+    }
+}
+
+lemma lseg_to_list {
+  statement:
+    forall x.
+      lseg(x, null, #vx) |- list(x, #vx)
+
+  proof:
+    unfold lseg(x, null, #vx);
+    if (#vx != []){
+      assert {bind: #nv, #nnext} (x -b> #nv, #nnext);
+      apply lseg_to_list(#nnext)
+    }
+}
+
+{ (v == #v) }
+function list_allocate_node(v) {
+  t := new(2);
+  [t] := v;
+  [[ fold list(null, []) ]];
+  [[ fold list(t, [ #v ]) ]];
+  return t
+}
+{ list(ret, [ #v ]) }
+
+{ (x == #x) * (k == #k) * (#k: Int) * list(#x, #vs) }
+function list_push(x, k) {
+  z := new(2);
+  [z] := k;
+  [z + 1] := x;
+  [[ fold list(z, #k :: #vs) ]];
+  return z
+}
+{ list(ret, #k :: #vs) }
+
+{ (x == #x) * (x != null) * list(#x, #k :: #vs) }
+function list_pop(x) {
+  [[ unfold list(#x, #k :: #vs) ]];
+  r := new(2);
+  k := [x];
+  z := [x + 1];
+  [r] := k;
+  [r + 1] := z;
+  return r
+}
+{ list(#z, #vs) * (ret == #r) * #r -b> #k, #z }
+
+{ (x == #x) * list(x, #vx) }
+function list_length(x) {
+  y := x;
+  n := 0;
+  [[ invariant {bind: n, y, #nvx,  #nvy}
+      lseg(x, y,  #nvx) * list(y, #nvy) *
+         (#vx == (#nvx@#nvy)) * (n == len #nvx) ]];
+  while (y != null) {
+    [[ assert {bind: #y} (y == #y) ]];
+    [[ assert {bind: #v, #z} #y -b> #v, #z ]];
+    y := [y+1];
+    n := n+1;
+    [[ apply lseg_append(x, #nvx, #v, y) ]]
+  };
+  [[ unfold list(null, #nvy)]];
+  [[ apply lseg_to_list(x) ]];
+  return n
+}
+{ list(#x, #vx) * (ret == len(#vx)) }
+
+
+predicate rpn_eval(+ts, r : Int) {
+  re(ts, [], r)
+}
+
+predicate re(+ts, +ns, r : Int) {
+  // base case
+  (ts == []) * (ns == #n::#rns) * (r == #n);
+  // too many/not enough numbers
+  (ts == []) * (ns == []) * (r == 0);
+
+  // number
+  (ts == #n::#rest) * (#n: Int) * 
+  re(#rest, #n::ns, r);
+
+  // operators
+  (ts == "+"::#rest) * (ns == [#n1, #n2] @ #restn) * 
+  re(#rest, (#n1+#n2)::#restn, r);
+  (ts == "-"::#rest) * (ns == [#n1, #n2] @ #restn) * 
+  re(#rest, (#n1-#n2)::#restn, r);
+
+  (ts == #op::#rest) * (len(ns) < 2) * (r == 0) *
+  ((#op == "+") || (#op == "-"))
+
+}
+
+{ (h == #h) * (n == #n) * list(#h, #terms) * list(#n, #nums) }
+function eval_rpn_aux(h, n) {
+  res := 0;
+  // done evaluating!
+  if(h == null) {
+    if(n == null) {
+      res := 0;
+      [[ fold re([], #nums, 0) ]];
+    } else {
+      res := [n];
+      assume_type (res, Int);
+      [[ assert (#nums == res :: #rest) ]];
+      [[ fold re([], #nums, res) ]];
+    }
+  } else {
+    token := [h];
+    h := [h + 1];
+    if((token == "+") || (token == "-")) {
+      // operator: apply, add to stack, recurse
+      n_len := list_length(n);
+      if(n_len >= 2) {
+        l := [n];
+        n := [n + 1];
+        r := [n];
+        n := [n + 1];
+        assume_type (l, Int);
+        assume_type (r, Int);
+        if(token == "+") {
+          x := l + r
+        } else {
+          x := l - r
+        };
+        n := list_push(n, x);
+        res := eval_rpn_aux(h, n);
+      } else {
+        // not enough numbers -- give up
+        res := 0;
+      }
+    } else {
+      // number: add to stack, recurse
+      assume_type (token, Int);
+      n := list_push(n, token);
+      res := eval_rpn_aux(h, n);
+    };
+  };
+  return res
+}
+{ (ret == #res) * re(#terms, #nums, #res) }
+
+{ (h == #h) * list(#h, #terms) }
+function eval_rpn(h) {
+  res := eval_rpn_aux(h, null);
+  return res
+}
+{ (ret == #res) * rpn_eval(#terms, #res) }
