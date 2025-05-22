@@ -1,12 +1,41 @@
 // ========== Exercise E: Collections-C SLL Library ==========
 // 
+// Let's now verify algorithms based on real-world data structure.
+// In particular, in this exercise, we will explore some of the
+// singly-linked list algorithms in the Collections-C library
+// [https://github.com/srdja/Collections-C] for the C language.
 //
+// The Collections-C (dubbed cc for short) singly-linked list
+// data structure is defined using a struct as follows:
+// 
+//   typedef struct snode_s {
+//     void *data;
+//     struct snode_s *next;
+//   } SNode;
 //
+//   struct cc_slist_s {
+//     size_t size;
+//     SNode *head;
+//     SNode *tail;
+//     ...
+//   };
+//
+// Here, SNode is the typical singly-linked list data structure,
+// and slist_s is a wrapper around the entire linked list that also
+// includes the pointer to the tail of the list and the overall size
+// of the linked list.
 
 // === DON'T EDIT THIS ===
 //#region
 
 @config manual_fold : true
+
+// We have our usual sll and lseg predicates as usual.
+// Note that unlike the sll and lseg predicates seen in previous
+// exercises, we have an additional parameter delta, which denotes
+// the list of pointer addresses comprising the linked list.
+// As we will see, this is useful for verifying the get_node_at
+// function, which returns the i-th node (i.e. address) of the list.
 
 predicate sll(+x, alpha, delta) {
     // empty
@@ -19,6 +48,12 @@ predicate lseg(+x, +y, alpha, delta) {
   (x == y) * (alpha == nil) * (delta == nil);
   (x -b> #v, #z) * lseg(#z, y, #beta, #gamma) * (alpha == #v::#beta) * (delta == x::#gamma)
 }
+
+// We also have the cc_sll_ht predicate, which is the wrapper
+// for the cc_slist_s struct. 
+// Note that in the non-empty case, we have the lseg predicate,
+// which describes the entire list except the last node, and
+// then we have the sll predicate, which describes the last node.
 
 predicate nounfold cc_sll_ht(+x, h, t, alpha, delta) {
   // Full cc_slist_s object: length, head, tail
@@ -35,6 +70,9 @@ predicate nounfold cc_sll_ht(+x, h, t, alpha, delta) {
   (#l == (len #beta) + 1)
 }
 
+// Finally, we have a top-level predicate cc_sll that
+// existentially quantfies the head and tail pointers.
+
 predicate cc_sll(+x, alpha, delta) {
   cc_sll_ht(x, #h, #t, alpha, delta)
 }
@@ -49,7 +87,6 @@ predicate list_count(+vs, +k, n : Int) {
   (vs == k :: #vss) * list_count(#vss, k, #m) * (n == #m + 1);
   (vs == #v :: #vss) * (#v != k) * list_count(#vss, k, n) 
 }
-
 
 lemma lseg_to_sll {
   statement:
@@ -140,6 +177,7 @@ lemma list_nth_next {
 //#endregion
 // === EDIT BELOW HERE ===
 
+// 1. getting the i-th node of linked list (HARD)
 { (v == #v) * (i == #i) * cc_sll(#v, #vs, #xs) * (0 <= #i) * (#i < (len #vs)) }
 function get_node_at(v, i) {
   size := [v];
@@ -161,6 +199,18 @@ function get_node_at(v, i) {
     //-[[ assert {bind: #vss} (#vs == val :: #vss)]];
     //-[[ fold list_nth(#xs, j, prev)]];
     //-[[ fold list_nth(#vs, j, val) ]];
+    //?? There are primarily three components to the loop invariant:
+    //? - The lseg predicate, which describes the list of pointers that
+    //?   have already been traversed,
+    //? - (prev -b> val, node), which describes the current node the loop
+    //?   is at, and
+    //? - The sll predicate, which describes the list of pointers that have
+    //?   not yet been traversed.
+    //? Note that before we enter the loop, the sll predicate should describe
+    //? the entire list, but the sll predicate we have so far probably only
+    //? describes the last element of the list. One needs to 'concatenate'
+    //? the lseg and sll predicates in the current state to get the desired
+    //? sll predicate.
     [[ invariant {bind: prev, node, val, j, #start, #end, #startp, #endp} 
         (i == #i) * (prev -b> val, node) * 
         lseg(head, prev, #start, #startp) * sll(node, #end, #endp) * 
@@ -186,6 +236,9 @@ function get_node_at(v, i) {
     [r] := val;
     [r + 1] := node;
     [r + 2] := prev;
+    //?? If you concatenated the lseg and sll predicate before entering the loop,
+    //? you now need to 'undo' the concatenation so that you can fold back towards
+    //? the cc_sll predicate.
     //-[[ assert {bind: #ys, #zs, #yss, #zss} lseg(#h, prev, #ys, #yss) * sll(node, #zs, #zss)]];
     //-[[ apply lseg_append(#h, prev, #ys, val, node, #yss) ]];
     //-[[ apply concat_lseg_sll(#h, node, #ys@[val], #zs, #yss@[prev], #zss) ]];
@@ -198,6 +251,7 @@ function get_node_at(v, i) {
 { (ret -b> #val, #node, #prev) * cc_sll(#v, #vs, #xs) * list_nth(#xs, #i, #prev) * list_nth(#vs, #i, #val) }
 
 
+// 2. counting the number of v's in a singly-linked list (MEDIUM)
 { (v == #v) * (k == #k) * cc_sll(#v, #vs, #xs) }
 function cc_slist_contains(v, k) {
   //-[[ assert {bind: #size} (v -b> #size, #h, #t) ]];
