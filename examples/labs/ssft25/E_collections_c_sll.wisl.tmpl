@@ -316,8 +316,8 @@ function cc_slist_contains(v, k) {
       //-[[ apply list_count_append_true(#start, k, count, val) ]];
       count := count + 1
     } else {
-      skip
       //-[[ apply list_count_append_false(#start, k, count, val) ]];
+      skip
     };
     node := [node + 1];
     //-[[ apply lseg_append(head, #node, #start, val, node, #startp) ]]
