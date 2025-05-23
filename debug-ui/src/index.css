@@ -8,7 +8,8 @@ body {
 
 .sedap__nodeWrap {
   overflow: hidden;
-  border-color: var(--vscode-editorCursor-foreground);
+  --node-border: var(--node-highlight, --vscode-editorCursor-foreground);
+  border-color: var(--node-border);
 }
 
 .sedap__nodeBadge {
@@ -20,7 +21,7 @@ body {
 
 .sedap__node {
   background: linear-gradient(var(--vscode-editor-background), var(--vscode-editor-background));
-  border-color: var(--vscode-editorCursor-foreground);
+  border-color: var(--node-border);
 }
 
 [data-sedap-node-selected] {
@@ -43,27 +44,34 @@ body {
     linear-gradient(var(--vscode-editor-background), var(--vscode-editor-background));
 }
 
-[data-sedap-node-highlight="error"] .sedap__node {
-  border-color: var(--vscode-editorError-foreground);
+[data-sedap-node-highlight="error"] {
+  --node-highlight: var(--vscode-editorError-foreground);
 }
 
-.sedap__nodeWrap[data-sedap-node-highlight="error"] {
-  border-color: var(--vscode-editorError-foreground);
+[data-sedap-node-highlight="success"] {
+  --node-highlight: var(--vscode-testing-iconPassed);
+}
+
+.sedap__highlightIcon {
+  color: var(--node-highlight);
+  display: flex;
 }
 
 .sedap__nodeText {
   font-family: var(--vscode-editor-font-family);
   text-wrap: nowrap;
   text-align: center;
-  width: 100%;
   display: inline-block;
 }
 
 .sedap__nodeWrap .sedap__nodeText {
   display: inline-block;
-  width: calc(100% - 0.5em);
   text-overflow: ellipsis;
   overflow: hidden;
+}
+
+.sedap__nodeTooltip .sedap__nodeText {
+  width: 100%;
 }
 
 .sedap__nodeTooltipItem {
@@ -129,7 +137,7 @@ body {
 }
 
 .react-flow__minimap-mask {
-  fill: var(--vscode-editor-selectionBackground);
+  fill: color(from var(--vscode-editor-selectionBackground) srgb r g b / 0.25);
 }
 
 vscode-panel-view {
