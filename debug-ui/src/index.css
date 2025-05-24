@@ -1,8 +1,15 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--vscode-editor-background);
-  color: var(--vscode-editor-foreground);
+  --background: var(--vscode-editor-background);
+  --foreground: var(--vscode-editor-foreground);
+  --success: var(--vscode-testing-iconPassed);
+  --error: var(--vscode-editorError-foreground);
+  --warning: var(--vscode-editorWarning-foreground);
+  --info: var(--vscode-editorInfo-foreground);
+  --hint: var(--vscode-editorHint-foreground);
+  background-color: var(--background);
+  color: var(--foreground);
   --tooltip-background: var(--vscode-editorWidget-background)
 }
 
@@ -20,7 +27,7 @@ body {
 }
 
 .sedap__node {
-  background: linear-gradient(var(--vscode-editor-background), var(--vscode-editor-background));
+  background: linear-gradient(var(--background), var(--background));
   border-color: var(--node-border);
 }
 
@@ -35,21 +42,21 @@ body {
 [data-sedap-node-selected="primary"] .sedap__node {
   background:
     linear-gradient(var(--vscode-editor-selectionBackground), var(--vscode-editor-selectionBackground)),
-    linear-gradient(var(--vscode-editor-background), var(--vscode-editor-background));
+    linear-gradient(var(--background), var(--background));
 }
 
 [data-sedap-node-selected="secondary"] .sedap__node {
   background:
     linear-gradient(var(--vscode-editor-inactiveSelectionBackground), var(--vscode-editor-inactiveSelectionBackground)),
-    linear-gradient(var(--vscode-editor-background), var(--vscode-editor-background));
+    linear-gradient(var(--background), var(--background));
 }
 
 [data-sedap-node-highlight="error"] {
-  --node-highlight: var(--vscode-editorError-foreground);
+  --node-highlight: var(--error);
 }
 
 [data-sedap-node-highlight="success"] {
-  --node-highlight: var(--vscode-testing-iconPassed);
+  --node-highlight: var(--success);
 }
 
 .sedap__highlightIcon {
@@ -84,7 +91,7 @@ body {
 }
 
 .react-flow__edge-textbg {
-  fill: var(--vscode-editor-background);
+  fill: var(--background);
 }
 
 .react-flow__edge-path {
@@ -96,7 +103,7 @@ body {
 }
 
 .react-flow__background {
-  background-color: var(--vscode-editor-background);
+  background-color: var(--background);
 }
 
 .react-flow__controls.minimapControl {
@@ -128,12 +135,12 @@ body {
 
 .react-flow__minimap {
   border: 2px solid var(--vscode-editorCursor-foreground);
-  background: var(--vscode-editor-background);
+  background: var(--background);
 }
 
 .react-flow__minimap-node {
   fill: var(--vscode-editor-inactiveSelectionBackground);
-  stroke: var(--vscode-editor-foreground);
+  stroke: var(--foreground);
 }
 
 .react-flow__minimap-mask {

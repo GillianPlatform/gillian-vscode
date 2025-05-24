@@ -12,6 +12,7 @@ import { CurrentSteps, Nodes } from "@gillianplatform/sedap-vscode-ui";
 import Controls from "./Controls";
 import ControlButton from "./ControlButton";
 import { VscMap } from "react-icons/vsc";
+import Status from "./Status";
 
 const Wrap = styled.div`
   width: 100%;
@@ -38,6 +39,7 @@ export type MapViewProps = {
   toggleMinimap: () => void;
   substitutionsVisible: boolean;
   toggleSubstitutions: () => void;
+  status: [boolean, boolean] | undefined;
 };
 
 function MapView({
@@ -52,6 +54,7 @@ function MapView({
   toggleMinimap,
   substitutionsVisible,
   toggleSubstitutions,
+  status,
 }: MapViewProps) {
   const traceViewProps: TraceViewProps = {
     root,
@@ -76,6 +79,7 @@ function MapView({
     <Wrap>
       <MapWrap>
         <TraceView {...traceViewProps}>
+          <Status status={status} />
           <Controls>
             <ControlButton
               active={!substitutionsVisible}

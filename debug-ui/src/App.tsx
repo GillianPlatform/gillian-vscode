@@ -10,6 +10,7 @@ import { MapRoot } from "@gillianplatform/sedap-types";
 
 type Ext = {
   substs: Record<string, Subst[] | undefined>;
+  status?: [boolean, boolean];
 };
 
 type DerivedRoots = Record<string, Record<string, string>>;
@@ -60,6 +61,7 @@ const renderMapTab = (
     toggleMinimap,
     substitutionsVisible,
     toggleSubstitutions,
+    status: ext?.status,
   };
   const content = (
     <MapView
