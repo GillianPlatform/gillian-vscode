@@ -2,7 +2,7 @@
   "name": "gillian",
   "publisher": "gillianplatform",
   "displayName": "The Gillian Platform",
-  "icon": "gillian.png",
+  "icon": "./icons/gillian.png",
   "version": "0.0.1",
   "description": "Gillian integration for VSCode",
   "author": {
@@ -85,7 +85,11 @@
         "extensions": [
           ".wisl"
         ],
-        "configuration": "./syntaxes/wisl.language-config.json"
+        "configuration": "./syntaxes/wisl.language-config.json",
+        "icon": {
+          "light": "./icons/wisl-light.png",
+          "dark": "./icons/wisl-dark.png"
+        }
       },
       {
         "id": "gil",

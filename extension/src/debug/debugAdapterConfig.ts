@@ -39,7 +39,7 @@ export function activateDebugAdapter(context: vscode.ExtensionContext) {
       if (session.type !== DEBUG_TYPE) {
         return;
       }
-      const panelIcon = vscode.Uri.joinPath(context.extensionUri, "gillian.svg");
+      const panelIcon = vscode.Uri.joinPath(context.extensionUri, "icons", "gillian.png");
       const webviewOptions: WebviewPanelOptions & WebviewOptions = {
         ...defaultWebviewOptions,
         localResourceRoots: [getWebviewResourceRoot(context)],
