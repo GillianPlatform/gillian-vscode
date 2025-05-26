@@ -1,4 +1,4 @@
-// ========== 05 - Applying lemmas ==========
+// ========== 5 - Applying lemmas ==========
 //
 // In this exercise, we'll demonstrate the final tactic you'll need for this lab: apply.
 //
@@ -22,7 +22,7 @@
 // (which is verified similarly to a function), but a deeper dive into lemmas
 // is outside the scope of this lab. For these exercises, the lemmas can be
 // given without proof.
-// 
+//
 // Lemmas will always be provided for you; since lemmas themselves are not
 // verified in this lab, we advise against writing your own.
 //
@@ -30,22 +30,21 @@
 // twice (once for the empty list, and once for the single element), we can use
 // the 'singleton_list' lemma, which takes in as a premise the cell assertion
 // (t -b> v, null) (established by the previous two instructions), and produces
-// the completed predicate. 
+// the completed predicate.
 //
 // Try verifying list_get and list_member_func using the provided lemmas.
 //
 // Bonus challenge 1: can you verify list_get without using the lemma?
-// Bonus challenge 2: Is the lemma for list_member_func actually necessary? 
+// Bonus challenge 2: Is the lemma for list_member_func actually necessary?
 //                    Can we remove it by modifying something else?
 
-// === DON'T EDIT THIS ===
-//#region
+//#region  === DON'T EDIT THIS ===
 
 @config manual_fold : true
 
 lemma singleton_list {
   statement:
-    forall t, v. 
+    forall t, v.
       (t -b> v, null) |- list(t, [ #v ])
   proof:
     fold list(null, []);
@@ -89,11 +88,10 @@ lemma list_member_create {
       list(x, vs) |- list(x, vs) * list_member(vs, k, #r)
 }
 
-//#endregion
-// === EDIT BELOW HERE ===
+//#endregion  === EDIT BELOW HERE ===
 
-{ (x == #x) * (i == #i) * (x != null) * list(x, #vs)
-  * list_search(#vs, #i, #r) * (i >= 0) }
+{ (x == #x) * (i == #i) * (x != null) * list(x, #vs) *
+    list_search(#vs, #i, #r) * (i >= 0) }
 function list_get(x, i) {
   //-[[ unfold list(x, #vs) ]];
   //-[[ unfold list_search(#vs, #i, #r) ]];

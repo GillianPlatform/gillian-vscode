@@ -1,11 +1,11 @@
-// ========== Exercise G: Fibonacci ==========
-// 
-// A simple example of recursiveness vs iteration, with Fibonacci!
+// ========== 8 - Fibonacci ==========
+//
+// A simple example of recursion vs iteration, with Fibonacci!
 //
 // This will get you thinking about pure vs non-pure predicates; one
 // is more restrictive than the other in terms of what you can do with it.
 
-// === DON'T EDIT THIS ===
+//#region  === DON'T EDIT THIS ===
 
 @config manual_fold: false
 
@@ -19,7 +19,7 @@ lemma fib_copy {
   statement:
     forall n, r.
       fib(n, r) |- fib(n, r) * fib(n, r)
-  
+
   proof:
     unfold fib(n, r);
     if(n <= 1) {
@@ -34,18 +34,18 @@ lemma fib_copy {
     fold fib(n, r)
 }
 
-// === EDIT BELOW HERE ===
+//#endregion  === EDIT BELOW HERE ===
 
-//+Note here how in automatic mode, Gillian is capable of proving the 
-//+recursive function automatically, without lemmas or anything.
+// Note here how in automatic mode, Gillian is capable of proving the recursive
+// function automatically, without lemmas or anything.
 
 { (n == #n) * (#n: Int) }
 function fib_rec(n) {
-  if(n < 2) { 
+  if(n < 2) {
     if(n <= 0) {
       r := 0
     } else {
-      r := 1  
+      r := 1
     }
   } else {
     a := fib_rec(n - 1);
@@ -57,7 +57,7 @@ function fib_rec(n) {
 { (ret == #res) * fib(#n, #res) }
 
 
-//+With the iterative style however, things get a bit more involved!
+// With the iterative style however, things get a bit more involved!
 
 { (n == #n) * (#n: Int) }
 function fib_iter(n) {
@@ -73,7 +73,7 @@ function fib_iter(n) {
     i := 2;
     [[ invariant {bind: b, r, i}
       fib(i - 1, b) * fib(i, r) *
-      (2 <= i) * (i <= n) * (n == #n)
+        (2 <= i) * (i <= n) * (n == #n)
     ]];
     while(i < n) {
       i := i + 1;

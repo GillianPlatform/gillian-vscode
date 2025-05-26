@@ -1,4 +1,4 @@
-// ========== 04 - The 'assert' tactic ==========
+// ========== 4 - The 'assert' tactic ==========
 //
 // In this exercise, you will learn one of Gillian's proof tactics: assert.
 //
@@ -22,11 +22,10 @@
 //
 // This is demonstrated below; try stepping through list_pop with the debugger
 // and observe how the state changes after performing the assert tactic.
-// 
+//
 // Knowing this, try using assert while verifying list_reverse and find_min.
 
-// === DON'T EDIT THIS ===
-//#region
+//#region  === DON'T EDIT THIS ===
 
 @config manual_fold : true
 
@@ -74,8 +73,7 @@ predicate min(+vs, v : Int) {
   (vs == #v :: #vs) * (#v <= #min) * min(#vs, #min) * (v == #v)
 }
 
-//#endregion
-// === EDIT BELOW HERE ===
+//#endregion  === EDIT BELOW HERE ===
 
 { (x == #x) *  list(#x, #vs) }
 function list_reverse(x) {

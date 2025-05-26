@@ -1,4 +1,4 @@
-const { join, sep } = require("path");
+const { join, sep, dirname } = require("path");
 const fs = require("fs");
 
 const fileSuffix = ".tmpl";
@@ -71,8 +71,9 @@ function splitFileName(file) {
 }
 
 function write(path, filename, content) {
-  fs.mkdirSync(path, { recursive: true });
   const file = join(path, filename);
+  const dir = dirname(file);
+  fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(file, content);
 }
 

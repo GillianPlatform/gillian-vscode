@@ -26,8 +26,7 @@
 // time complexity of operations like concat (O(1) instead of O(n)), but make
 // the verification process more involved.
 
-// === DON'T EDIT THIS ===
-//#region
+//#region  === DON'T EDIT THIS ===
 
 @config manual_fold : false
 
@@ -55,7 +54,7 @@ lemma dlsegl_append_right {
 }
 
 // Similarly, for dlsegr, it would be helpful if we could prepend a node to the
-// start of the list. 
+// start of the list.
 lemma dlsegr_append_left {
   statement:
     forall x, a, z, w, y, v, vs.
@@ -92,7 +91,7 @@ predicate dlist(+x, +y, vs) {
 }
 
 // Finally, we have the dlseg_concat lemma, which concatenates two
-// doubly-linked list segments. 
+// doubly-linked list segments.
 lemma dlseg_concat {
   statement:
     forall x_a, v_a, w_a, vs_a, x_b, y_b, v_b, vs_b.
@@ -100,11 +99,10 @@ lemma dlseg_concat {
         |- dlsegl(x_a, y_b, v_b, w_a, (vs_a @ vs_b))
 }
 
-//#endregion
-// === EDIT BELOW HERE ===
+//#endregion  === EDIT BELOW HERE ===
 
-{ (x_a == #x_a) * (v_a == #v_a) * (x_b == #x_b) * (v_b == #v_b)
-    * dlist(#x_a, #v_a, #vs_a) * dlist(#x_b, #v_b, #vs_b) }
+{ (x_a == #x_a) * (v_a == #v_a) * (x_b == #x_b) * (v_b == #v_b) *
+  dlist(#x_a, #v_a, #vs_a) * dlist(#x_b, #v_b, #vs_b) }
 function concat(x_a, v_a, x_b, v_b) {
   r := new(2);
   if (x_a == null) {
