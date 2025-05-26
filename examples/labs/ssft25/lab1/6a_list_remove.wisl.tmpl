@@ -26,6 +26,7 @@ predicate l_member(+vs, +v, r : Bool) {
 function list_remove_weak(x, k) {
   //-[[ unfold list(x, #vs) ]];
   if (x == null) {
+    //+skip
     //-[[ fold list(x, #vs) ]];
     //-[[ fold l_member([], #k, false) ]]
   } else {

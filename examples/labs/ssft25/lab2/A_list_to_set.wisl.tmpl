@@ -112,11 +112,10 @@ function remove_duplicates(x) {
     v := [x];
     next := [x + 1];
     r := remove_duplicates(next);
-    //+mem := set_list_member(r, v)
     //-[[ assert {bind: #s} set_list(r, #s)]];
     //-[[ assert {bind: #v, #vss} (#vs == #v :: #vss) ]];
     //-[[ apply set_list_member_create(r, v, #s) ]];
-    //-mem := set_list_member(r, v);
+    mem := set_list_member(r, v);
     //-[[ apply contains_all_prepend(#s, #vss, #v) ]];
     if (mem) {
       skip
@@ -140,11 +139,10 @@ function remove_duplicates_strong(x) {
     v := [x];
     next := [x + 1];
     r := remove_duplicates_strong(next);
-    //+mem := set_list_member(r, v)
     //-[[ assert {bind: #s} set_list(r, #s)]];
     //-[[ assert {bind: #v, #vss} (#vs == #v :: #vss) ]];
     //-[[ apply set_list_member_create(r, v, #s) ]];
-    //-mem := set_list_member(r, v);
+    mem := set_list_member(r, v);
     //-[[ apply contains_all_prepend(#s, #vss, #v)]];
     if (mem) {
       skip

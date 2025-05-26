@@ -36,8 +36,8 @@ lemma fib_copy {
 
 //#endregion  === EDIT BELOW HERE ===
 
-//+Note here how in automatic mode, Gillian is capable of proving the
-//+recursive function automatically, without lemmas or anything.
+// Note here how in automatic mode, Gillian is capable of proving the recursive
+// function automatically, without lemmas or anything.
 
 { (n == #n) * (#n: Int) }
 function fib_rec(n) {
@@ -57,7 +57,7 @@ function fib_rec(n) {
 { (ret == #res) * fib(#n, #res) }
 
 
-//+With the iterative style however, things get a bit more involved!
+// With the iterative style however, things get a bit more involved!
 
 { (n == #n) * (#n: Int) }
 function fib_iter(n) {
