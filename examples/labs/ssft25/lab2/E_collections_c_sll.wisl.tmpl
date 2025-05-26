@@ -38,6 +38,7 @@
 //      CC_ERR_OUT_OF_RANGE     = 8,
 //      CC_ITER_END             = 9,
 //  };
+//
 // In WISL, you are always guaranteed a memory allocation, so when porting these
 // functions, we never return CC_ERR_ALLOC.
 //
@@ -46,6 +47,8 @@
 //
 //   [[ if (condition) {tactics} else {tactics} ]]
 //
+// The solutions assume the exercises 1 and 2 are done in auto mode, 
+// while 3 and 4 are done in manual.
 //#region  === DON'T EDIT THIS ===
 
 @config manual_fold : true
@@ -54,7 +57,8 @@
 // lseg predicates seen in previous, exercises, we have an additional parameter
 // delta, which denotes the list of pointer addresses composing the linked list.
 // As we will see, this is useful for verifying get_node_at, which returns the
-// *address* of the i-th node of the list.
+// *address* of the i-th node of the list. For lseg we made that (x != y) assertion
+// explicit to help Gillian in the branching process.
 
 predicate sll(+x, alpha, delta) {
     // empty
@@ -98,11 +102,29 @@ predicate cc_sll(+x, alpha, delta) {
   cc_sll_ht(x, #h, #t, alpha, delta)
 }
 
+// For contains, we have the list_count predicate that states:
+// For a list vs and an element k, element k appears n times in the list.
+
 predicate list_count(+vs, +k, n : Int) {
   (vs == []) * (n == 0);
   (vs == k :: #vss) * list_count(#vss, k, #m) * (n == #m + 1);
   (vs == #v :: #vss) * (#v != k) * list_count(#vss, k, n)
 }
+
+// For list_get, to model the semantics of the collections-C get_node_at function,
+// predicate cc_get is made.
+// It states that, for a pointer v and its repective lists vs and xs, index i, return value r,
+// we have the following cases:
+// 1. i is beyond the list, so we return nothing with status CC_ERR_OUT_OF_RANGE.
+// 2. Our list is a single node and i == 0, so we just return the head (and prev is null)
+// 3. We have our usual list from cc_sll, and i == 0, so we return the head.
+// 4. We have a broken up list, (vs == vs1 @ [ val ] @ vs2 @ [ last ] ) and i is related
+// by len(vs1) == i - 1. 
+//
+// The reason we have this separation is due to the fact that we want to keep the information
+// of the head of the tail always, so we must provide branching cases for this. Also,
+// lseg does not allow us to represent the previous as null, so we must account this in a
+// separate case.
 
 predicate nounfold cc_get(+v, +i : Int, +r, vs, xs) {
   cc_sll(v, vs, xs) * (i >= len(vs)) * (r -b> 8, null, null);

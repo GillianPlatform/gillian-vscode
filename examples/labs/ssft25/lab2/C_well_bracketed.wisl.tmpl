@@ -77,6 +77,7 @@ function list_pop(x) {
 { (x == #x) * (s == #s) * list(#x, #a) * list(#s, #b) * wbs(#a, #b, #r) }
 function wellBr_helper(x, s) {
   ok := true;
+  //-[[ unfold wbs(#a, #b, #r) ]];
   if (x == null) {
     if (s != null) {
       ok := false
@@ -139,26 +140,26 @@ predicate nonBracket(+c : String) {
 predicate wbs(+a, +b, r : Bool) {
 //-  // base case
 //-  (a == []) * (b == []) * (r == true);
-//-
+//- 
 //-  // base case when stack is non-empty
 //-  (a == []) * (b == #d :: #b) * (r == false);
-//-
+//- 
 //-  // open brackets case
 //-  (a == #c :: #a) *
 //-  openBracket(#c) *
 //-  wbs(#a, #c :: b, r);
-//-
+//- 
 //-  // close brackets true case
 //-  (a == #c :: #a) *
 //-  closeBracket(#c) *
 //-  (b == #d :: #b) *
 //-  ((#d == "<") /\ (#c == ">") \/ ((#d == "[") /\ (#c == "]"))) *
 //-  wbs(#a, #b, r);
-//-
+//- 
 //-  // close brackets empty case
 //-  (a == #c :: #a) * closeBracket(#c) *  (b == []) * (r == false)
 //-    * wbs(#a, [], #r);
-//-
+//- 
 //-  // close brackets false case
 //-  (a == #c :: #a) *
 //-  closeBracket(#c) *
@@ -166,7 +167,7 @@ predicate wbs(+a, +b, r : Bool) {
 //-  (((#d != "<") \/ (#c != ">")) /\ ((#d != "[") \/ (#c != "]"))) *
 //-  (r == false) *
 //-  wbs(#a, #b, #r);
-//-
+//- 
 //-  // no brackets case
 //-  (a == #c :: #a) *
 //-  nonBracket(#c) *

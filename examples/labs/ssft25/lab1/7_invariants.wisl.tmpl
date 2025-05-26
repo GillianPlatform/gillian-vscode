@@ -37,7 +37,8 @@
 // ability to step through the loop.
 //
 // Try verifying list_length_iter and list_concat_iter using the listseg
-// predicate and its lemmas.
+// predicate and its lemmas. Gillian is set as manual mode, in order for you 
+// to understand exactly what is happening in the loops.
 
 //#region  === DON'T EDIT THIS ===
 
@@ -78,11 +79,20 @@ lemma listseg_to_list {
 function list_length_iter(x) {
   y := x;
   n := 0;
+  //?? List length iter hint 1:
+  //? Remember that it is in manual mode, so you don't have the base case of
+  //? listseg.
   //-[[ fold listseg(x, y, [])]];
   [[ invariant {bind: n, y, #vs1,  #vs2}
       listseg(x, y, #vs1) * list(y, #vs2) *
          (#vs == (#vs1 @ #vs2)) * (n == len #vs1) ]];
   while (y != null) {
+    //?? List length iter hint 2:
+    //? We are modifying y to be the next part of the list.
+    //? In order to re-establish the loop invariant, we need to unpack list(y, #vs2)
+    //? to get the right predicate, and append it to listseg(x, y, #vs1).
+    //? However, we can't simply do it by folding and unfolding, so it is required
+    //? To use a lemma.
     //-[[ unfold list(y, #vs2)]];
     //-[[ assert {bind: #v, #z} y -b> #v, #z ]];
     y := [y + 1];

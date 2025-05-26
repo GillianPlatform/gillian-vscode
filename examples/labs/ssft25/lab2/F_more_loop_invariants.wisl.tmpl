@@ -66,7 +66,7 @@ lemma list_member_concat {
 //#region  === EDIT BELOW HERE ===
 
 { (x == #x) * list(#x, #vs) }
-function SLL_copy_iter(x){
+function list_copy_iter(x){
     y := null;
     if (x == null){
       skip
@@ -104,7 +104,7 @@ function SLL_copy_iter(x){
 { list(#x, #vs) * list(ret, #vs) }
 
 { (x == #x) * (k == #k) * list(#x, #vs) * list_member(#vs, #k, #r) }
-function SLL_member_iter(x, k) {
+function list_member_iter(x, k) {
   found := false;
   next := x;
   //-[[ fold listseg(x, next, [])]];
@@ -126,6 +126,9 @@ function SLL_member_iter(x, k) {
     //-[[ unfold list_member(#vs2, k, #rg) ]];
     //-[[ apply list_member_append(#vs1, k, false, #v) ]]
   };
+  //?? list_member_iter hint:
+  //? After the while loop, you have the condition as a disjunction. You can
+  //? separate it into two different cases with the conditional tactic.
   //-[[ if (found == false) {
   //-    apply listseg_to_list(#x);
   //-    unfold list_member([], #k, false)
