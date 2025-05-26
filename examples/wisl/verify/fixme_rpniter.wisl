@@ -1,15 +1,19 @@
 
 @config manual_fold : false
 
+predicate nounfold token(+x) {
+  x : Int;
+  ((x == "+") || (x == "-"))
+}
 predicate list(+x, vs) {
   (x == null) * (vs == []);
-  (x -b> #v, #next) * list(#next, #vs) *
+  (x -b> #v, #next) * list(#next, #vs) * token(#v) *
   (vs == #v :: #vs)
 }
 
 predicate lseg(+x, y, vs) {
   (x == y) * (vs == []);
-  (x -b> #v, #next) * lseg(#next, y, #vs) * (vs == #v :: #vs)
+  (x -b> #v, #next) * lseg(#next, y, #vs) * (vs == #v :: #vs) * token(#v)
 }
 
 lemma lseg_append {
@@ -43,15 +47,6 @@ lemma lseg_to_list {
     }
 }
 
-{ (v == #v) }
-function list_allocate_node(v) {
-  t := new(2);
-  [t] := v;
-  [[ fold list(null, []) ]];
-  [[ fold list(t, [ #v ]) ]];
-  return t
-}
-{ list(ret, [ #v ]) }
 
 { (x == #x) * (k == #k) * (#k: Int) * list(#x, #vs) }
 function list_push(x, k) {
@@ -71,6 +66,7 @@ function list_push_end(x, k) {
     x := new(2);
     [x] := k;
     [x + 1] := null;
+    [[ fold list(null, [])]]
   } else {
     next := [x + 1];
     z := list_push_end(next, k);
@@ -138,81 +134,110 @@ predicate re(+ts, +ns, r : Int) {
   ((#op == "+") || (#op == "-"))
 }
 
-//predicate re_iter(+ts, +vs, +ns, 
+predicate re_iter(+ts, ns, r : Int, is_ok : Bool) {
+  // base case, no rpn terms equates to 0 (Only used to initialize)
+  (ts == []) * (ns == []) * (r == 0) * (is_ok == true);
 
-// We are intereted in 5 transformations:
-// Base case:
-// • re_iter(ts, [], [], true, 0)
-// Consume number:
-// • re_iter(n::ts, vs, ns, true, _) * (n: Int) 
-//     -* re_iter(ts, n::vs, n::ns, true, n)
-// Consume operator (success):
-// • re_iter("+"::ts, vs, l::r::ns, true, _) * (n == (l + r))
-//     -* re_iter(ts, "+"::vs, n::ns, true, n)
-// Consume operator (failure):
-// • re_iter("+"::ts, vs, ns, true, _) * (len(ns) < 2)
-//     -* re_iter(ts, "+"::vs, ns, false, 0)
-// Error state:
-// • re_iter(t::ts, vs, ns, false, 0)
-//     -* re_iter(ts, t::vs, ns, false, 0)
-// Finally, we must have that re_iter([], vs, _, _, res) -* rpn_eval(rev(vs), res)
+  // number
+  (ts == #n::#rest) * (#n: Int) * (r == #n) * (ns == #n :: #ns) *
+  re_iter(#rest, #ns, #r, is_ok);
 
-// ts: terms left to visit
-// vs: visited terms (reversed!)
-// ns: number stack
-// ok: if the RPN evaluated succesfully
-// r:  the resulting number; 0 if eval failed
-// predicate re_iter(+ts, +vs, +ns, ok : Bool, r : Int) {
-//   // base case
-//  (vs == []) * (ns == []) * (r == 0) * (ok == true);
-//   
-//   // number
-//   (ts == #n::#rest) * (#n: Int) *
-//   re(#rest, #n::vs, #n::ns, ok, r);
-// 
-//   // operators
-//   (#n: Int) * (#oldn == ([#l, #n - #l] @ #restn)) * ((#l+#r) == #n) *
-//   (ns == #n::#restn) * (vs == "+"::#restvs) *
-//   re("+"::ts, #restvs, #oldn, ok, r);
-// 
-// //  (#n: Int) *
-// //  (ns == #n::#restn) * (vs == "-"::#restvs) *
-// //  re("-"::ts, #restvs, tl(#restn), ok, r);
-// 
-//   // not enough numbers
-//   (ts == #op::#rest) * (len(ns) < 2) * (ok == false) * (r == 0) *
-//   ((#op == "+") || (#op == "-") ) 
-// }
+  // operators
+  (ts == "+"::#rest) * (#restn == #n1 :: #n2 :: #ns) * (r == #n1 + #n2) *
+  re_iter(#rest, #restn, #r, is_ok) * (ns == r :: #ns);
+  (ts == "-"::#rest) * (r == #n1 - #n2) *
+  (#restn == #n1 :: #n2 :: #ns) * (ns == r :: #ns) *
+  re_iter(#rest, #restn, #r, is_ok);
 
-lemma re_reconstruct_ok {
-  statement:
-    forall vs, ns, ok, r.
-      re([], vs, ns, ok, r) * (ns == #n::#restn) |- rpn_eval(rev(vs), true, #n) * (r == #n)
+  (ts == #op::#rest) * (ns == #restn) * (len(#restn) < 2) * (r == 0) * (is_ok == false) *
+  ((#op == "+") || (#op == "-")) * re_iter(#rest, #restn, #r, #is_ok);
+
+  // Propogate 
+  (ts == #tkn::#rest) * (ns == #restn) * (r == 0) * (is_ok == false) * re_iter(#rest, #restn, #r, false)
 }
 
-lemma re_reconstruct_nok {
-  statement:
-    forall vs, ns, ok, r.
-      re([], vs, ns, ok, r) * (ns == []) |- rpn_eval(rev(vs), false, 0)
+predicate nounfold rpn_eval_iter(+ts, r : Int, is_ok : Bool) {
+  re_iter(ts, #ns, r, is_ok)
 }
 
+lemma rpn_eval_concat_false {
+  statement:
+    forall terms, m_terms.
+      re_iter(m_terms, #nums2, #res2, #is_ok) * re_iter(terms, #nums, #res, false) |- re_iter(m_terms @ terms, #nums3, #res3, false)
+}
 
-{ (h == #h) * list(#h, #terms) }
+{ (x == #x) * (y == #y) * list(y, #m_terms) * list(x, #terms) * re_iter(#terms, #nums, #res, false) * re_iter(#m_terms, #nums2, #res2, #is_ok2) }
+function rpn_eval_concat_false(x, y) {
+  [[ unfold list(y, #m_terms) ]];
+  if ( y == null) {
+    skip
+  } else {
+    [[ unfold re_iter(#m_terms, #nums2, #res2, #is_ok2) ]];
+    next := [y + 1];
+    val := [y];
+    r := rpn_eval_concat_false(x, next)
+  };
+
+  return true
+}
+{ re_iter(#m_terms @ #terms, #nums3, #res3, false) }
+
+// TODO Not exactly correct
+lemma rpn_eval_create {
+  statement:
+    forall x, vs.
+      list(x, vs) |- list(x, vs) * re_iter(rev(vs), #nums, #res, #is_ok)
+}
+
+{ (x == #x) * list(x, #vs) }
+function rpn_eval_creation(x) {
+  if (x == null) {
+    skip
+  } else {
+    next := [x + 1];
+    r := rpn_eval_creation(next);
+    [[ assert {bind: #t, #vss} (#vs == #t :: #vss) ]];
+    [[ assert {bind: #nums2, #res2, #is_ok2} re_iter(#vss, #nums2, #res2, #is_ok2)]];
+    [[ if (#res2 == #t) {
+
+    } else {
+      if (#is_ok2 == false) {
+
+      } else {
+        unfold token(#t);
+        if ((#t == "-") || (#t == "+")) {
+          if (len(#nums2) < 2) {
+
+          } else {
+            assert {bind: #n1, #n2} (hd(#nums2) == #n1) * (hd(tl(#nums2)) == #n2)
+          }
+        } else {
+
+        }
+      }
+    }]]
+  };
+  return true
+}
+{ list(#x, #vs) * re_iter(#vs, #nums, #res, #is_ok) }
+
+{ (h == #h) * list(h, #terms) }
 function eval_rpn(h) {
   head := h;
   is_ok := true;
   n := null;
   res := 0;
-  [[ fold re(#rest, [], [], true, 0) ]];
-  [[ invariant {bind: h, n, res, is_ok}
+  [[ fold lseg(head, h, [])]];
+  [[ fold list(n, [])]];
+  [[ fold re_iter([], [], res, is_ok)]];
+  [[ invariant {bind: h, n, res, is_ok, #start, #rest, #n, #nums}
     lseg(head, h, #start) *
     list(h, #rest) *
-    (#terms == (#start @ #rest)) *
-    (n == #n) *
-    list(#n, #nums) *
-    re(#rest, rev(#start), #nums, is_ok, res)
+    (n == #n) * (#terms == (#start @ #rest)) *
+    list(n, #nums) *
+    re_iter(rev(#start), #nums, res, is_ok)
   ]];
-  while (h != null && is_ok == true) {
+  while ((h != null) && (is_ok == true)) {
     [[ unfold list(h, #rest) ]];
     [[ assert
       (h -b> #tok, #next) *
@@ -222,7 +247,6 @@ function eval_rpn(h) {
     token := [h];
     h := [h + 1];
     [[ apply lseg_append(head, #start, #tok, h) ]];
-    [[ assert (((#start @ [#tok]) @ #rest2) == #terms) ]];
     is_op := (token == "+") || (token == "-");
     if(is_op) {
       // operator: apply, add to stack, recurse
@@ -230,51 +254,132 @@ function eval_rpn(h) {
       if(n_len >= 2) {
         [[ assert list(#n, [#l, #r] @ #numsrest)
           * (#nums == ([#l, #r] @ #numsrest)) ]];
+        [[ unfold list(n, [#l, #r] @ #numsrest)]];
         l := [n];
         n := [n + 1];
+        [[ unfold list(n, #r :: #numsrest)]];
         r := [n];
         n := [n + 1];
-        [[ assert list(n, #numbers) * (l == #l) * (r == #r) ]];
         assume_type (l, Int);
         assume_type (r, Int);
         if(token == "+") {
-          [[ assert re(#rest, rev(#start), #nums, #ok, res) ]];
           x := l + r;
           n := list_push(n, x);
-          [[ assert (#rest == "+"::#rest2)
-            * (#newnums == (#l+#r)::#oldnums)
-            * list(n, (#l+#r)::tl(tl(#nums))) ]];
-          [[ fold re(#rest2, "+"::rev(#start), (#l+#r)::(tl(tl(#nums))), #ok, #res) ]];
         } else {
           x := l - r;
           n := list_push(n, x);
-          [[ assert (#rest == "+"::#rest2)
-            * list(n, (#l+#r)::tl(tl(#nums))) ]];
-          [[ fold re(#rest2, "+"::rev(#start), (#l+#r)::(tl(tl(#nums))), #ok, #res) ]];
         };
+        res := x;
+        [[ fold re_iter(token :: rev(#start), x :: #numsrest, res, is_ok)]]
       } else {
         // not enough numbers -- give up
         res := 0;
         is_ok := false;
+        [[ fold re_iter(#tok :: rev(#start), #nums, 0, false)]]
       }
     } else {
       // number: add to stack, recurse
       assume_type (token, Int);
       n := list_push(n, token);
+      res := token;
+      [[ fold re_iter(#tok :: rev(#start), #tok :: #nums, res, is_ok)]]
     };
-  };
-
-  if(n == null) {
-    res := 0;
-    is_ok := false;
-  } else {
-    res := [n];
-    assume_type (res, Int);
   };
   ret_ := new(2);
   [ret_] := is_ok;
   [ret_ + 1] := res;
-  [[ fold rpn_eval(#terms, is_ok, #res) ]];
+  [[ if (h == null) {
+    unfold list(h, #rest);
+    fold rpn_eval_iter(rev(#terms), res, is_ok)
+  } else {
+    assert list(h, #rest);
+    assert lseg(head, h, #start);
+    apply rpn_eval_create(h, #rest);
+    apply rpn_eval_concat_false(rev(#start), rev(#rest));
+    fold rpn_eval_iter(rev(#terms), res, false)
+  }]];
   return ret_
 }
-{ (ret -b> #ok, #res2) * rpn_eval(#terms, #ok, #res) * (#ok == false || #res2 == #res) }
+{ (ret -b> #ok, #res) * rpn_eval_iter(rev(#terms), #res, #ok) }
+
+
+{ (h == #h) * list(h, #terms) }
+function eval_rpn_easy(h) {
+  head := h;
+  is_ok := true;
+  n := null;
+  res := 0;
+  [[ fold lseg(head, h, [])]];
+  [[ fold list(n, [])]];
+  [[ fold re_iter([], [], res, is_ok)]];
+  [[ invariant {bind: h, n, res, is_ok, #start, #rest, #n, #nums}
+    lseg(head, h, #start) *
+    list(h, #rest) *
+    (n == #n) * (#terms == (#start @ #rest)) *
+    list(n, #nums) *
+    re_iter(rev(#start), #nums, res, is_ok)
+  ]];
+  while ((h != null)) {
+    [[ unfold list(h, #rest) ]];
+    [[ assert
+      (h -b> #tok, #next) *
+      (#rest == #tok :: #rest2) *
+      lseg(head, h, #start) *
+      list(#next, #rest2) ]];
+    token := [h];
+    h := [h + 1];
+    [[ apply lseg_append(head, #start, #tok, h) ]];
+    if (is_ok == false) {
+      // propagate
+      res := 0;
+      [[ fold re_iter(#tok :: rev(#start), #nums, 0, false)]];
+      skip
+    } else {
+      is_op := (token == "+") || (token == "-");
+      if(is_op) {
+        // operator: apply, add to stack, recurse
+        n_len := list_length(n);
+        if(n_len >= 2) {
+          [[ assert list(#n, [#l, #r] @ #numsrest)
+            * (#nums == ([#l, #r] @ #numsrest)) ]];
+          [[ unfold list(n, [#l, #r] @ #numsrest)]];
+          l := [n];
+          n := [n + 1];
+          [[ unfold list(n, #r :: #numsrest)]];
+          r := [n];
+          n := [n + 1];
+          assume_type (l, Int);
+          assume_type (r, Int);
+          if(token == "+") {
+            x := l + r;
+            n := list_push(n, x);
+          } else {
+            x := l - r;
+            n := list_push(n, x);
+          };
+          res := x;
+          [[ fold re_iter(token :: rev(#start), x :: #numsrest, res, is_ok)]]
+        } else {
+          // not enough numbers -- give up
+          res := 0;
+          is_ok := false;
+          [[ fold re_iter(#tok :: rev(#start), #nums, 0, false)]]
+        }
+      } else {
+        // number: add to stack, recurse
+        assume_type (token, Int);
+        n := list_push(n, token);
+        res := token;
+        [[ fold re_iter(#tok :: rev(#start), #tok :: #nums, res, is_ok)]] 
+      }
+    };
+  };
+  ret_ := new(2);
+  [ret_] := is_ok;
+  [ret_ + 1] := res;
+  [[ unfold list(h, #rest) ]] ;
+  [[ fold rpn_eval_iter(rev(#terms), res, is_ok) ]];
+  [[ apply lseg_to_list(head)]];
+  return ret_
+}
+{ (ret -b> #ok, #res) * rpn_eval_iter(rev(#terms), #res, #ok) * list(#h, #terms) }

@@ -105,7 +105,7 @@ predicate nounfold cc_get(+v, +i : Int, +r, vs, xs) {
   (i == 0) * (v -b> 1, #h, #h) * (#h -b> #val, null) * (r -b> 0, null, #h) *
   (vs == [#val]) * (xs == [#h]);
 
-  (i == 0) * (v -b> #l, #h, #t) * (#h -b> #val, #node) *
+  (i == 0) * (v -b> #l, #h, #t) * (#h -b> #val, #node) * (#h != #t) *
   lseg(#node, #t, #beta, #gamma) * sll(#t, [#last], [ #t ]) *
   (vs == #val :: #beta @ [ #last ]) * (xs == #h :: #gamma @ [ #t ]) *
   (r -b> 0, null, #h);
@@ -164,8 +164,6 @@ lemma list_count_append_false {
 //#endregion  === EDIT BELOW HERE ===
 
 // 1. Prepending a value to the front of the list (EASY)
-//    (Note: this function verifies correctly in auto mode
-//     without any tactics)
 { (v == #v) * (x == #x) * cc_sll(#v, #vs, #xs) }
 function cc_slist_add_first(v, x) {
   node := new(2);
@@ -176,6 +174,8 @@ function cc_slist_add_first(v, x) {
     [v + 2] := node
   } else {
     head := [v + 1];
+    //-[[ assert {bind: #tail, #last} (v -b> size, head, #tail) * 
+    //- sll(#tail, [ #last ], [ #tail ])]];
     [node + 1] := head;
     [v + 1] := node
   };
@@ -209,7 +209,7 @@ function cc_slist_add_last(v, x) {
 
 // 3. Getting the i-th node of linked list (HARD)
 { (v == #v) * (i == #i) * cc_sll(#v, #vs, #xs) * (0 <= #i) }
-function get_node_at_better(v, i) {
+function get_node_at(v, i) {
   //-[[ unfold cc_sll_ht(#v, #h, #t, #vs, #xs)]];
   size := [v];
   r := new(3);
