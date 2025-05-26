@@ -544,7 +544,7 @@
           "name": "invalid.illegal.variable.wisl"
         },
         {
-          "match": "\\b[a-zA-Z][a-zA-Z_]*\\b",
+          "match": "\\b[a-zA-Z][a-zA-Z_0-9]*\\b",
           "name": "variable.program.wisl"
         },
         {
