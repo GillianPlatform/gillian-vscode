@@ -40,7 +40,12 @@
 //  };
 // In WISL, you are always guaranteed a memory allocation, so when porting these
 // functions, we never return CC_ERR_ALLOC.
-
+//
+// Note that you might need the conditional tactic for get_node_at and 
+// cc_slist_contains:
+//
+//   [[ if (condition) {tactics} else {tactics} ]]
+//
 //#region  === DON'T EDIT THIS ===
 
 @config manual_fold : true

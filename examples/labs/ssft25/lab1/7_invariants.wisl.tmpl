@@ -41,7 +41,7 @@
 
 //#region  === DON'T EDIT THIS ===
 
-@config manual_fold: false
+@config manual_fold: true
 
 predicate list(+x, vs) {
   (x == null) * (vs == []);
@@ -78,10 +78,12 @@ lemma listseg_to_list {
 function list_length_iter(x) {
   y := x;
   n := 0;
+  //-[[ fold listseg(x, y, [])]];
   [[ invariant {bind: n, y, #vs1,  #vs2}
       listseg(x, y, #vs1) * list(y, #vs2) *
          (#vs == (#vs1 @ #vs2)) * (n == len #vs1) ]];
   while (y != null) {
+    //-[[ unfold list(y, #vs2)]];
     //-[[ assert {bind: #v, #z} y -b> #v, #z ]];
     y := [y + 1];
     //+n := n + 1
@@ -95,12 +97,14 @@ function list_length_iter(x) {
 
 {(x == #x) * (y == #y) * list(#x, #xs) * list(#y, #ys) }
 function list_concat_iter(x, y){
+  //-[[ unfold list(x, #xs)]];
   if (x == null) {
     head := y
   } else {
     head := x;
     prev := head;
     next := [x + 1];
+    //-[[ fold listseg(head, prev, [])]];
     [[ invariant {bind: prev, next, #vs1, #vs2, #v}
           listseg(head, prev, #vs1) * (prev -b> #v, next) * list(next,  #vs2) *
            (#xs == #vs1 @ (#v :: #vs2)) ]];
