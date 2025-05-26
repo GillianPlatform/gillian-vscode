@@ -1,12 +1,11 @@
-// ========== 06a - List removal ==========
+// ========== 6a - List removal ==========
 //
 // In group of exercises, we will be looking at the many ways specifications
-// can be written and iterated upon. 
+// can be written and iterated upon.
 //
 // Using the list membership predicate, try to verify the following function.
 
-// === DON'T EDIT THIS ===
-//#region
+//#region  === DON'T EDIT THIS ===
 
 @config manual_fold : true
 
@@ -21,8 +20,7 @@ predicate l_member(+vs, +v, r : Bool) {
   (vs == #v :: #ws) * (#v != v) * l_member(#ws, v, r)
 }
 
-//#endregion
-// === EDIT BELOW HERE ===
+//#endregion  === EDIT BELOW HERE ===
 
 { (x == #x) * (k == #k) * list(#x, #vs) }
 function list_remove_weak(x, k) {

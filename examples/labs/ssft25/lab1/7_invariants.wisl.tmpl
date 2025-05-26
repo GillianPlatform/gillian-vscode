@@ -1,48 +1,52 @@
-// ========== 07 - Loop Invariants ==========
-// So far, we have mainly been dealing with recursive functions. 
+// ========== 7 - Loop Invariants ==========
+//
+// So far, we have mainly been dealing with recursive functions.
 // It is time to start working with iteration!
 //
 // Iteration in WISL takes the form of a while loop, following very similar
 // semantics as other programming languages. However, to verify a while loop,
-// a loop invariant must be supplied. 
+// a loop invariant must be supplied.
 //
-// Loop invariants are logical assertions that hold in every iteration of the loop.
-// With a loop invariant, we must prove two statements:
+// Loop invariants are logical assertions that hold in every iteration of the
+// loop. With a loop invariant, we must prove two statements:
 // - Before entering the loop, the loop invariant must hold.
-// - Given the current iteration, the loop invariant must hold for the next iteration 
-//   (also known as re-establishing the loop invariant) 
+// - Given the current iteration, the loop invariant must hold for the next
+//   iteration (also known as re-establishing the loop invariant)
 //
-// With these two statements, we can utilize the loop invariant after the loop along
-// with the termination condition. This helps prove the postcondition.
+// With these two statements, we can utilize the loop invariant after the loop
+// along with the termination condition. This helps prove the postcondition.
 //
-// In order to reason about singly-linked lists with loop invariants, we need more information,
-// particularily about a specific segment of the list. For this, the listseg(x, y, #vs) predicate 
-// is formed (see below), denoting a list segment that starts at x and ends in y, and has contents #vs.
-// We can use this to reason about an intermediate iteration on the list, while keeping information
-// about the whole list. 
+// In order to reason about singly-linked lists with loop invariants, we need
+// more information, particularily about a specific segment of the list. For
+// this, the listseg(x, y, #vs) predicate is formed (see below), denoting a list
+// segment that starts at x and ends in y, and has contents #vs. We can use this
+// to reason about an intermediate iteration on the list, while keeping
+// information about the whole list.
 //
-// The following diagram depicts how listseg might be used for loop invariants. 
+// The following diagram depicts how listseg might be used for loop invariants.
 //
 //           listseg(x, y, vs1)              list(y, vs2)
 //       |---------------------|---|      |-----------------|
-// x |-> |                     | y | |->  |                 | 
+// x |-> |                     | y | |->  |                 |
 //       |---------------------|---|      |-----------------|
 //
-// 
-// In the debugger, in order to see the loop of the body, you must step to the loop condition 
-// and click the small arrow in the box. This will open up the matching plan for the loop invariant at the beginning
-// and give you the ability to step through the loop.
-// 
-// Try verifying list_length_iter and list_concat_iter using the listseg predicate and its lemmas.
 //
-// === DON'T EDIT THIS ===
+// In the debugger, in order to see the loop of the body, you must step to the
+// loop condition and click the small arrow in the box. This will open up the
+// matching plan for the loop invariant at the beginning and give you the
+// ability to step through the loop.
+//
+// Try verifying list_length_iter and list_concat_iter using the listseg
+// predicate and its lemmas.
+
+//#region  === DON'T EDIT THIS ===
 
 @config manual_fold: false
 
 predicate list(+x, vs) {
   (x == null) * (vs == []);
   (x -b> #v, #z) * list(#z, #vss) *
-  (vs == #v :: #vss)
+    (vs == #v :: #vss)
 }
 
 predicate listseg(+x, y, vs) {
@@ -68,7 +72,7 @@ lemma listseg_to_list {
       listseg(x, null, #xs) |- list(x, #xs)
 }
 
-// === EDIT BELOW HERE ===
+//#endregion  === EDIT BELOW HERE ===
 
 { (x == #x) * list(x, #vs) }
 function list_length_iter(x) {

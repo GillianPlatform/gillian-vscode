@@ -1,10 +1,9 @@
-// ========== 01 - Folding and unfolding ==========
+// ========== 1 - Folding and unfolding ==========
 //
 // Add fold and/or unfold tactics to make this function verify.
 //?? You should fold the empty list case.
 
-// === DON'T EDIT THIS ===
-//#region
+//#region  === DON'T EDIT THIS ===
 
 @config manual_fold : true
 
@@ -13,8 +12,7 @@ predicate list(+x, vs) {
     (x -b> #v, #z) * list(#z, #vss) * (vs == #v::#vss)
 }
 
-//#endregion
-// === EDIT BELOW HERE ===
+//#endregion  === EDIT BELOW HERE ===
 
 { (v == #v) }
 function list_allocate_node(v){

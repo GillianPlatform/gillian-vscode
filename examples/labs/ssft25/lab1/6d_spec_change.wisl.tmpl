@@ -1,16 +1,15 @@
-// ========== 06d - Changing requirements ==========
+// ========== 6d - Changing requirements ==========
 //
 // Suppose that our requirements have changed: our function now needs to return
 // a new list with the desired element removed, while leaving the original list
 // untouched.
 //
 // Modify the the body *and* specification of list_remove_copy to fulfil this
-// new requirement. Keep in mind to make the postcondition as strong as possible.
+// new requirement. Try to make the postcondition as strong as possible.
 //
 // Feel free to copy over the predicate you wrote in the previous exercise.
 
-// === DON'T EDIT THIS ===
-//#region
+//#region  === DON'T EDIT THIS ===
 
 @config manual_fold : false
 
@@ -27,8 +26,7 @@ function list_allocate_node(v){
 }
 { list(ret, [ #v ]) }
 
-//#endregion
-// === EDIT BELOW HERE ===
+//#endregion  === EDIT BELOW HERE ===
 
 //-predicate list_without(+xs, +v, ys) {
 //-  (xs == []) * (ys == []);

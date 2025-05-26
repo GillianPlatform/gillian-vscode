@@ -10,8 +10,7 @@
 // remove_duplicates? Try implementing this for remove_duplicates_strong and
 // verifying it.
 
-// === DON'T EDIT THIS ===
-//#region
+//#region  === DON'T EDIT THIS ===
 
 @config manual_fold : false
 
@@ -28,8 +27,8 @@ predicate list_member(+vs, +v, r : Bool){
 
 predicate set_list(+x, vs) {
   (vs == []) * (x == null);
-  (x -b> #v, #z) * set_list(#z, #vs) * (vs == #v :: #vs)
-    * list_member(#vs, #v, false)
+  (x -b> #v, #z) * set_list(#z, #vs) * (vs == #v :: #vs) *
+  list_member(#vs, #v, false)
 }
 
 predicate contains_all(+xs, +vs) {
@@ -103,8 +102,7 @@ function set_list_member(x, k){
 }
 { set_list(#x, #vs) * list_member(#vs, #k, #r) * (ret == #r) }
 
-//#endregion
-// === EDIT BELOW HERE ===
+//#endregion  === EDIT BELOW HERE ===
 
 { (x == #x) * list(x, #vs) }
 function remove_duplicates(x) {

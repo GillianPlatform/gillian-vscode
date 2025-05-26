@@ -1,4 +1,4 @@
-// === 00 - Intro (manual mode) ===
+// ========== 0b - Intro (manual mode) ==========
 //
 // In Gillian, predicates are assertions and can be defined recursively,
 // often containing multiple cases (separated by semicolons).
@@ -18,8 +18,7 @@
 // Note: If you get stuck on an exercise, you might be able to find a hint in
 // the 'hints' folder.
 
-// === DON'T EDIT THIS ===
-//#region
+//#region  === DON'T EDIT THIS ===
 
 @config manual_fold : true
 
@@ -28,8 +27,7 @@ predicate list(+x, vs) {
     (x -b> #v, #z) * list(#z, #vss) * (vs == #v::#vss)
 }
 
-//#endregion
-// === EDIT BELOW HERE ===
+//#endregion  === EDIT BELOW HERE ===
 
 { (x == #x) * list(#x, #vs) }
 function llen(x) {

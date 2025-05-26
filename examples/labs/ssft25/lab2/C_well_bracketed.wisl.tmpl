@@ -3,8 +3,8 @@
 // Now that you're familiar with verifying singly-linked list algorithms, let's
 // look at an application of them.
 //
-// Given a string, can we write a function to check that it's well-bracketed? 
-// Well-bracketed in this case means: 
+// Given a string, can we write a function to check that it's well-bracketed?
+// Well-bracketed in this case means:
 //   1. The number of opening brackets must match the number of closing brackets
 //      (of the same type)
 //   2. Whenever there is an opening bracket, a closing bracket must match it
@@ -19,7 +19,7 @@
 //   - "<ab[c]e" is *not* well-bracketed
 //
 // For this exercise, we consider two types of brackets: "[]" and "<>".
-// 
+//
 // Look over the functions wellBr and wellBr_helper; these use a singly-linked
 // as a stack to track which opening brackets not yet been matched.
 //
@@ -27,16 +27,17 @@
 // 'a' (representing the individual characters of a string) and the stack 'b',
 // deduces whether the string represented by 'a' is well-bracketed.
 //
-// The predicates openBracket, closeBracket, nonBracket are provided to you, which indicate whether the character c is an open bracket,
-// close bracket, or neither respectively.
+// The predicates openBracket, closeBracket, nonBracket are provided to you,
+// which indicate whether a character is an open bracket, close bracket, or
+// neither, respectively.
 
-// === DON'T EDIT THIS ===
-//#region
+//#region  === DON'T EDIT THIS ===
 
 @config manual_fold : false
 
 predicate list(+x, vs) {
   (x == null) * (vs == []);
+
   (x -b> #v, #next) * list(#next, #vs) *
   (vs == #v :: #vs)
 }
@@ -133,8 +134,7 @@ predicate nonBracket(+c : String) {
   ((c != "<") /\ (c != ">") /\ (c != "[") /\ (c != "]"))
 }
 
-//#endregion
-// === EDIT BELOW HERE ===
+//#endregion  === EDIT BELOW HERE ===
 
 predicate wbs(+a, +b, r : Bool) {
 //-  // base case
@@ -144,15 +144,15 @@ predicate wbs(+a, +b, r : Bool) {
 //-  (a == []) * (b == #d :: #b) * (r == false);
 //-
 //-  // open brackets case
-//-  (a == #c :: #a) * 
-//-  openBracket(#c) * 
+//-  (a == #c :: #a) *
+//-  openBracket(#c) *
 //-  wbs(#a, #c :: b, r);
 //-
 //-  // close brackets true case
-//-  (a == #c :: #a) * 
-//-  closeBracket(#c) * 
-//-  (b == #d :: #b) * 
-//-  ((#d == "<") /\ (#c == ">") \/ ((#d == "[") /\ (#c == "]"))) * 
+//-  (a == #c :: #a) *
+//-  closeBracket(#c) *
+//-  (b == #d :: #b) *
+//-  ((#d == "<") /\ (#c == ">") \/ ((#d == "[") /\ (#c == "]"))) *
 //-  wbs(#a, #b, r);
 //-
 //-  // close brackets empty case
@@ -160,16 +160,16 @@ predicate wbs(+a, +b, r : Bool) {
 //-    * wbs(#a, [], #r);
 //-
 //-  // close brackets false case
-//-  (a == #c :: #a) * 
-//-  closeBracket(#c) * 
-//-  (b == #d :: #b) * 
-//-  (((#d != "<") \/ (#c != ">")) /\ ((#d != "[") \/ (#c != "]"))) * 
-//-  (r == false) * 
+//-  (a == #c :: #a) *
+//-  closeBracket(#c) *
+//-  (b == #d :: #b) *
+//-  (((#d != "<") \/ (#c != ">")) /\ ((#d != "[") \/ (#c != "]"))) *
+//-  (r == false) *
 //-  wbs(#a, #b, #r);
 //-
 //-  // no brackets case
-//-  (a == #c :: #a) * 
-//-  nonBracket(#c) * 
+//-  (a == #c :: #a) *
+//-  nonBracket(#c) *
 //-  wbs(#a, b, r)
 //+  // Complete this predicate!
 //+  (r == true)
