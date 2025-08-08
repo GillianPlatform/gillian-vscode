@@ -31,8 +31,7 @@ function startLsp(langCmd: string, name: string, language: string) {
     }
     sourceDirectory = expandPath(sourceDirectory, workspaceFolder);
     cwd = sourceDirectory;
-    command = "opam";
-    args = ["exec", "--", "dune", "exec", "--", langCmd].concat(args);
+    [command, ...args] = [...config.sourceExecPrefix, langCmd, ...args];
   }
 
   const serverOptions: ServerOptions = {
