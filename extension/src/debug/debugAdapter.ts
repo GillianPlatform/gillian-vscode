@@ -78,8 +78,7 @@ export class DebugAdapterExecutableFactory implements vscode.DebugAdapterDescrip
       }
       sourceDirectory = expandPath(sourceDirectory, workspaceFolder);
       cwd = sourceDirectory;
-      cmd = "opam";
-      args = ["exec", "--", "dune", "exec", "--", langCmd].concat(args);
+      [cmd, ...args] = [...config.sourceExecPrefix, langCmd, ...args];
     }
 
     console.log("Starting debugger...", { cmd, args, cwd });

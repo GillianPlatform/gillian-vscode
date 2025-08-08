@@ -158,6 +158,14 @@
             "default": "",
             "markdownDescription": "The location of the Gillian source code, only relevant if `#gillian.runMode#` is `source`."
           },
+          "gillian.sourceExecPrefix": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": ["opam", "exec", "--", "dune", "exec", "--"],
+            "markdownDescription": "The prefix of the command for running Gillian from source.\nIf using Nix, set this to `[\"nix\", \"develop\", \"-c\", \"dune\", \"exec\", \"--\"]`"
+          },
           "gillian.useManualProof": {
             "type": "boolean",
             "default": false,
