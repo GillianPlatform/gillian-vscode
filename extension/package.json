@@ -2,7 +2,7 @@
   "name": "gillian",
   "publisher": "gillianplatform",
   "displayName": "The Gillian Platform",
-  "icon": "gillian.png",
+  "icon": "./icons/gillian.png",
   "version": "0.0.1",
   "description": "Gillian integration for VSCode",
   "author": {
@@ -36,14 +36,14 @@
     "lint-check": "eslint"
   },
   "dependencies": {
-    "@gillianplatform/sedap-vscode-ext": "0.0.1",
+    "@gillianplatform/sedap-vscode-ext": "0.0.6",
     "vscode-languageclient": "^9.0.1"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.4",
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.17.0",
-    "@gillianplatform/sedap-types": "0.0.1",
+    "@gillianplatform/sedap-types": "0.0.6",
     "@types/glob": "^7.2.0",
     "@types/node": "22.x",
     "@types/vscode": "^1.96.0",
@@ -75,8 +75,7 @@
         ],
         "extensions": [
           ".jsil"
-        ],
-        "configuration": "./language-configuration.json"
+        ]
       },
       {
         "id": "wisl",
@@ -86,7 +85,11 @@
         "extensions": [
           ".wisl"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./syntaxes/wisl.language-config.json",
+        "icon": {
+          "light": "./icons/wisl-light.png",
+          "dark": "./icons/wisl-dark.png"
+        }
       },
       {
         "id": "gil",
@@ -96,7 +99,7 @@
         "extensions": [
           ".gil"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./syntaxes/gil.language-config.json"
       }
     ],
     "grammars": [

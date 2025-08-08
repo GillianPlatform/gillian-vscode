@@ -1,6 +1,8 @@
 {
   "gillian.sourceDirectory": "${workspaceFolder}/../../Gillian",
   "gillian.wisl.commandLineArguments": [
-    "--procs-only"
-  ]
+    "--procs-only",
+    "--usage-logs",
+    "--loop-hack"
+  ],
 }

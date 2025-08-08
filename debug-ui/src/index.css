@@ -1,13 +1,22 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--vscode-editor-background);
-  color: var(--vscode-editor-foreground);
+  --background: var(--vscode-editor-background);
+  --foreground: var(--vscode-editor-foreground);
+  --success: var(--vscode-testing-iconPassed);
+  --error: var(--vscode-editorError-foreground);
+  --warning: var(--vscode-editorWarning-foreground);
+  --info: var(--vscode-editorInfo-foreground);
+  --hint: var(--vscode-editorHint-foreground);
+  background-color: var(--background);
+  color: var(--foreground);
+  --tooltip-background: var(--vscode-editorWidget-background)
 }
 
 .sedap__nodeWrap {
   overflow: hidden;
-  border-color: var(--vscode-editorCursor-foreground);
+  --node-border: var(--node-highlight, --vscode-editorCursor-foreground);
+  border-color: var(--node-border);
 }
 
 .sedap__nodeBadge {
@@ -18,8 +27,8 @@ body {
 }
 
 .sedap__node {
-  background: linear-gradient(var(--vscode-editor-background), var(--vscode-editor-background));
-  border-color: var(--vscode-editorCursor-foreground);
+  background: linear-gradient(var(--background), var(--background));
+  border-color: var(--node-border);
 }
 
 [data-sedap-node-selected] {
@@ -33,23 +42,56 @@ body {
 [data-sedap-node-selected="primary"] .sedap__node {
   background:
     linear-gradient(var(--vscode-editor-selectionBackground), var(--vscode-editor-selectionBackground)),
-    linear-gradient(var(--vscode-editor-background), var(--vscode-editor-background));
+    linear-gradient(var(--background), var(--background));
 }
 
 [data-sedap-node-selected="secondary"] .sedap__node {
   background:
     linear-gradient(var(--vscode-editor-inactiveSelectionBackground), var(--vscode-editor-inactiveSelectionBackground)),
-    linear-gradient(var(--vscode-editor-background), var(--vscode-editor-background));
+    linear-gradient(var(--background), var(--background));
+}
+
+[data-sedap-node-highlight="error"] {
+  --node-highlight: var(--error);
+}
+
+[data-sedap-node-highlight="success"] {
+  --node-highlight: var(--success);
+}
+
+.sedap__highlightIcon {
+  color: var(--node-highlight);
+  display: flex;
 }
 
 .sedap__nodeText {
   font-family: var(--vscode-editor-font-family);
   text-wrap: nowrap;
+  text-align: center;
+  display: inline-block;
+}
+
+.sedap__nodeWrap .sedap__nodeText {
+  display: inline-block;
   text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.sedap__nodeTooltip .sedap__nodeText {
+  width: 100%;
+}
+
+.sedap__nodeTooltipItem {
+    border-bottom: 1px solid white;
+    padding: 5px;
+}
+
+.sedap__nodeTooltipItem:last-child {
+    border-bottom: none;
 }
 
 .react-flow__edge-textbg {
-  fill: var(--vscode-editor-background);
+  fill: var(--background);
 }
 
 .react-flow__edge-path {
@@ -61,7 +103,16 @@ body {
 }
 
 .react-flow__background {
-  background-color: var(--vscode-editor-background);
+  background-color: var(--background);
+}
+
+.react-flow__controls.minimapControl {
+  padding: 5px;
+}
+
+.react-flow__controls.minimapControl svg {
+  max-width: unset;
+  max-height: unset;
 }
 
 .react-flow__controls-button {
@@ -73,18 +124,27 @@ body {
   background: var(--vscode-button-hoverBackground);
 }
 
+.react-flow__controls-button.secondary {
+  color: var(--vscode-button-secondaryForeground);
+  background: var(--vscode-button-secondaryBackground);
+}
+
+.react-flow__controls-button.secondary:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+
 .react-flow__minimap {
   border: 2px solid var(--vscode-editorCursor-foreground);
-  background: var(--vscode-editor-background);
+  background: var(--background);
 }
 
 .react-flow__minimap-node {
   fill: var(--vscode-editor-inactiveSelectionBackground);
-  stroke: var(--vscode-editor-foreground);
+  stroke: var(--foreground);
 }
 
 .react-flow__minimap-mask {
-  fill: var(--vscode-editor-selectionBackground);
+  fill: color(from var(--vscode-editor-selectionBackground) srgb r g b / 0.25);
 }
 
 vscode-panel-view {

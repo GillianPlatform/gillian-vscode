@@ -1,9 +1,18 @@
-import { NodePrev, TraceView, TraceViewProps } from "@gillianplatform/sedap-react";
+import {
+  DEFAULT_REACT_FLOW_PROPS,
+  NodePrev,
+  TraceView,
+  TraceViewProps,
+} from "@gillianplatform/sedap-react";
 import IconButton from "./IconButton";
 import Badge from "./Badge";
 import styled from "styled-components";
 import Sidebar, { Subst } from "./Sidebar";
 import { CurrentSteps, Nodes } from "@gillianplatform/sedap-vscode-ui";
+import Controls from "./Controls";
+import ControlButton from "./ControlButton";
+import { VscMap } from "react-icons/vsc";
+import Status from "./Status";
 
 const Wrap = styled.div`
   width: 100%;
@@ -21,11 +30,16 @@ const MapWrap = styled.div`
 export type MapViewProps = {
   root: string;
   nodes: Nodes;
-  substs: Subst[];
+  substs?: Subst[] | undefined;
   selectedNodes: CurrentSteps;
   onNodeSelected: (id: string) => void;
   onNextStepSelected: (prev: NodePrev) => void;
   onZoomNode: (id: string, name: string) => void;
+  minimapVisible: boolean;
+  toggleMinimap: () => void;
+  substitutionsVisible: boolean;
+  toggleSubstitutions: () => void;
+  status: [boolean, boolean] | undefined;
 };
 
 function MapView({
@@ -36,6 +50,11 @@ function MapView({
   onNodeSelected,
   onNextStepSelected,
   onZoomNode,
+  minimapVisible,
+  toggleMinimap,
+  substitutionsVisible,
+  toggleSubstitutions,
+  status,
 }: MapViewProps) {
   const traceViewProps: TraceViewProps = {
     root,
@@ -44,18 +63,51 @@ function MapView({
     onNodeSelected,
     onNextStepSelected,
     onZoomNode,
+    showMinimap: minimapVisible,
     componentOverrides: {
       button: IconButton,
       badge: Badge,
     },
+    reactFlowProps: {
+      id: root,
+      ...DEFAULT_REACT_FLOW_PROPS,
+    },
+    nodeTooltips: true,
   };
 
   return (
     <Wrap>
       <MapWrap>
-        <TraceView {...traceViewProps} />
+        <TraceView {...traceViewProps}>
+          <Status status={status} />
+          <Controls>
+            <ControlButton
+              active={!substitutionsVisible}
+              onClick={toggleSubstitutions}
+              title="Toggle substitutions"
+            >
+              {substs ? (
+                <b>
+                  <i>&alpha;</i>
+                </b>
+              ) : (
+                <>&alpha;</>
+              )}
+            </ControlButton>
+            <ControlButton active={!minimapVisible} onClick={toggleMinimap} title="Toggle minimap">
+              <VscMap />
+            </ControlButton>
+          </Controls>
+        </TraceView>
       </MapWrap>
-      <Sidebar {...{ substs, selectedNodes: selectedNodes.primary || [], onNodeSelected }} />
+      <Sidebar
+        visible={substitutionsVisible}
+        selectedNodes={selectedNodes.primary || []}
+        {...{
+          substs,
+          onNodeSelected,
+        }}
+      />
     </Wrap>
   );
 }

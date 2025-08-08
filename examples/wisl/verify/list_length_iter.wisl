@@ -28,7 +28,7 @@ lemma SLLseg_append {
 
   proof:
     unfold SLLseg(x, #y, vs);
-    if (not (x = #y)) {
+    if (x != #y) {
       assert {bind: #nv, #nnext, #nvs}
         (x -b> #nv, #nnext) * SLLseg(#nnext, #y, #nvs) *
         (vs == #nv :: #nvs);
@@ -49,7 +49,7 @@ lemma SLLseg_to_SLL {
 
   proof:
     unfold SLLseg(x, null, #vx);
-    if (not (#vx = [])){
+    if (#vx != []){
       assert {bind: #nv, #nnext} (x -b> #nv, #nnext);
       apply SLLseg_to_SLL(#nnext)
     }
@@ -63,8 +63,8 @@ function SLL_length_iter(x) {
   [[invariant {bind: n, y, #nvx,  #nvy}
       SLLseg(x, y,  #nvx) * SLL(y, #nvy) *
          (#vx == (#nvx@#nvy)) * (n == len #nvx) ]];
-  while (not (y = null)) {
-    [[ assert {bind: #y} y == #y ]];
+  while (y != null) {
+    [[ assert {bind: #y} (y == #y) ]];
     [[ assert {bind: #v, #z} #y -b> #v, #z ]];
     y := [y+1];
     n := n+1;

@@ -10,6 +10,7 @@ import { MapRoot } from "@gillianplatform/sedap-types";
 
 type Ext = {
   substs: Record<string, Subst[] | undefined>;
+  status?: [boolean, boolean];
 };
 
 type DerivedRoots = Record<string, Record<string, string>>;
@@ -38,13 +39,17 @@ const renderMapTab = (
   name_: string,
   onZoom: OnZoom,
   mapState: MapState<Ext>,
+  minimapVisible: boolean,
+  toggleMinimap: () => void,
+  substitutionsVisible: boolean = false,
+  toggleSubstitutions: () => void = () => {},
   onClose_?: (id: string) => void,
   parentRoot?: MapRoot,
 ): Tab => {
   const rootId = parentRoot?.id || id;
   const name = parentRoot ? `${parentRoot.name} > ${name_}` : name_;
   const { nodes, selectedNodes, onNodeSelected, onNextStepSelected, ext } = mapState;
-  const substs = (ext && ext.substs && ext.substs[rootId]) || [];
+  const substs = (ext && ext.substs && ext.substs[rootId]) || undefined;
   const mapViewProps = {
     nodes,
     substs,
@@ -52,6 +57,11 @@ const renderMapTab = (
     onNodeSelected,
     onNextStepSelected,
     onZoomNode: onZoom(rootId),
+    minimapVisible,
+    toggleMinimap,
+    substitutionsVisible,
+    toggleSubstitutions,
+    status: ext?.status,
   };
   const content = (
     <MapView
@@ -76,6 +86,15 @@ function App() {
   const [activeTab, setActiveTab] = useState<string | undefined>();
   const [derivedRoots, setDerivedRoots] = useState<DerivedRoots>({});
 
+  const [minimapVisible, setMinimapVisible] = useState(true);
+  const [substitutionsVisible, setSubstitutionsVisible] = useState(false);
+  const toggleMinimap = useCallback(() => {
+    setMinimapVisible((prev) => !prev);
+  }, []);
+  const toggleSubstitutions = useCallback(() => {
+    setSubstitutionsVisible((prev) => !prev);
+  }, []);
+
   useEffect(() => {
     let modified = false;
     const newDerivedRoots = { ...derivedRoots };
@@ -99,7 +118,7 @@ function App() {
     let tabExists = false;
     if (activeTab !== undefined) {
       for (const { id } of roots) {
-        if (id === activeTab || derivedRoots[id][activeTab]) {
+        if (id === activeTab || derivedRoots?.[id]?.[activeTab]) {
           tabExists = true;
           break;
         }
@@ -146,14 +165,34 @@ function App() {
 
   const tabs: Tab[] = [];
   for (const { id: rootId, name: rootName } of roots) {
-    const tab = renderMapTab(rootId, rootName, onZoomNode, mapState);
+    const tab = renderMapTab(
+      rootId,
+      rootName,
+      onZoomNode,
+      mapState,
+      minimapVisible,
+      toggleMinimap,
+      substitutionsVisible,
+      toggleSubstitutions,
+    );
     tabs.push(tab);
 
     for (const [derivedId, derivedName] of Object.entries(derivedRoots[rootId] || {})) {
-      const tab = renderMapTab(derivedId, derivedName, onZoomNode, mapState, onTabClose(rootId), {
-        id: rootId,
-        name: rootName,
-      });
+      const tab = renderMapTab(
+        derivedId,
+        derivedName,
+        onZoomNode,
+        mapState,
+        minimapVisible,
+        toggleMinimap,
+        substitutionsVisible,
+        toggleSubstitutions,
+        onTabClose(rootId),
+        {
+          id: rootId,
+          name: rootName,
+        },
+      );
       tabs.push(tab);
     }
   }
