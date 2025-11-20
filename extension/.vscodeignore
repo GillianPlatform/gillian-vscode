@@ -3,3 +3,4 @@ tsconfig.json
 esbuild.js
 eslint.config.mjs
 src/**/*
+node_modules/**/*
