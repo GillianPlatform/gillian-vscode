@@ -39,6 +39,7 @@ function startLsp(langCmd: string, name: string, language: string) {
     args,
     options: {
       cwd,
+      shell: true,
     },
   };
 
