@@ -1,6 +1,6 @@
 import { ExtensionContext, Uri, workspace, commands } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient/node";
-import { expandPath } from "../util/vscodeVariables";
+import { expandCommand, expandPath, parseCmdArgs } from "../util/vscodeVariables";
 
 const clients: Record<string, LanguageClient> = {};
 
@@ -10,20 +10,18 @@ function startLsp(langCmd: string, name: string, language: string) {
 
   const mode = "verify";
   const workspaceFolder = workspace.workspaceFolders?.[0];
-  const extraArgs: string[] = (langConfig.commandLineArguments || []).map((arg: string) =>
-    expandPath(arg, workspaceFolder),
-  );
+  const extraArgs: string = expandPath(langConfig.commandLineArguments, workspaceFolder);
 
-  let command: string;
+  const args_s = ["lsp", mode, ...(config.useManualProof ? ["-m"] : []), extraArgs].join(" ");
+  let cmd_s: string;
   let cwd: string;
-  let args = ["lsp", mode, ...(config.useManualProof ? ["-m"] : []), ...extraArgs];
 
   if (config.runMode === "installed") {
     cwd = expandPath(config.outputDirectory || "./.gillian", workspaceFolder);
     const binDirectory = config.binDirectory;
     const path = binDirectory ? expandPath(binDirectory, workspaceFolder) + "/" : "";
     workspace.fs.createDirectory(Uri.file(cwd));
-    command = `${path}${langCmd}`;
+    cmd_s = `${path}${langCmd} ${args_s}`;
   } else {
     let sourceDirectory = config.sourceDirectory;
     if (!sourceDirectory) {
@@ -31,8 +29,14 @@ function startLsp(langCmd: string, name: string, language: string) {
     }
     sourceDirectory = expandPath(sourceDirectory, workspaceFolder);
     cwd = sourceDirectory;
-    [command, ...args] = [...config.sourceExecPrefix, langCmd, ...args];
+    const tmpl = config.sourceExecTemplate || "${command}";
+    cmd_s = expandCommand(tmpl, `${langCmd} ${args_s}`, workspaceFolder);
   }
+
+  const [command, ...args_] = parseCmdArgs(cmd_s);
+  const args = args_.map((s) => `'${s}'`);
+
+  console.log("attempting LSP", { command, args, cwd });
 
   const serverOptions: ServerOptions = {
     command,

@@ -2,7 +2,7 @@
 
 import * as vscode from "vscode";
 import { ProviderResult } from "vscode";
-import { expandPath } from "../util/vscodeVariables";
+import { expandPath, expandCommand, parseCmdArgs } from "../util/vscodeVariables";
 
 export class DebugAdapterExecutableFactory implements vscode.DebugAdapterDescriptorFactory {
   createDebugAdapterDescriptor(
@@ -51,18 +51,20 @@ export class DebugAdapterExecutableFactory implements vscode.DebugAdapterDescrip
     console.log("Configuring debugger...", { config });
 
     const workspaceFolder = _session.workspaceFolder;
-    const extraArgs: string[] = (langConfig.commandLineArguments || []).map((arg: string) =>
-      expandPath(arg, workspaceFolder),
-    );
+    const extraArgs: string = expandPath(langConfig.commandLineArguments, workspaceFolder);
 
     const mode = _session.configuration.execMode || "verify";
 
     const env = langConfig.environmentVariables || {};
-    let args = ["debug", mode, "-r", "db", ...extraArgs];
-    if (config.useManualProof) {
-      args.push("-m");
-    }
-    let cmd: string;
+    const args_s = [
+      "debug",
+      mode,
+      "-r",
+      "db",
+      ...(config.useManualProof ? ["-m"] : []),
+      extraArgs,
+    ].join(" ");
+    let cmd_s: string;
     let cwd: string;
 
     if (config.runMode === "installed") {
@@ -70,7 +72,7 @@ export class DebugAdapterExecutableFactory implements vscode.DebugAdapterDescrip
       const binDirectory = config.binDirectory;
       const path = binDirectory ? expandPath(binDirectory, workspaceFolder) + "/" : "";
       vscode.workspace.fs.createDirectory(vscode.Uri.file(cwd));
-      cmd = `${path}${langCmd}`;
+      cmd_s = `${path}${langCmd} ${args_s}`;
     } else {
       let sourceDirectory = config.sourceDirectory;
       if (!sourceDirectory) {
@@ -78,8 +80,11 @@ export class DebugAdapterExecutableFactory implements vscode.DebugAdapterDescrip
       }
       sourceDirectory = expandPath(sourceDirectory, workspaceFolder);
       cwd = sourceDirectory;
-      [cmd, ...args] = [...config.sourceExecPrefix, langCmd, ...args];
+      const tmpl = config.sourceExecTemplate || "${command}";
+      cmd_s = expandCommand(tmpl, `${langCmd} ${args_s}`, workspaceFolder);
     }
+
+    const [cmd, ...args] = parseCmdArgs(cmd_s);
 
     console.log("Starting debugger...", { cmd, args, cwd });
     const options = { cwd, env };

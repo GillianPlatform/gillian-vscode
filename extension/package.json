@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@gillianplatform/sedap-vscode-ext": "0.0.6",
+    "shell-quote": "^1.8.3",
     "vscode-languageclient": "^9.0.1"
   },
   "devDependencies": {
@@ -46,6 +47,7 @@
     "@gillianplatform/sedap-types": "0.0.6",
     "@types/glob": "^7.2.0",
     "@types/node": "22.x",
+    "@types/shell-quote": "^1.7.5",
     "@types/vscode": "^1.96.0",
     "@typescript-eslint/eslint-plugin": "^8.18.2",
     "@typescript-eslint/parser": "^8.18.2",
@@ -158,13 +160,10 @@
             "default": "",
             "markdownDescription": "The location of the Gillian source code, only relevant if `#gillian.runMode#` is `source`."
           },
-          "gillian.sourceExecPrefix": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "default": ["opam", "exec", "--", "dune", "exec", "--"],
-            "markdownDescription": "The prefix of the command for running Gillian from source.\nIf using Nix, set this to `[\"nix\", \"develop\", \"-c\", \"dune\", \"exec\", \"--\"]`"
+          "gillian.sourceExecTemplate": {
+            "type": "string",
+            "default": "opam exec -- dune exec -- ${command}",
+            "markdownDescription": "The template for commands when running Gillian from source.\nIf using Nix, set this to `\"nix-shell --command 'dune exec -- ${commandQuoted}'\"`"
           },
           "gillian.useManualProof": {
             "type": "boolean",
@@ -186,11 +185,8 @@
             "default": true
           },
           "gillian.wisl.commandLineArguments": {
-            "type": "array",
-            "default": [],
-            "items": {
-              "type": "string"
-            }
+            "type": "string",
+            "default": "pack"
           },
           "gillian.wisl.environmentVariables": {
             "type": "object",
@@ -214,11 +210,8 @@
             "default": true
           },
           "gillian.gillian-c.commandLineArguments": {
-            "type": "array",
-            "default": [],
-            "items": {
-              "type": "string"
-            }
+            "type": "string",
+            "default": ""
           },
           "gillian.gillian-c.environmentVariables": {
             "type": "object",
@@ -242,11 +235,8 @@
             "default": true
           },
           "gillian.gillian-js.commandLineArguments": {
-            "type": "array",
-            "default": [],
-            "items": {
-              "type": "string"
-            }
+            "type": "string",
+            "default": ""
           },
           "gillian.gillian-js.environmentVariables": {
             "type": "object",
@@ -270,11 +260,8 @@
             "default": true
           },
           "gillian.gillian-c2.commandLineArguments": {
-            "type": "array",
-            "default": [],
-            "items": {
-              "type": "string"
-            }
+            "type": "string",
+            "default": ""
           },
           "gillian.gillian-c2.environmentVariables": {
             "type": "object",
