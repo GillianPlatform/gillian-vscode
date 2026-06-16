@@ -253,7 +253,7 @@
         "properties": {
           "gillian.gillian-c2.showVerifyButton": {
             "type": "boolean",
-            "default": false
+            "default": true
           },
           "gillian.gillian-c2.showSymbolicDebugButton": {
             "type": "boolean",

@@ -37,7 +37,7 @@ export function activateCodeLens(context: ExtensionContext) {
   }
 }
 
-function getLensKinds(lang: string | undefined): [ExecMode, string][] {
+function getLensKinds(lang: string | undefined): Map<ExecMode, string> {
   let showVerifyLens = true;
   let showSymbolicDebugLens = true;
   if (lang) {
@@ -45,12 +45,12 @@ function getLensKinds(lang: string | undefined): [ExecMode, string][] {
     showVerifyLens = langConfig.showVerifyButton;
     showSymbolicDebugLens = langConfig.showSymbolicDebugButton;
   }
-  const lensKinds: [ExecMode, string][] = [];
+  const lensKinds = new Map();
   if (showVerifyLens) {
-    lensKinds.push(["verify", "Verify "]);
+    lensKinds.set("verify", "Verify");
   }
   if (showSymbolicDebugLens) {
-    lensKinds.push(["wpst", "Symbolic-debug "]);
+    lensKinds.set("wpst", "Symbolic-debug");
   }
   return lensKinds;
 }
@@ -81,7 +81,7 @@ class DebugCodeLensProvider implements CodeLensProvider {
       const match = procNamePattern.exec(text);
       const procedureName = match === null ? null : match[1].trim();
       if (procedureName) {
-        for (const [execMode, commandPrefix] of lensKinds) {
+        for (const [execMode, commandPrefix] of lensKinds.entries()) {
           const codeLens = this.makeCodeLens(
             procNamePattern.lastIndex,
             procedureName,
@@ -101,20 +101,45 @@ class DebugCodeLensProvider implements CodeLensProvider {
 
   private makeCLens(document: TextDocument): CodeLens[] {
     const text = document.getText();
-    const pattern = /int\s+main\s*\(\)/g;
     const lensKinds = getLensKinds("gillian-c2");
 
     const lenses: CodeLens[] = [];
-    let match = pattern.exec(text);
-    while (match !== null) {
-      const ix = match.index + "int main".length;
-      for (const [execMode, commandPrefix] of lensKinds) {
-        const codeLens = this.makeCodeLens(ix, "main", document, execMode, commandPrefix);
+
+    if (lensKinds.has("wpst")) {
+      const mainPattern = /int\s+main\s*\(\)/g;
+      let match = mainPattern.exec(text);
+      while (match !== null) {
+        const ix = match.index + "int main".length;
+        const codeLens = this.makeCodeLens(ix, "main", document, "wpst", lensKinds.get("wpst")!);
         if (codeLens !== undefined) {
           lenses.push(codeLens);
         }
+        match = mainPattern.exec(text);
       }
-      match = pattern.exec(text);
+    }
+
+    if (lensKinds.has("verify")) {
+      const scPattern = /\/\*@.+?\*\//gs;
+      const specPattern = /spec (.+?)\(/g;
+      let scMatch;
+      while ((scMatch = scPattern.exec(text)) !== null) {
+        const scIx = scMatch.index;
+        const sc = scMatch[0];
+        let specMatch;
+        while ((specMatch = specPattern.exec(sc)) !== null) {
+          const ix = scIx + specMatch.index + specMatch[0].length - 1;
+          const codeLens = this.makeCodeLens(
+            ix,
+            specMatch[1],
+            document,
+            "verify",
+            lensKinds.get("verify")!,
+          );
+          if (codeLens !== undefined) {
+            lenses.push(codeLens);
+          }
+        }
+      }
     }
 
     return lenses;
@@ -150,10 +175,11 @@ class DebugCodeLensProvider implements CodeLensProvider {
     const end = document.positionAt(index);
     const range = new Range(start, end);
     const debugConfig = this.createDebugConfig(procedureName, document.uri.fsPath, execMode);
+    const title = `${commandPrefix} ${procedureName}`;
     return new CodeLens(range, {
       command: "extension.gillian.debugProcedure",
-      title: commandPrefix + procedureName,
-      tooltip: commandPrefix + procedureName,
+      title,
+      tooltip: title,
       arguments: [debugConfig],
     });
   }

@@ -14,7 +14,7 @@
 				"${workspaceFolder}/examples"
 			],
 			"outFiles": [
-				"${workspaceFolder}/extension/dist/**/*.js"
+				"${workspaceFolder}/extension/**/*"
 			]
 		}
 	]
