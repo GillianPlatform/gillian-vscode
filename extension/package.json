@@ -186,7 +186,7 @@
           },
           "gillian.wisl.commandLineArguments": {
             "type": "string",
-            "default": "pack"
+            "default": ""
           },
           "gillian.wisl.environmentVariables": {
             "type": "object",
