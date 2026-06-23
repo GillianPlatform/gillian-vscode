@@ -10,7 +10,7 @@
     "lint": "npm run lint --workspaces",
     "lint-check": "npm run lint-check --workspaces",
     "link-sedap": "npm link @gillianplatform/sedap-types @gillianplatform/sedap-react @gillianplatform/sedap-vscode-ui @gillianplatform/sedap-vscode-ext @gillianplatform/sedap-vscode-types --workspaces",
-    "gen-lab": "node ./scripts/processTemplates.js ./examples/labs/ssft25"
+    "gen-lab": "node ./scripts/processTemplates.js ./examples/labs/ssft25 ./examples/labs/oplss26"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

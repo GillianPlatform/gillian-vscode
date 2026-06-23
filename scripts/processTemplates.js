@@ -77,7 +77,7 @@ function write(path, filename, content) {
   fs.writeFileSync(file, content);
 }
 
-function writeResult(fileName, [ exercise, solution, hints ], dirs) {
+function writeResult(fileName, [exercise, solution, hints], dirs) {
   write(dirs.examples, fileName, exercise);
   write(dirs.solutions, fileName, solution);
 
@@ -89,7 +89,7 @@ function writeResult(fileName, [ exercise, solution, hints ], dirs) {
     write(filePath, file, hint);
   } else {
     for (let i = 0; i < hints.length; i++) {
-      const file = `${filePre}_hint_${i+1}${filePost}.txt`;
+      const file = `${filePre}_hint_${i + 1}${filePost}.txt`;
       const hint = `Hint ${i + 1}:\n\n${hints[i]}`;
       write(filePath, file, hint);
     }
@@ -111,7 +111,9 @@ function processTemplates(baseDir) {
 }
 
 if (process.argv.length < 2) {
-  console.error("Usage: node processTemplates.js <dir>");
+  console.error("Usage: node processTemplates.js <dirs...>");
   process.exit(1);
 }
-processTemplates(process.argv[2]);
+for (const baseDir of process.argv.slice(2)) {
+  processTemplates(baseDir);
+}
