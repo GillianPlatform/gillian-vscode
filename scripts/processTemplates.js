@@ -6,8 +6,8 @@ const fileSuffix = ".tmpl";
 const patterns = {
   exerciseLine: /([\t ]*)\/\/\+(.+)\n/g,
   solutionLine: /([\t ]*)\/\/\-(.+)\n/g,
-  hint: /[\t ]*\/\/\?\? .+\n(?:[\t ]*\/\/\? .+\n)*/g,
-  hintLine: /[\t ]*\/\/\?\?? (.+)/
+  hint: /[\t ]*\/\/\?\? .+\n(?:[\t ]*\/\/\? .*\n)*/g,
+  hintLine: /[\t ]*\/\/\?\?? (.*)/
 }
 
 function clearDirs(dirs) {

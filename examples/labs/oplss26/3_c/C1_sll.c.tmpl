@@ -49,8 +49,8 @@ pred sll(+p, alpha) {
   requires: sll(#x, #alpha) * (x == #x)
   ensures:  sll(#x, #alpha) * (ret == len #alpha)
 } */
-//+ int listLength(SLL *x) {
-//- size_t listLength(SLL *x) {
+//+int listLength(SLL *x) {
+//-size_t listLength(SLL *x) {
     if (x == NULL) {
         return 0;
     } else {
@@ -60,9 +60,9 @@ pred sll(+p, alpha) {
 
 //?? How can we constrain the size of the list to make sure we can safely append to it?
 /*@ spec listPrepend(x, v) {
-  //+ requires: (x == #x) * sll(#x, #alpha) * (v == #v)
-  //- requires: (x == #x) * sll(#x, #alpha) * (v == #v) *
-  //-           i__is_int(1 + len #alpha)
+  //+requires: (x == #x) * sll(#x, #alpha) * (v == #v)
+  //-requires: (x == #x) * sll(#x, #alpha) * (v == #v) *
+  //-          i__is_int(1 + len #alpha)
   ensures: sll(ret, #v::#alpha)
 } */
 SLL* listPrepend(SLL *x, int v) {
@@ -73,9 +73,9 @@ SLL* listPrepend(SLL *x, int v) {
 }
 
 /*@ spec listConcat(x, y) {
-  //+ requires: (x == #x) * (y == #y) * sll(#x, #alpha) * sll(#y, #beta)
-  //- requires: (x == #x) * (y == #y) * sll(#x, #alpha) * sll(#y, #beta) *
-  //-           i__is_size_t((len #alpha) + (len #beta))
+  //+requires: (x == #x) * (y == #y) * sll(#x, #alpha) * sll(#y, #beta)
+  //-requires: (x == #x) * (y == #y) * sll(#x, #alpha) * sll(#y, #beta) *
+  //-          i__is_size_t((len #alpha) + (len #beta))
   ensures:  sll(ret, #alpha @ #beta)
 } */
 SLL* listConcat(SLL *x, SLL *y) {
