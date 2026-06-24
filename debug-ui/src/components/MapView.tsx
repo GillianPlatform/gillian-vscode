@@ -7,7 +7,6 @@ import {
 import IconButton from "./IconButton";
 import Badge from "./Badge";
 import styled from "styled-components";
-import Sidebar, { Subst } from "./Sidebar";
 import { CurrentSteps, Nodes } from "@gillianplatform/sedap-vscode-ui";
 import Controls from "./Controls";
 import ControlButton from "./ControlButton";
@@ -30,30 +29,24 @@ const MapWrap = styled.div`
 export type MapViewProps = {
   root: string;
   nodes: Nodes;
-  substs?: Subst[] | undefined;
   selectedNodes: CurrentSteps;
   onNodeSelected: (id: string) => void;
   onNextStepSelected: (prev: NodePrev) => void;
   onZoomNode: (id: string, name: string) => void;
   minimapVisible: boolean;
   toggleMinimap: () => void;
-  substitutionsVisible: boolean;
-  toggleSubstitutions: () => void;
   status: [boolean, boolean] | undefined;
 };
 
 function MapView({
   root,
   nodes,
-  substs,
   selectedNodes,
   onNodeSelected,
   onNextStepSelected,
   onZoomNode,
   minimapVisible,
   toggleMinimap,
-  substitutionsVisible,
-  toggleSubstitutions,
   status,
 }: MapViewProps) {
   const traceViewProps: TraceViewProps = {
@@ -81,33 +74,12 @@ function MapView({
         <TraceView {...traceViewProps}>
           <Status status={status} />
           <Controls>
-            <ControlButton
-              active={!substitutionsVisible}
-              onClick={toggleSubstitutions}
-              title="Toggle substitutions"
-            >
-              {substs ? (
-                <b>
-                  <i>&alpha;</i>
-                </b>
-              ) : (
-                <>&alpha;</>
-              )}
-            </ControlButton>
             <ControlButton active={!minimapVisible} onClick={toggleMinimap} title="Toggle minimap">
               <VscMap />
             </ControlButton>
           </Controls>
         </TraceView>
       </MapWrap>
-      <Sidebar
-        visible={substitutionsVisible}
-        selectedNodes={selectedNodes.primary || []}
-        {...{
-          substs,
-          onNodeSelected,
-        }}
-      />
     </Wrap>
   );
 }

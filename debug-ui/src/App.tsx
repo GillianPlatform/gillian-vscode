@@ -4,12 +4,10 @@ import styled from "styled-components";
 import { MapState, useSEDAPMap } from "@gillianplatform/sedap-vscode-ui";
 import { TraceViewProps } from "@gillianplatform/sedap-react";
 import MapView from "./components/MapView";
-import { Subst } from "./components/Sidebar";
 import Tabs, { Tab } from "./components/Tabs";
 import { MapRoot } from "@gillianplatform/sedap-types";
 
 type Ext = {
-  substs: Record<string, Subst[] | undefined>;
   status?: [boolean, boolean];
 };
 
@@ -41,26 +39,20 @@ const renderMapTab = (
   mapState: MapState<Ext>,
   minimapVisible: boolean,
   toggleMinimap: () => void,
-  substitutionsVisible: boolean = false,
-  toggleSubstitutions: () => void = () => {},
   onClose_?: (id: string) => void,
   parentRoot?: MapRoot,
 ): Tab => {
   const rootId = parentRoot?.id || id;
   const name = parentRoot ? `${parentRoot.name} > ${name_}` : name_;
   const { nodes, selectedNodes, onNodeSelected, onNextStepSelected, ext } = mapState;
-  const substs = (ext && ext.substs && ext.substs[rootId]) || undefined;
   const mapViewProps = {
     nodes,
-    substs,
     selectedNodes,
     onNodeSelected,
     onNextStepSelected,
     onZoomNode: onZoom(rootId),
     minimapVisible,
     toggleMinimap,
-    substitutionsVisible,
-    toggleSubstitutions,
     status: ext?.status,
   };
   const content = (
@@ -87,12 +79,8 @@ function App() {
   const [derivedRoots, setDerivedRoots] = useState<DerivedRoots>({});
 
   const [minimapVisible, setMinimapVisible] = useState(true);
-  const [substitutionsVisible, setSubstitutionsVisible] = useState(false);
   const toggleMinimap = useCallback(() => {
     setMinimapVisible((prev) => !prev);
-  }, []);
-  const toggleSubstitutions = useCallback(() => {
-    setSubstitutionsVisible((prev) => !prev);
   }, []);
 
   useEffect(() => {
@@ -165,16 +153,7 @@ function App() {
 
   const tabs: Tab[] = [];
   for (const { id: rootId, name: rootName } of roots) {
-    const tab = renderMapTab(
-      rootId,
-      rootName,
-      onZoomNode,
-      mapState,
-      minimapVisible,
-      toggleMinimap,
-      substitutionsVisible,
-      toggleSubstitutions,
-    );
+    const tab = renderMapTab(rootId, rootName, onZoomNode, mapState, minimapVisible, toggleMinimap);
     tabs.push(tab);
 
     for (const [derivedId, derivedName] of Object.entries(derivedRoots[rootId] || {})) {
@@ -185,8 +164,6 @@ function App() {
         mapState,
         minimapVisible,
         toggleMinimap,
-        substitutionsVisible,
-        toggleSubstitutions,
         onTabClose(rootId),
         {
           id: rootId,
