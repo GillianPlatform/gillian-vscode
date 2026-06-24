@@ -3,7 +3,7 @@
   "injectionSelector": "L:source.c",
   "patterns": [
     {
-      "begin": "\\b(__builtin_annot)\\s*(\\()\\s*(\")",
+      "begin": "\\b(__builtin_annot|__GILLIAN)\\s*(\\()\\s*(\")",
       "beginCaptures": {
         "1": {
           "name": "entity.name.function.c"
