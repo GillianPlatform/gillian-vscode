@@ -44,7 +44,7 @@ function getSolutionContent(content) {
 
 function getHints(content) {
   return [...content.matchAll(patterns.hint)].map((match) => {
-    lines = match[0].split("\n");
+    const lines = match[0].split("\n");
     return lines
       .map((line) => line.replace(patterns.hintLine, "$1"))
       .join("\n");
@@ -110,7 +110,7 @@ function processTemplates(baseDir) {
   }
 }
 
-if (process.argv.length < 2) {
+if (process.argv.length < 3) {
   console.error("Usage: node processTemplates.js <dirs...>");
   process.exit(1);
 }
