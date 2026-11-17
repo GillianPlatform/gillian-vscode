@@ -186,7 +186,7 @@ function BSTAllocateLeaf(v) {
 // This function creates and returns a copy of the given binary search tree.
 { (x == #x) * bst(#x, #vs) }
 function BSTCopy(x) {
-  if(x != null) {
+  if (x != null) {
     //-[[ assert {bind: #k, #kl, #kr} (x -b> #k, #kl, #kr) ]];
     //-[[ assert {bind: #vsl, #vsr}
     //-        bst(#kl, #vsl) * bst(#kr, #vsr) ]];
@@ -225,7 +225,7 @@ function BSTCopy(x) {
 { (x == #x) * (a == #a) * bst(#x, #vs) * a : Int }
 function BSTSearch(x, a) {
   r := false;
-  if(x != null) {
+  if (x != null) {
     //+// Hint 3 may help here
     //?? You may find the [[ assert {bind: ... } ]]
     //? tactic helpful to label the logical
@@ -235,14 +235,14 @@ function BSTSearch(x, a) {
     //-         list_gt(#vsl, #k) * list_lt(#vsr, #k) *
     //-         list_member(#vsl, #k, false) * list_member(#vsr, #k, false) ]];
     t := [x];
-    if(a == t) {
+    if (a == t) {
       //+// Hint 4 may help here
       //?? Consider how the #vs looks at this point.
       //? What can you say about t ∈ #vs?
       //-[[ apply list_member_mid(a, #vsl, #vsr) ]];
       r := true
     } else {
-      if(a < t) {
+      if (a < t) {
         //+// Hint 5 may help here
 	      //?? if a < t and list_lt(vs, t), what does this
         //? say about a ∈ vs? Like what about the case
