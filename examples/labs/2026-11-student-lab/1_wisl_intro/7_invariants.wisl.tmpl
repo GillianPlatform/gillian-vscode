@@ -83,7 +83,7 @@ function list_length_iter(x) {
   //? Remember that it is in manual mode, so you don't have the base case of
   //? listseg.
   //-[[ fold listseg(x, y, [])]];
-  [[ invariant {bind: n, y, #vs1,  #vs2}
+  [[ invariant {bind: n, y, #vs1, #vs2}
       listseg(x, y, #vs1) * list(y, #vs2) *
          (#vs == (#vs1 @ #vs2)) * (n == len #vs1) ]];
   while (y != null) {
@@ -100,6 +100,7 @@ function list_length_iter(x) {
     //-n := n + 1;
     //-[[ apply listseg_append(x, #vs1, #v, y) ]]
   };
+  //-[[ unfold list(y, #vs2) ]];
   //-[[ apply listseg_to_list(x) ]];
   return n
 }
@@ -127,6 +128,7 @@ function list_concat_iter(x, y){
         //-[[ apply listseg_append(head,  #vs1, #v, prev) ]]
     };
     //+[prev + 1] := y
+    //-[[ unfold list(next, #vs2)]];
     //-[prev + 1] := y;
     //-[[ assert {bind:#svs, #sv} listseg(head, prev, #svs) * (prev -b> #sv, y) ]];
     //-[[ apply listseg_append(head, #svs, #sv, y) ]];
