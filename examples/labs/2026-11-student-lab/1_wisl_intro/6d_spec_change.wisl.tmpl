@@ -13,7 +13,7 @@
 
 @config manual_fold : false
 
-predicate list(+x, vs) {
+predicate list(x; vs) {
   (x == null) * (vs == []);
   (x -b> #v, #z) * list(#z, #vss) * (vs == #v :: #vss)
 }
@@ -28,7 +28,7 @@ function list_allocate_node(v){
 
 //#endregion  === EDIT BELOW HERE ===
 
-//-predicate list_without(+xs, +v, ys) {
+//-predicate list_without(xs, v; ys) {
 //-  (xs == []) * (ys == []);
 //-  (xs == #x :: #xss) * (ys == #x :: #yss) * (v != #x)
 //-    * list_without(#xss, v, #yss);

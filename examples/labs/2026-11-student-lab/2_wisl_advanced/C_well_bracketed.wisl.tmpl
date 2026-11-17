@@ -35,7 +35,7 @@
 
 @config manual_fold : false
 
-predicate list(+x, vs) {
+predicate list(x; vs) {
   (x == null) * (vs == []);
 
   (x -b> #v, #next) * list(#next, #vs) *
@@ -119,25 +119,25 @@ function wellBr(x) {
 }
 { list(#x, #a) * wb(#a, #r) * (ret == #r) }
 
-predicate wb(+a, r : Bool) {
+predicate wb(a; r : Bool) {
   wbs(a, [], r)
 }
 
-predicate openBracket(+c : String) {
+predicate openBracket(c : String) {
   ((c == "<") || (c == "["))
 }
 
-predicate closeBracket(+c : String) {
+predicate closeBracket(c : String) {
   ((c == ">") || (c == "]"))
 }
 
-predicate nonBracket(+c : String) {
+predicate nonBracket(c : String) {
   ((c != "<") /\ (c != ">") /\ (c != "[") /\ (c != "]"))
 }
 
 //#endregion  === EDIT BELOW HERE ===
 
-predicate wbs(+a, +b, r : Bool) {
+predicate wbs(a, b; r : Bool) {
 //-  // base case
 //-  (a == []) * (b == []) * (r == true);
 //- 

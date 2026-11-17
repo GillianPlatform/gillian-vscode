@@ -9,7 +9,7 @@
 
 @config manual_fold: false
 
-predicate fib(+n, res: Int) {
+predicate fib(n; res: Int) {
   (n <= 0) * (res == 0);
   (n == 1) * (res == 1);
   (n >= 2) * fib(n-1, #a) * fib(n-2, #b) * (res == (#a+#b))

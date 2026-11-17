@@ -11,7 +11,7 @@
 
 @config manual_fold : false
 
-predicate list(+x, vs) {
+predicate list(x; vs) {
     (x == null) * (vs == []);
     (x -b> #v, #z) * list(#z, #vss) * (vs == #v::#vss)
 }

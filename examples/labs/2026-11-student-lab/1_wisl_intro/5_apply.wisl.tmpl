@@ -60,12 +60,12 @@ function list_allocate_node(v){
 }
 { list(ret, [ #v ]) }
 
-predicate list(+x, vs) {
+predicate list(x; vs) {
     (x == null) * (vs == []);
     (x -b> #v, #z) * list(#z, #vss) * (vs == #v::#vss)
 }
 
-predicate list_search(+vs, +i, v) {
+predicate list_search(vs, i; v) {
   (vs == #v :: #vs) * (i == 0) * (v == #v);
   (vs == #v :: #vs) * (i != 0) * (i > 0) * (i < len(vs)) * list_search(#vs, i - 1, v)
 }
@@ -76,7 +76,7 @@ lemma search_not_null {
       list(x, vs) * list_search(vs, i - 1, r) |- list(x, vs) * list_search(vs, i - 1, r) * (x != null)
 }
 
-predicate list_member(+vs, +v, r : Bool){
+predicate list_member(vs, v; r : Bool){
   (vs == []) * (r == false);
   (vs == v :: #ws) * (r == true) * list_member(#ws, v, #mem);
   (vs == #v :: #ws) * (#v != v) * list_member(#ws, v, r)

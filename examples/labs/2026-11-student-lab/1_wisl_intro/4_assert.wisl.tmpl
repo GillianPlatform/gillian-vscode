@@ -29,7 +29,7 @@
 
 @config manual_fold : true
 
-predicate list(+x, vs) {
+predicate list(x; vs) {
   (x == null) * (vs == []);
   (x -b> #v, #z) * list(#z, #vss) * (vs == #v::#vss)
 }
@@ -62,12 +62,12 @@ function list_concat(x, y) {
 }
 { list(ret,  #xs @ #ys) }
 
-predicate intList(+x, vs) {
+predicate intList(x; vs) {
   (x == null) * (vs == []);
   (x -b> #v, #z) * (#v : Int) * intList(#z, #vss) * (vs == #v::#vss)
 }
 
-predicate min(+vs, v : Int) {
+predicate min(vs; v : Int) {
   (vs == [v]);
   (vs == #v :: #vs) * (v < #v) * min(#vs, v);
   (vs == #v :: #vs) * (#v <= #min) * min(#vs, #min) * (v == #v)

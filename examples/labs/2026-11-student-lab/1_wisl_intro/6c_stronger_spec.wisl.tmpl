@@ -12,7 +12,7 @@
 
 @config manual_fold : false
 
-predicate list(+x, vs) {
+predicate list(x; vs) {
   (x == null) * (vs == []);
   (x -b> #v, #z) * list(#z, #vss) * (vs == #v :: #vss)
 }
@@ -24,7 +24,7 @@ predicate list(+x, vs) {
 //? by xs being exactly the same list, with the same order, but without k.
 //? There should be three cases, and you should go through inductively
 //? both lists, checking whether their elements are the same.
-predicate list_without(+xs, +v, ys) {
+predicate list_without(xs, v; ys) {
 //-  (xs == []) * (ys == []);
 //-  (xs == #x :: #xss) * (ys == #x :: #yss) * (v != #x)
 //-    * list_without(#xss, v, #yss);

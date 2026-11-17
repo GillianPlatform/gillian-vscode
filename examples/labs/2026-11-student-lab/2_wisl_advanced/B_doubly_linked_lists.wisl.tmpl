@@ -31,13 +31,13 @@
 @config manual_fold : false
 
 // This describes a doubly-linked list segment, unfolding from the left.
-predicate dlsegl(+x, +y, +v, +w, vs : List) {
+predicate dlsegl(x, y, v, w; vs : List) {
   (x == y) * (v == w) * (vs == []);
   (x -b> #a, #z, w) * (vs == #a :: #vss) * dlsegl(#z, y, v, x, #vss)
 }
 
 // This describes a doubly-linked list segment, unfolding from the right
-predicate dlsegr(+x, +y, +v, +w, vs : List) {
+predicate dlsegr(x, y, v, w; vs : List) {
   (x == y) * (v == w) * (vs == []);
   (v -b> #a, y, #z) * (vs == #vss @ [#a]) * dlsegr(x, v, #z, w, #vss)
 }
@@ -86,7 +86,7 @@ lemma dlseg_r_to_l {
 // are null, i.e. there is no preceding list segment, and no succeeding list
 // segment. Note that this is represented using dlsegl; dlsegr can be used via
 // the dlseg_l_to_r lemma.
-predicate dlist(+x, +y, vs) {
+predicate dlist(x, y; vs) {
   dlsegl(x, null, y, null, vs)
 }
 

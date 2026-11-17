@@ -9,12 +9,12 @@
 
 @config manual_fold : false
 
-predicate list(+x, vs) {
+predicate list(x; vs) {
   (x == null) * (vs == []);
   (x -b> #v, #z) * list(#z, #vss) * (vs == #v :: #vss)
 }
 
-predicate l_member(+vs, +v, r : Bool) {
+predicate l_member(vs, v; r : Bool) {
   (vs == []) * (r == false);
   (vs == v :: #ws) * (r == true) * l_member(#ws, v, #mem);
   (vs == #v :: #ws) * (#v != v) * l_member(#ws, v, r)

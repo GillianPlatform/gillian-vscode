@@ -31,7 +31,7 @@ typedef struct ln {
 } SLL;
 
 /*@
-pred sll(+p, alpha) {
+pred sll(p; alpha) {
   (p -m> struct ln { #head; #tail }) *
   (alpha == #head::#beta) *
   sll(#tail, #beta) *

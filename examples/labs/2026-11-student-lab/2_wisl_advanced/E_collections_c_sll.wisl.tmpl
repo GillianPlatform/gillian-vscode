@@ -60,7 +60,7 @@
 // *address* of the i-th node of the list. For lseg we made that (x != y) assertion
 // explicit to help Gillian in the branching process.
 
-predicate sll(+x, alpha, delta) {
+predicate sll(x; alpha, delta) {
     // empty
     (x == null) * (alpha == []) * (delta == []);
     // non-empty
@@ -68,7 +68,7 @@ predicate sll(+x, alpha, delta) {
     (delta == x::#gamma)
 }
 
-predicate lseg(+x, +y, alpha, delta) {
+predicate lseg(x, y; alpha, delta) {
   (x == y) * (alpha == []) * (delta == []);
 
   (x -b> #v, #z) * (x != y) * lseg(#z, y, #beta, #gamma) *
@@ -80,7 +80,7 @@ predicate lseg(+x, +y, alpha, delta) {
 // describes the entire list except the last node, and then we have the sll
 // predicate, which describes the last node.
 
-predicate nounfold cc_sll_ht(+x, h, t, alpha, delta) {
+predicate nounfold cc_sll_ht(x; h, t, alpha, delta) {
   // Full cc_slist_s object: length, head, tail
   (x -b> 0, h, t) *
   (alpha == []) * (delta == []) *
@@ -98,14 +98,14 @@ predicate nounfold cc_sll_ht(+x, h, t, alpha, delta) {
 // Finally, we have a top-level predicate cc_sll that existentially quantfies
 // the head and tail pointers.
 
-predicate cc_sll(+x, alpha, delta) {
+predicate cc_sll(x; alpha, delta) {
   cc_sll_ht(x, #h, #t, alpha, delta)
 }
 
 // For contains, we have the list_count predicate that states:
 // For a list vs and an element k, element k appears n times in the list.
 
-predicate list_count(+vs, +k, n : Int) {
+predicate list_count(vs, k; n : Int) {
   (vs == []) * (n == 0);
   (vs == k :: #vss) * list_count(#vss, k, #m) * (n == #m + 1);
   (vs == #v :: #vss) * (#v != k) * list_count(#vss, k, n)
@@ -126,7 +126,7 @@ predicate list_count(+vs, +k, n : Int) {
 // lseg does not allow us to represent the previous as null, so we must account this in a
 // separate case.
 
-predicate nounfold cc_get(+v, +i : Int, +r, vs, xs) {
+predicate nounfold cc_get(v, i : Int, r; vs, xs) {
   cc_sll(v, vs, xs) * (i >= len(vs)) * (r -b> 8, null, null);
 
   (i == 0) * (v -b> 1, #h, #h) * (#h -b> #val, null) * (r -b> 0, null, #h) *
