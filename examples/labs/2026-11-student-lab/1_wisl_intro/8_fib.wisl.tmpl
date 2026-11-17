@@ -22,7 +22,7 @@ lemma fib_copy {
 
   proof:
     unfold fib(n, r);
-    if(n <= 1) {
+    if (n <= 1) {
       assert true
     } else {
       assert fib(n-1, #a);
@@ -41,8 +41,8 @@ lemma fib_copy {
 
 { (n == #n) * (#n: Int) }
 function fib_rec(n) {
-  if(n < 2) {
-    if(n <= 0) {
+  if (n < 2) {
+    if (n <= 0) {
       r := 0
     } else {
       r := 1
@@ -61,8 +61,8 @@ function fib_rec(n) {
 
 { (n == #n) * (#n: Int) }
 function fib_iter(n) {
-  if(n < 2) {
-    if(n < 1) {
+  if (n < 2) {
+    if (n < 1) {
       r := 0
     } else {
       r := 1
