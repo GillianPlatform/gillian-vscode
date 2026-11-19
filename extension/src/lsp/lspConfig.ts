@@ -1,4 +1,4 @@
-import { ExtensionContext, Uri, workspace, commands } from "vscode";
+import { ExtensionContext, Uri, workspace, commands, window } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient/node";
 import { expandCommand, expandPath, parseCmdArgs } from "../util/vscodeVariables";
 
@@ -90,17 +90,20 @@ function startWislLsp() {
 }
 
 function restartWislLsp() {
-  restartLsp("wisl", "WISL Language Server", "wisl");
+  return restartLsp("wisl", "WISL Language Server", "wisl");
 }
 
 export function activateLsp(context: ExtensionContext) {
-  startWislLsp();
-
   context.subscriptions.push(
-    commands.registerCommand("extension.gillian.restartWislLSP", () => {
-      restartWislLsp();
-    }),
+    commands.registerCommand("extension.gillian.restartWislLSP", restartWislLsp),
   );
+
+  // A throw here would abort activation; keep the restart command usable instead
+  try {
+    startWislLsp();
+  } catch (e) {
+    window.showErrorMessage(`Failed to start WISL language server: ${e}`);
+  }
 }
 
 export function deactivateLSP() {
