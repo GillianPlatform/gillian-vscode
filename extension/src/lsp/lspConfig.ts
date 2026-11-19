@@ -5,6 +5,7 @@ import { expandCommand, expandPath, parseCmdArgs } from "../util/vscodeVariables
 const clients: Record<string, LanguageClient> = {};
 
 function startLsp(langCmd: string, name: string, language: string) {
+  if (clients[langCmd]) return; // already started; restartLsp stops it first
   const config = workspace.getConfiguration("gillian");
   const langConfig = workspace.getConfiguration(`gillian.${langCmd}`);
 
@@ -63,14 +64,15 @@ function startLsp(langCmd: string, name: string, language: string) {
   const id = `gillian-lsp-${langCmd}`;
   console.log("Launching LSP client", { id, name, serverOptions, clientOptions });
   const client = new LanguageClient(id, name, serverOptions, clientOptions);
-  clients.langCmd = client;
+  clients[langCmd] = client;
   client.start();
 }
 
 async function stopLsp(langCmd: string) {
   const client = clients[langCmd];
-  if (!client || !client.isRunning()) return false;
-  await client.stop();
+  if (!client) return false;
+  delete clients[langCmd];
+  if (client.needsStop()) await client.stop();
   return true;
 }
 
@@ -99,7 +101,7 @@ export function activateLsp(context: ExtensionContext) {
 
 export function deactivateLSP() {
   for (const [lang, client] of Object.entries(clients)) {
-    if (client.isRunning()) client.stop();
+    if (client.needsStop()) client.stop();
     delete clients[lang];
   }
 }
