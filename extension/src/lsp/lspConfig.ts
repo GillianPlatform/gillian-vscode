@@ -85,25 +85,34 @@ async function restartLsp(langCmd: string, name: string, language: string) {
   startLsp(langCmd, name, language);
 }
 
-function startWislLsp() {
-  startLsp("wisl", "WISL Language Server", "wisl");
-}
+// Settings read by startLsp; changing any of them restarts the server
+const wislLspSettings = [
+  "runMode",
+  "outputDirectory",
+  "binDirectory",
+  "sourceDirectory",
+  "sourceExecTemplate",
+  "useManualProof",
+  "wisl.commandLineArguments",
+  "wisl.environmentVariables",
+].map((s) => `gillian.${s}`);
 
-function restartWislLsp() {
-  return restartLsp("wisl", "WISL Language Server", "wisl");
+async function restartWislLsp() {
+  try {
+    await restartLsp("wisl", "WISL Language Server", "wisl");
+  } catch (e) {
+    window.showErrorMessage(`Failed to start WISL language server: ${e}`);
+  }
 }
 
 export function activateLsp(context: ExtensionContext) {
   context.subscriptions.push(
     commands.registerCommand("extension.gillian.restartWislLSP", restartWislLsp),
+    workspace.onDidChangeConfiguration((e) => {
+      if (wislLspSettings.some((s) => e.affectsConfiguration(s))) restartWislLsp();
+    }),
   );
-
-  // A throw here would abort activation; keep the restart command usable instead
-  try {
-    startWislLsp();
-  } catch (e) {
-    window.showErrorMessage(`Failed to start WISL language server: ${e}`);
-  }
+  restartWislLsp();
 }
 
 export function deactivateLSP() {
