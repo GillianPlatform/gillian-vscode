@@ -122,7 +122,6 @@ function remove_duplicates(x) {
     } else {
       //+r := set_list_prepend(r, v)
       //-r := set_list_prepend(r, v);
-      //-[[ apply list_member_create(next, #v, #vss) ]]
     }
   };
   return r
@@ -150,7 +149,6 @@ function remove_duplicates_strong(x) {
       //+r := set_list_prepend(r, v)
       //-r := set_list_prepend(r, v);
       //-[[ apply contains_all_prepend(#vss, #s, #v)]];
-      //-[[ apply list_member_create(next, #v, #vss) ]]
     }
   };
   return r
