@@ -241,14 +241,7 @@ function get_node_at(v, i) {
   size := [v];
   r := new(3);
   if (i >= size) {
-    //+[r] := 8
-    //-[r] := 8;
-    //-[[ if (size == 0) {
-    //-  fold cc_sll_ht(#v, null, null, [], [])
-    //-} else {
-    //-  assert (#v -b> size, #h, #t);
-    //-  fold cc_sll_ht(#v, #h, #t, #vs, #xs)
-    //-}]]
+    [r] := 8
   } else {
     head := [v + 1];
     tail := [v + 2];
@@ -269,7 +262,6 @@ function get_node_at(v, i) {
       prev := head;
       node := [head + 1];
       j := 1;
-      //-[[ fold lseg(head, prev, [], []) ]];
       //-[[ assert (#beta == #val2 :: #vss) ]];
       //-[[ assert (#gamma == #ptr :: #xss) ]];
       //-[[ apply concat_lseg_sll(node, tail, #vss, [#last], #xss, [tail]) ]];
@@ -293,8 +285,6 @@ function get_node_at(v, i) {
       [r + 2] := node;
       //-[[ assert {bind: #end, #endp} sll(node, #end, #endp) ]];
       //-[[ assert {bind: #start, #startp} lseg(head, prev, #start, #startp) ]];
-      //-[[ unfold sll(node, #end, #endp)]];
-      //-[[ fold sll(node, #end, #endp)]];
       //-[[ assert {bind: #smth} (#end == #smth @ [#last]) ]];
       //-[[ assert {bind: #smthp} (#endp == #smthp @ [tail]) ]];
       //-[[ apply sll_split_last(node, #smth, #last, #smthp, tail) ]]
@@ -308,7 +298,6 @@ function get_node_at(v, i) {
 // 4. counting the number of v's in a singly-linked list (MEDIUM)
 { (v == #v) * (k == #k) * cc_sll(#v, #vs, #xs) }
 function cc_slist_contains(v, k) {
-  //-[[ unfold cc_sll_ht(v, #h, #t, #vs, #xs)]];
   //-[[ assert {bind: #size} (v -b> #size, #h, #t) ]];
   head := [v + 1];
   node := head;
@@ -318,13 +307,8 @@ function cc_slist_contains(v, k) {
   //-    sll(#t, [ #last ], [ #t ]);
   //-  apply concat_lseg_sll(#h, #t, #beta, [#last], #gamma, [#t]);
   //-  apply list_count_create(node, #beta @ [#last], #gamma @ [#t], k)
-  //-} else {
-  //-  fold sll(null, [], []);
-  //-  fold list_count([], #k, 0)
   //-}
   //-]];
-  //-[[ fold lseg(head, head, [], []) ]];
-  //-[[ fold list_count([], #k, 0)]];
   [[ invariant {bind: node, count, #start, #startp, #rg, #end, #endp}
     lseg(head, node, #start, #startp) * sll(node, #end, #endp) *
     (#vs == #start @ #end) * (#xs == #startp @ #endp) *
@@ -346,10 +330,7 @@ function cc_slist_contains(v, k) {
   };
   //-[[ if (#size != 0) {
   //-  apply lseg_to_sll(head, #beta @ [#last]);
-  //-  apply sll_split_last(#h, #beta, #last, #gamma, #t);
-  //-  fold cc_sll_ht(v, #h, #t, #vs, #xs)
-  //-} else {
-  //-  fold cc_sll_ht(v, null, null, [], [])
+  //-  apply sll_split_last(#h, #beta, #last, #gamma, #t)
   //-} ]];
   return count
 }
