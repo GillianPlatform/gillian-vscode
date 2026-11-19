@@ -51,7 +51,7 @@
 // while 3 and 4 are done in manual.
 //#region  === DON'T EDIT THIS ===
 
-@config manual_fold : true
+@config manual_fold : false
 
 // We have our sll and lseg predicates as usual. Note that unlike the sll and
 // lseg predicates seen in previous, exercises, we have an additional parameter
@@ -237,7 +237,7 @@ function cc_slist_add_last(v, x) {
 // 3. Getting the i-th node of linked list (HARD)
 { (v == #v) * (i == #i) * cc_sll(#v, #vs, #xs) * (0 <= #i) }
 function get_node_at(v, i) {
-  //-[[ unfold cc_sll_ht(#v, #h, #t, #vs, #xs)]];
+  //-[[ unfold cc_sll_ht(#v)]];
   size := [v];
   r := new(3);
   if (i >= size) {
@@ -247,12 +247,12 @@ function get_node_at(v, i) {
     tail := [v + 2];
     //-[[ assert {bind: #beta, #gamma, #last} lseg(head, tail, #beta, #gamma) *
     //-  (#vs == #beta @ [#last]) ]];
-    //-[[ unfold lseg(head, tail, #beta, #gamma) ]];
+    //-[[ unfold lseg(head, tail) ]];
     if (i == 0) {
       //-[[ if (head == tail) {
-      //-  unfold sll(tail, [#last], [tail]);
+      //-  unfold sll(tail);
       //-  assert {bind: #l, #p} (tail -b> #l, #p);
-      //-  unfold sll(#p, [], [])
+      //-  unfold sll(#p)
       //-} else {}]];
       r := new(3);
       [r] := 0;
@@ -273,7 +273,7 @@ function get_node_at(v, i) {
           (size == j + len(#end))
         ]];
       while (j < i) {
-        //-[[ unfold sll(node, #end, #endp) ]];
+        //-[[ unfold sll(node) ]];
         //-[[ apply lseg_append(head, prev, #start, #val, node, #startp) ]];
         prev := node;
         node := [node + 1];
@@ -314,9 +314,9 @@ function cc_slist_contains(v, k) {
     (#vs == #start @ #end) * (#xs == #startp @ #endp) *
     list_count(#start, k, count) * list_count(#end, k, #rg) ]];
   while (node != null) {
-    //-[[ unfold sll(node, #end, #endp) ]];
+    //-[[ unfold sll(node) ]];
     //-[[ assert {bind: #node} (node == #node) ]];
-    //-[[ unfold list_count(#end, k, #rg) ]];
+    //-[[ unfold list_count(#end, k) ]];
     val := [node];
     if (val == k) {
       //-[[ apply list_count_append_true(#start, k, count, val) ]];

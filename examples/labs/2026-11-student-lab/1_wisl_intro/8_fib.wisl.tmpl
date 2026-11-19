@@ -21,7 +21,7 @@ lemma fib_copy {
       fib(n, r) |- fib(n, r) * fib(n, r)
 
   proof:
-    unfold fib(n, r);
+    unfold fib(n);
     if (n <= 1) {
       assert true
     } else {

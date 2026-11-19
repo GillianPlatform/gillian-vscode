@@ -86,7 +86,7 @@ function set_list_prepend(x, k){
 { (x == #x) * (k == #k) * set_list(#x, #vs) * list_member(#vs, #k, #r) }
 function set_list_member(x, k){
   found := false;
-  [[ unfold list_member(#vs, k, #r) ]];
+  [[ unfold list_member(#vs, k) ]];
   if (x == null){
     skip
   } else {

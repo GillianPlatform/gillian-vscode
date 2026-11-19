@@ -52,7 +52,7 @@ function list_allocate_node(v){
 
 {(x == #x) * (y == #y) * list(#x, #xs) * list(#y, #ys) }
 function list_concat(x, y) {
-  //-[[ unfold list(x, #xs) ]];
+  //-[[ unfold list(x) ]];
   if (x == null){
     x := y
   } else {
@@ -68,11 +68,11 @@ function list_concat(x, y) {
 { (x == #x) * list(#x, #vs) }
 function list_copy(x){
   //-y := null;
-  //-[[ unfold list(x, #vs) ]];
+  //-[[ unfold list(x) ]];
   //-if (x != null) {
     //-k := [x];
     //-y := list_allocate_node(k);
-    //-[[ unfold list(y, [ k ]) ]];
+    //-[[ unfold list(y) ]];
     //-t := [x + 1];
     //-z := list_copy(t);
     //-[y + 1] := z

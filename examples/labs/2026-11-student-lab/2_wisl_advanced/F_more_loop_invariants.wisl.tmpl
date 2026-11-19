@@ -116,14 +116,14 @@ function list_member_iter(x, k) {
   while ((found == false) && (next != null)){
     //-[[ assert (found == false) ]];
     //-[[ assert {bind: #next} (next == #next) ]];
-    //-[[ unfold list(next, #vs2) ]];
+    //-[[ unfold list(next) ]];
     //-[[ assert {bind: #v, #z} #next -b> #v, #z ]];
     v := [next];
     found := (v == k);
     //+next := [next + 1]
     //-next := [next + 1];
     //-[[ apply listseg_append(x, #vs1, #v, next) ]];
-    //-[[ unfold list_member(#vs2, k, #rg) ]];
+    //-[[ unfold list_member(#vs2, k) ]];
     //-[[ apply list_member_append(#vs1, k, false, #v) ]]
   };
   //?? list_member_iter hint:
@@ -131,7 +131,7 @@ function list_member_iter(x, k) {
   //? separate it into two different cases with the conditional tactic.
   //-[[ if (found == false) {
   //-    apply listseg_to_list(#x);
-  //-    unfold list_member([], #k, false)
+  //-    unfold list_member([], #k)
   //-  } else {
   //-    assert {bind: #vs1, #vs2} listseg(#x, next, #vs1) * list(next, #vs2);
   //-    apply list_member_concat(#vs1, #vs2, #k);

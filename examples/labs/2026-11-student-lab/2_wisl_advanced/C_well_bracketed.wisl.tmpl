@@ -55,7 +55,7 @@ function list_allocate_node(v) {
 { (x == #x) * (k == #k) * list(#x, #vs) }
 function list_push(x, k) {
   z := list_allocate_node(k);
-  [[ unfold list(z, [ #k ]) ]];
+  [[ unfold list(z) ]];
   [z + 1] := x;
   [[ fold list(z, #k :: #vs) ]];
   return z
@@ -64,7 +64,7 @@ function list_push(x, k) {
 
 { (x == #x) * (x != null) * list(#x, #k :: #vs) }
 function list_pop(x) {
-  [[ unfold list(#x, #k :: #vs) ]];
+  [[ unfold list(#x) ]];
   r := new(2);
   k := [x];
   z := [x + 1];
@@ -77,7 +77,7 @@ function list_pop(x) {
 { (x == #x) * (s == #s) * list(#x, #a) * list(#s, #b) * wbs(#a, #b, #r) }
 function wellBr_helper(x, s) {
   ok := true;
-  //-[[ unfold wbs(#a, #b, #r) ]];
+  //-[[ unfold wbs(#a, #b) ]];
   if (x == null) {
     if (s != null) {
       ok := false

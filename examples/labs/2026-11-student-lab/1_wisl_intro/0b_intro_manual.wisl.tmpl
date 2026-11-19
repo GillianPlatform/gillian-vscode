@@ -13,6 +13,10 @@
 //     [[ fold P(x, y) ]];
 //     [[ unfold P(x, y) ]];
 //
+// When unfolding, you only need to give the predicate's in-parameters (those
+// before the ';' in its definition), so for 'predicate P(x; y)', you can just
+// write '[[ unfold P(x) ]]'. Any out-parameters you do give are checked.
+//
 // Try adding folds and unfolds to make this function verify!
 //
 // Note: If you get stuck on an exercise, you might be able to find a hint in
@@ -31,7 +35,7 @@ predicate list(x; vs) {
 
 { (x == #x) * list(#x, #vs) }
 function llen(x) {
-    //-[[ unfold list(#x, #vs) ]];
+    //-[[ unfold list(#x) ]];
     if (x == null) {
         n := 0
     } else {

@@ -93,14 +93,14 @@ function list_length_iter(x) {
     //? to get the right predicate, and append it to listseg(x, y, #vs1).
     //? However, we can't simply do it by folding and unfolding, so it is required
     //? To use a lemma.
-    //-[[ unfold list(y, #vs2)]];
+    //-[[ unfold list(y)]];
     //-[[ assert {bind: #v, #z} y -b> #v, #z ]];
     y := [y + 1];
     //+n := n + 1
     //-n := n + 1;
     //-[[ apply listseg_append(x, #vs1, #v, y) ]]
   };
-  //-[[ unfold list(y, #vs2) ]];
+  //-[[ unfold list(y) ]];
   //-[[ apply listseg_to_list(x) ]];
   return n
 }
@@ -108,7 +108,7 @@ function list_length_iter(x) {
 
 {(x == #x) * (y == #y) * list(#x, #xs) * list(#y, #ys) }
 function list_concat_iter(x, y){
-  //-[[ unfold list(x, #xs)]];
+  //-[[ unfold list(x)]];
   if (x == null) {
     head := y
   } else {
@@ -121,14 +121,14 @@ function list_concat_iter(x, y){
            (#xs == #vs1 @ (#v :: #vs2)) ]];
     while (next != null) {
         //-[[ assert {bind: #prev} (prev == #prev) ]];
-        //-[[ unfold list(next, #vs2) ]];
+        //-[[ unfold list(next) ]];
         prev := next;
         //-next := [next + 1];
         //+next := [next + 1]
         //-[[ apply listseg_append(head,  #vs1, #v, prev) ]]
     };
     //+[prev + 1] := y
-    //-[[ unfold list(next, #vs2)]];
+    //-[[ unfold list(next)]];
     //-[prev + 1] := y;
     //-[[ assert {bind:#svs, #sv} listseg(head, prev, #svs) * (prev -b> #sv, y) ]];
     //-[[ apply listseg_append(head, #svs, #sv, y) ]];

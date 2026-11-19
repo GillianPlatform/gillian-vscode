@@ -91,7 +91,7 @@ DLL* listPrepend(DLL *x, int v) {
     if (x == NULL) {
         return node_v;
     } else {
-        //-__GILLIAN("unfold DLL(node_v, [#v])");
+        //-__GILLIAN("unfold DLL(node_v)");
         x->prev = node_v;
         node_v->next = x;
         return node_v;
@@ -114,14 +114,14 @@ DLL* listConcat(DLL *x, DLL *y) {
             //-    "assert [[bind #vx, #px, #nx, #gamma]] "
             //-    "(x -m> struct dln {#vx; #px; #nx}) * DLL(#nx, #gamma) * "
             //-    "(#alpha == #h :: #gamma)");
-            //-__GILLIAN("unfold DLL(#nx, #gamma)");
+            //-__GILLIAN("unfold DLL(#nx)");
             if (x->next == NULL) {
                 x->next = y;
                 y->prev = x;
                 return x;
             } else {
                 DLL *new_tail = listConcat(x->next, y);
-                //-__GILLIAN("unfold DLL(new_tail, #gamma @ #beta)");
+                //-__GILLIAN("unfold DLL(new_tail)");
                 x->next = new_tail;
                 return x;
             }

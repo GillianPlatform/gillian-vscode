@@ -93,8 +93,8 @@ lemma list_member_create {
 { (x == #x) * (i == #i) * (x != null) * list(x, #vs) *
     list_search(#vs, #i, #r) * (i >= 0) }
 function list_get(x, i) {
-  //-[[ unfold list(x, #vs) ]];
-  //-[[ unfold list_search(#vs, #i, #r) ]];
+  //-[[ unfold list(x) ]];
+  //-[[ unfold list_search(#vs, #i) ]];
   v := [x];
   next := [x + 1];
   if (i == 0) {
@@ -114,7 +114,7 @@ function list_get(x, i) {
 { (x == #x) * (k == #k) * list(#x, #vs) }
 function list_member_func(x, k){
   found := false;
-  //-[[ unfold list(x, #vs) ]];
+  //-[[ unfold list(x) ]];
   if (x == null){
     skip
   } else {
