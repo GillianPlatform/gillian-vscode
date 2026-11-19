@@ -86,7 +86,7 @@ export class DebugAdapterExecutableFactory implements vscode.DebugAdapterDescrip
 
     const [cmd, ...args] = parseCmdArgs(cmd_s);
 
-    console.log("Starting debugger...", { cmd, args, cwd });
+    console.log("Starting debugger...", { cmd, args, env, cwd });
     const options = { cwd, env };
     return new vscode.DebugAdapterExecutable(cmd, args, options);
   }
