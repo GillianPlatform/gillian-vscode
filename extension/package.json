@@ -3,7 +3,7 @@
   "publisher": "gillianplatform",
   "displayName": "The Gillian Platform",
   "icon": "./icons/gillian.png",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Gillian integration for VSCode",
   "author": {
     "name": "The Gillian Team",
