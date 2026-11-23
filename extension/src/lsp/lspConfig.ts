@@ -38,6 +38,7 @@ function startLsp(langCmd: string, name: string, language: string) {
   const [command, ...args_] = parseCmdArgs(cmd_s);
   const args = args_.map((s) => `'${s}'`);
   const langEnv = langConfig.environmentVariables || {};
+  // spawn replaces the env; merge so it matches the debugger's DebugAdapterExecutable
   const env = { ...process.env, ...langEnv };
 
   console.log("attempting LSP", { command, args, env: langEnv, cwd });
@@ -47,7 +48,6 @@ function startLsp(langCmd: string, name: string, language: string) {
     args,
     options: {
       cwd,
-      // spawn replaces the env; merge so it matches the debugger's DebugAdapterExecutable
       env,
       shell: true,
     },
