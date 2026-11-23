@@ -26,7 +26,7 @@ predicate listseg(x; y, vs) {
   (x -b> #v, #z) * listseg(#z, y, #vss) * (vs == #v :: #vss)
 }
 
-predicate list_member(vs, v; r : Bool){
+predicate list_member(vs, v; r : Bool) {
   (vs == []) * (r == false);
   (vs == v :: #ws) * (r == true) * list_member(#ws, v, #mem);
   (vs == #v :: #ws) * (#v != v) * list_member(#ws, v, r)
@@ -66,9 +66,9 @@ lemma list_member_concat {
 //#region  === EDIT BELOW HERE ===
 
 { (x == #x) * list(#x, #vs) }
-function list_copy_iter(x){
+function list_copy_iter(x) {
     y := null;
-    if (x == null){
+    if (x == null) {
       skip
     } else {
         y := new(2);
@@ -82,7 +82,7 @@ function list_copy_iter(x){
           listseg(x, t, #vs1) * list(t, #vs2) * (v == #a) *
             (#vs == (#vs1 @ #vs2)) * listseg(y, p, #vs3) * (p -b> #a, null) *
                 (#vs1 == (#vs3 @ [#a])) ]];
-        while (t != null){
+        while (t != null) {
             //-[[ assert {bind: #t, #p} (t == #t) * (p == #p) ]];
             v := [t];
             c := new(2);
@@ -113,7 +113,7 @@ function list_member_iter(x, k) {
        listseg(x, next, #vs1) * list(next, #vs2) *
          (#vs == (#vs1 @ #vs2)) * (#r == (found || #rg)) *
            list_member(#vs1, k, found) * list_member(#vs2, k, #rg) ]];
-  while ((found == false) && (next != null)){
+  while ((found == false) && (next != null)) {
     //-[[ assert (found == false) ]];
     //-[[ assert {bind: #next} (next == #next) ]];
     //-[[ unfold list(next) ]];

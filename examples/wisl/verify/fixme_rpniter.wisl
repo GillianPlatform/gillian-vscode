@@ -41,7 +41,7 @@ lemma lseg_to_list {
 
   proof:
     unfold lseg(x, null, #vx);
-    if (#vx != []){
+    if (#vx != []) {
       assert {bind: #nv, #nnext} (x -b> #nv, #nnext);
       apply lseg_to_list(#nnext)
     }

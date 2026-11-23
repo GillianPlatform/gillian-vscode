@@ -107,7 +107,7 @@ function list_length_iter(x) {
 { list(#x, #vs) * (ret == len(#vs)) }
 
 {(x == #x) * (y == #y) * list(#x, #xs) * list(#y, #ys) }
-function list_concat_iter(x, y){
+function list_concat_iter(x, y) {
   //-[[ unfold list(x)]];
   if (x == null) {
     head := y

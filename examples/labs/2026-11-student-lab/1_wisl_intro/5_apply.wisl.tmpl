@@ -52,7 +52,7 @@ lemma singleton_list {
 }
 
 { (v == #v) }
-function list_allocate_node(v){
+function list_allocate_node(v) {
   t := new(2);
   [t] := v;
   [[ apply singleton_list(t, v) ]];
@@ -76,7 +76,7 @@ lemma search_not_null {
       list(x, vs) * list_search(vs, i - 1, r) |- list(x, vs) * list_search(vs, i - 1, r) * (x != null)
 }
 
-predicate list_member(vs, v; r : Bool){
+predicate list_member(vs, v; r : Bool) {
   (vs == []) * (r == false);
   (vs == v :: #ws) * (r == true) * list_member(#ws, v, #mem);
   (vs == #v :: #ws) * (#v != v) * list_member(#ws, v, r)
@@ -112,15 +112,15 @@ function list_get(x, i) {
 { list(#x, #vs) * list_search(#vs, #i, #r) * (ret == #r) }
 
 { (x == #x) * (k == #k) * list(#x, #vs) }
-function list_member_func(x, k){
+function list_member_func(x, k) {
   found := false;
   //-[[ unfold list(x) ]];
-  if (x == null){
+  if (x == null) {
     skip
   } else {
     v := [x];
     t := [x + 1];
-    if (v == k){
+    if (v == k) {
       found := true;
       //-[[ assert {bind: #vss} (#vs == v :: #vss) ]];
       //-[[ apply list_member_create(t, #k, #vss) ]]

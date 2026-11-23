@@ -19,7 +19,7 @@ predicate list(x; vs) {
 }
 
 { (v == #v) }
-function list_allocate_node(v){
+function list_allocate_node(v) {
   t := new(2);
   [t] := v;
   return t

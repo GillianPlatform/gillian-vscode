@@ -15,7 +15,7 @@ predicate list(x; vs) {
 //#endregion  === EDIT BELOW HERE ===
 
 { (v == #v) }
-function list_allocate_node(v){
+function list_allocate_node(v) {
   t := new(2);
   [t] := v;
   //-[[ fold list(null, []) ]];

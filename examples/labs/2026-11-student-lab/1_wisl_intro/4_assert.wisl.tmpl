@@ -50,7 +50,7 @@ function list_pop(x) {
 {(x == #x) * (y == #y) * list(#x, #xs) * list(#y, #ys) }
 function list_concat(x, y) {
   //-[[ unfold list(x) ]];
-  if (x == null){
+  if (x == null) {
     x := y
   } else {
     t := [x + 1];

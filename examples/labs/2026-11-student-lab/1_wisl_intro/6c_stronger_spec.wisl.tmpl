@@ -40,7 +40,7 @@ function list_remove_strong(x, k) {
   } else {
     v := [x];
     next := [x + 1];
-    if (v == k){
+    if (v == k) {
       free(x);
       x := list_remove_strong(next, k)
     } else {

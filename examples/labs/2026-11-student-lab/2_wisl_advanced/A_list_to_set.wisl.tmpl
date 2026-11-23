@@ -19,7 +19,7 @@ predicate list(x; vs) {
   (x -b> #v, #z) * list(#z, #vs) * (vs == #v :: #vs)
 }
 
-predicate list_member(vs, v; r : Bool){
+predicate list_member(vs, v; r : Bool) {
   (vs == []) * (r == false);
   (vs == v :: #ws) * (r == true);
   (vs == #v :: #ws) * (#v != v) * list_member(#ws, v, r)
@@ -75,7 +75,7 @@ function set_list_allocate_node(v) {
 { set_list(ret, [ #v ]) }
 
 { (x == #x) * (k == #k) *  set_list(#x, #vs) * list_member(#vs, #k, false) }
-function set_list_prepend(x, k){
+function set_list_prepend(x, k) {
     z := set_list_allocate_node(k);
     [z + 1] := x;
     [[ apply list_member_duplicate(#vs, #k, false)]];
@@ -84,14 +84,14 @@ function set_list_prepend(x, k){
 { set_list(ret, #k :: #vs) * list_member(#k :: #vs, #k, true) }
 
 { (x == #x) * (k == #k) * set_list(#x, #vs) * list_member(#vs, #k, #r) }
-function set_list_member(x, k){
+function set_list_member(x, k) {
   found := false;
   [[ unfold list_member(#vs, k) ]];
-  if (x == null){
+  if (x == null) {
     skip
   } else {
     v := [x];
-    if (v == k){
+    if (v == k) {
       found := true
     } else {
       t := [x + 1];

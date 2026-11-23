@@ -39,7 +39,7 @@ predicate list(x; vs) {
 }
 
 { (v == #v) }
-function list_allocate_node(v){
+function list_allocate_node(v) {
   t := new(2);
   [t] := v;
   [[ fold list(null, []) ]];
@@ -53,7 +53,7 @@ function list_allocate_node(v){
 {(x == #x) * (y == #y) * list(#x, #xs) * list(#y, #ys) }
 function list_concat(x, y) {
   //-[[ unfold list(x) ]];
-  if (x == null){
+  if (x == null) {
     x := y
   } else {
     t := [x + 1];
@@ -66,7 +66,7 @@ function list_concat(x, y) {
 { list(ret,  #xs @ #ys) }
 
 { (x == #x) * list(#x, #vs) }
-function list_copy(x){
+function list_copy(x) {
   //-y := null;
   //-[[ unfold list(x) ]];
   //-if (x != null) {
