@@ -1,10 +1,12 @@
-import { ExtensionContext, Uri, workspace, commands } from "vscode";
+import { mkdirSync } from "fs";
+import { ExtensionContext, workspace, commands, window } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient/node";
 import { expandCommand, expandPath, parseCmdArgs } from "../util/vscodeVariables";
 
 const clients: Record<string, LanguageClient> = {};
 
 function startLsp(langCmd: string, name: string, language: string) {
+  if (clients[langCmd]) return; // already started; restartLsp stops it first
   const config = workspace.getConfiguration("gillian");
   const langConfig = workspace.getConfiguration(`gillian.${langCmd}`);
 
@@ -20,7 +22,7 @@ function startLsp(langCmd: string, name: string, language: string) {
     cwd = expandPath(config.outputDirectory || "./.gillian", workspaceFolder);
     const binDirectory = config.binDirectory;
     const path = binDirectory ? expandPath(binDirectory, workspaceFolder) + "/" : "";
-    workspace.fs.createDirectory(Uri.file(cwd));
+    mkdirSync(cwd, { recursive: true }); // must exist before spawn, or it fails with ENOENT
     cmd_s = `${path}${langCmd} ${args_s}`;
   } else {
     let sourceDirectory = config.sourceDirectory;
@@ -35,14 +37,18 @@ function startLsp(langCmd: string, name: string, language: string) {
 
   const [command, ...args_] = parseCmdArgs(cmd_s);
   const args = args_.map((s) => `'${s}'`);
+  const langEnv = langConfig.environmentVariables || {};
+  // spawn replaces the env; merge so it matches the debugger's DebugAdapterExecutable
+  const env = { ...process.env, ...langEnv };
 
-  console.log("attempting LSP", { command, args, cwd });
+  console.log("attempting LSP", { command, args, env: langEnv, cwd });
 
   const serverOptions: ServerOptions = {
     command,
     args,
     options: {
       cwd,
+      env,
       shell: true,
     },
   };
@@ -63,14 +69,15 @@ function startLsp(langCmd: string, name: string, language: string) {
   const id = `gillian-lsp-${langCmd}`;
   console.log("Launching LSP client", { id, name, serverOptions, clientOptions });
   const client = new LanguageClient(id, name, serverOptions, clientOptions);
-  clients.langCmd = client;
+  clients[langCmd] = client;
   client.start();
 }
 
 async function stopLsp(langCmd: string) {
   const client = clients[langCmd];
-  if (!client || !client.isRunning()) return false;
-  await client.stop();
+  if (!client) return false;
+  delete clients[langCmd];
+  if (client.needsStop()) await client.stop();
   return true;
 }
 
@@ -79,27 +86,39 @@ async function restartLsp(langCmd: string, name: string, language: string) {
   startLsp(langCmd, name, language);
 }
 
-function startWislLsp() {
-  startLsp("wisl", "WISL Language Server", "wisl");
-}
+// Settings read by startLsp; changing any of them restarts the server
+const wislLspSettings = [
+  "runMode",
+  "outputDirectory",
+  "binDirectory",
+  "sourceDirectory",
+  "sourceExecTemplate",
+  "useManualProof",
+  "wisl.commandLineArguments",
+  "wisl.environmentVariables",
+].map((s) => `gillian.${s}`);
 
-function restartWislLsp() {
-  restartLsp("wisl", "WISL Language Server", "wisl");
+async function restartWislLsp() {
+  try {
+    await restartLsp("wisl", "WISL Language Server", "wisl");
+  } catch (e) {
+    window.showErrorMessage(`Failed to start WISL language server: ${e}`);
+  }
 }
 
 export function activateLsp(context: ExtensionContext) {
-  startWislLsp();
-
   context.subscriptions.push(
-    commands.registerCommand("extension.gillian.restartWislLSP", () => {
-      restartWislLsp();
+    commands.registerCommand("extension.gillian.restartWislLSP", restartWislLsp),
+    workspace.onDidChangeConfiguration((e) => {
+      if (wislLspSettings.some((s) => e.affectsConfiguration(s))) restartWislLsp();
     }),
   );
+  restartWislLsp();
 }
 
 export function deactivateLSP() {
   for (const [lang, client] of Object.entries(clients)) {
-    if (client.isRunning()) client.stop();
+    if (client.needsStop()) client.stop();
     delete clients[lang];
   }
 }

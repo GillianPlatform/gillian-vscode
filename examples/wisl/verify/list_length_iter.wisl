@@ -49,7 +49,7 @@ lemma SLLseg_to_SLL {
 
   proof:
     unfold SLLseg(x, null, #vx);
-    if (#vx != []){
+    if (#vx != []) {
       assert {bind: #nv, #nnext} (x -b> #nv, #nnext);
       apply SLLseg_to_SLL(#nnext)
     }

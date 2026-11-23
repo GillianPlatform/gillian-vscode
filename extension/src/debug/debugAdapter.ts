@@ -1,5 +1,6 @@
 /** Defines Gillian's Debug Adapter, which tells VSCode how to execute Gillian for debugging. */
 
+import { mkdirSync } from "fs";
 import * as vscode from "vscode";
 import { ProviderResult } from "vscode";
 import { expandPath, expandCommand, parseCmdArgs } from "../util/vscodeVariables";
@@ -71,7 +72,7 @@ export class DebugAdapterExecutableFactory implements vscode.DebugAdapterDescrip
       cwd = expandPath(config.outputDirectory || "./.gillian", workspaceFolder);
       const binDirectory = config.binDirectory;
       const path = binDirectory ? expandPath(binDirectory, workspaceFolder) + "/" : "";
-      vscode.workspace.fs.createDirectory(vscode.Uri.file(cwd));
+      mkdirSync(cwd, { recursive: true }); // must exist before spawn, or it fails with ENOENT
       cmd_s = `${path}${langCmd} ${args_s}`;
     } else {
       let sourceDirectory = config.sourceDirectory;
@@ -86,7 +87,7 @@ export class DebugAdapterExecutableFactory implements vscode.DebugAdapterDescrip
 
     const [cmd, ...args] = parseCmdArgs(cmd_s);
 
-    console.log("Starting debugger...", { cmd, args, cwd });
+    console.log("Starting debugger...", { cmd, args, env, cwd });
     const options = { cwd, env };
     return new vscode.DebugAdapterExecutable(cmd, args, options);
   }

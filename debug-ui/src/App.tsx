@@ -1,7 +1,7 @@
 import "./App.css";
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
-import { MapState, useSEDAPMap } from "@gillianplatform/sedap-vscode-ui";
+import { MapState, useSEDAPMap, vscodeApi } from "@gillianplatform/sedap-vscode-ui";
 import { TraceViewProps } from "@gillianplatform/sedap-react";
 import MapView from "./components/MapView";
 import Tabs, { Tab } from "./components/Tabs";
@@ -78,10 +78,13 @@ function App() {
   const [activeTab, setActiveTab] = useState<string | undefined>();
   const [derivedRoots, setDerivedRoots] = useState<DerivedRoots>({});
 
-  const [minimapVisible, setMinimapVisible] = useState(true);
+  const [minimapVisible, setMinimapVisible] = useState(window.gillianMinimapVisible ?? true);
   const toggleMinimap = useCallback(() => {
     setMinimapVisible((prev) => !prev);
   }, []);
+  useEffect(() => {
+    vscodeApi.postMessage({ type: "setMinimapVisible", body: minimapVisible });
+  }, [minimapVisible]);
 
   useEffect(() => {
     let modified = false;

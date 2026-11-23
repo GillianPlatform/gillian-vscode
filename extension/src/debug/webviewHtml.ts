@@ -1,6 +1,8 @@
 import { ExtensionContext, Uri, WebviewPanel } from "vscode";
 import { randomUUID } from "crypto";
 
+const MINIMAP_KEY = "debugMinimapVisible";
+
 export const getWebviewResourceRoot = (context: ExtensionContext) => {
   return Uri.joinPath(context.extensionUri, "debug-ui-out");
 };
@@ -9,6 +11,13 @@ export const getWebviewHtml =
   (context: ExtensionContext) =>
   ({ webview }: WebviewPanel): string => {
     const nonce = randomUUID();
+
+    const minimapVisible = context.globalState.get(MINIMAP_KEY, true);
+    webview.onDidReceiveMessage(({ type, body }) => {
+      if (type === "setMinimapVisible") {
+        context.globalState.update(MINIMAP_KEY, body);
+      }
+    });
 
     const res = getWebviewResourceRoot(context);
     const scriptSrcs = [Uri.joinPath(res, "index.js")];
@@ -43,6 +52,7 @@ export const getWebviewHtml =
           ${styles}
           <script nonce="${nonce}">
             window.acquireVsCodeApi = acquireVsCodeApi;
+            window.gillianMinimapVisible = ${minimapVisible};
           </script>
         </head>
         <body>
