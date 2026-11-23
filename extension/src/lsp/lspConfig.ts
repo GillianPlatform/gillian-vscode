@@ -1,4 +1,5 @@
-import { ExtensionContext, Uri, workspace, commands, window } from "vscode";
+import { mkdirSync } from "fs";
+import { ExtensionContext, workspace, commands, window } from "vscode";
 import { LanguageClient, LanguageClientOptions, ServerOptions } from "vscode-languageclient/node";
 import { expandCommand, expandPath, parseCmdArgs } from "../util/vscodeVariables";
 
@@ -21,7 +22,7 @@ function startLsp(langCmd: string, name: string, language: string) {
     cwd = expandPath(config.outputDirectory || "./.gillian", workspaceFolder);
     const binDirectory = config.binDirectory;
     const path = binDirectory ? expandPath(binDirectory, workspaceFolder) + "/" : "";
-    workspace.fs.createDirectory(Uri.file(cwd));
+    mkdirSync(cwd, { recursive: true }); // must exist before spawn, or it fails with ENOENT
     cmd_s = `${path}${langCmd} ${args_s}`;
   } else {
     let sourceDirectory = config.sourceDirectory;
